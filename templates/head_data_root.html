@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Head Data Root</title>
+    <link rel="stylesheet" href="/static/ui.css">
+  </head>
+  <body class="control-danger-zone">
+    <div class="container">
+      <div class="topbar">
+        <a class="pill" href="/admin/logout">Logout</a>
+        <a class="pill" href="/">Main Dashboard</a>
+        <a class="pill" href="/head/dashboard">Head Dashboard</a>
+        <a class="pill" href="/students">Students Page</a>
+      </div>
+
+      <section class="control-warning-banner is-strong">
+        <div class="control-warning-icon">!</div>
+        <div class="control-warning-copy">
+          <strong>Live Control Database Zone</strong>
+          <p>This page edits live records directly. Any change here is reflected immediately across the whole website, reports, attendance, classes, and student views.</p>
+        </div>
+      </section>
+
+      <h1 class="title">Head Data Root</h1>
+      <div class="warning">
+        This is the live database root. Every operation changes system data immediately. You will get a confirmation prompt before each action.
+      </div>
+
+      <div class="guide">
+        <h4>How to Use</h4>
+        <p>Use filters first to find records quickly, then update or delete with confirmation.</p>
+        <p>Changes here affect all reports, attendance, and level details instantly.</p>
+      </div>
+
+      {% if op_status == 'success' %}
+      <div class="notice success">{{ op_message }}</div>
+      {% elif op_status == 'error' %}
+      <div class="notice error">{{ op_message }}</div>
+      {% endif %}
+
+      <div class="panel">
+        <div class="topbar">
+          <a class="pill" href="/head/data-root?section=students">Students</a>
+          <a class="pill" href="/head/data-root?section=teachers">Teachers</a>
+          <a class="pill" href="/head/data-root?section=levels">Levels</a>
+          <a class="pill" href="/head/data-root?section=cleanup">Data Cleanup</a>
+          <a class="pill" href="/head/data-root?section=recordings">Recordings</a>
+        </div>
+      </div>
+
+      {% if section == 'students' %}
+      <div class="panel">
+        <h3>Add Student</h3>
+        <form class="inline-form" method="post" action="/students/add" title="Add a new student to live database" onsubmit="return confirm('Confirm adding this student to the live database?');">
+          <input type="hidden" name="section" value="students">
+          <input type="text" name="full_name" placeholder="Student full name" required>
+          <select name="level_id" required>
+            <option value="">Select level</option>
+            {% for level in levels %}
+            <option value="{{ level.id }}">{{ level.name }}</option>
+            {% endfor %}
+          </select>
+          <input type="text" name="status" placeholder="Status">
+          <select name="student_year">
+            <option value="">Student year</option>
+            {% for y in [5, 6, 7, 8, 9, 10] %}
+            <option value="{{ y }}">{{ y }}</option>
+            {% endfor %}
+          </select>
+          <input type="email" name="parent_email" placeholder="Parent email">
+          <input type="text" name="parent_whatsapp" placeholder="Parent WhatsApp">
+          <button type="submit">Add Student</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h3>Students Overview</h3>
+        <div class="grid-cards" style="margin-top:10px;">
+          <div class="card">
+            <h3>Total Students</h3>
+            <div class="metric">{{ student_summary.total }}</div>
+          </div>
+          <div class="card">
+            <h3>Missing Parent Email</h3>
+            <div class="metric">{{ student_summary.missing_parent_email }}</div>
+          </div>
+          <div class="card">
+            <h3>Missing Parent WhatsApp</h3>
+            <div class="metric">{{ student_summary.missing_parent_whatsapp }}</div>
+          </div>
+          <div class="card">
+            <h3>Missing Status</h3>
+            <div class="metric">{{ student_summary.missing_status }}</div>
+          </div>
+          <div class="card">
+            <h3>Missing Year</h3>
+            <div class="metric">{{ student_summary.missing_year }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Students Database</h3>
+        <form class="inline-form" method="get" action="/head/data-root" style="margin-bottom:10px;">
+          <input type="hidden" name="section" value="students">
+          <input type="text" name="search" placeholder="Search name or code" value="{{ search or '' }}">
+          <select name="level_id">
+            <option value="">All Levels</option>
+            {% for level in levels %}
+            <option value="{{ level.id }}" {% if level_id_filter == (level.id|string) %}selected{% endif %}>{{ level.name }}</option>
+            {% endfor %}
+          </select>
+          <select name="email_filter">
+            <option value="all" {% if email_filter == 'all' %}selected{% endif %}>All Emails</option>
+            <option value="has" {% if email_filter == 'has' %}selected{% endif %}>Has Email</option>
+            <option value="missing" {% if email_filter == 'missing' %}selected{% endif %}>Missing Email</option>
+          </select>
+          <select name="student_status_filter">
+            <option value="all" {% if student_status_filter == 'all' %}selected{% endif %}>All Statuses</option>
+            <option value="active" {% if student_status_filter == 'active' %}selected{% endif %}>Active</option>
+            <option value="inactive" {% if student_status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+          </select>
+          <select name="student_year_filter">
+            <option value="all" {% if student_year_filter == 'all' %}selected{% endif %}>All Years</option>
+            {% for y in [5, 6, 7, 8, 9, 10] %}
+            <option value="{{ y }}" {% if student_year_filter == (y|string) %}selected{% endif %}>Year {{ y }}</option>
+            {% endfor %}
+          </select>
+          <select name="sort_by">
+            <option value="name_asc" {% if sort_by == 'name_asc' %}selected{% endif %}>Name A-Z</option>
+            <option value="name_desc" {% if sort_by == 'name_desc' %}selected{% endif %}>Name Z-A</option>
+            <option value="code_asc" {% if sort_by == 'code_asc' %}selected{% endif %}>Code Asc</option>
+            <option value="code_desc" {% if sort_by == 'code_desc' %}selected{% endif %}>Code Desc</option>
+            <option value="level_asc" {% if sort_by == 'level_asc' %}selected{% endif %}>Level Asc</option>
+            <option value="level_desc" {% if sort_by == 'level_desc' %}selected{% endif %}>Level Desc</option>
+          </select>
+          <button class="secondary" type="submit">Apply</button>
+          <a href="/head/data-root?section=students">Reset</a>
+        </form>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Edit Student</th>
+                <th>Parent Contact</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in student_rows %}
+              <tr id="student-{{ row.student.id }}">
+                <td>
+                  <strong>{{ row.student.student_code }}</strong><br>
+                  <small>
+                    {% if row.flags %}
+                    Needs: {{ row.flags | join(', ') | replace('_', ' ') }}
+                    {% else %}
+                    Student profile is complete
+                    {% endif %}
+                  </small>
+                </td>
+                <td>
+                  <form class="inline-form" method="post" action="/students/{{ row.student.id }}/update" title="Update student name, level, year, status, and parent email" onsubmit="return confirm('Confirm updating this student record?');">
+                    <input type="hidden" name="section" value="students">
+                    <input type="text" name="full_name" value="{{ row.student.full_name }}" required>
+                    <select name="level_id" required>
+                      {% for level in levels %}
+                      <option value="{{ level.id }}" {% if row.student.level_id == level.id %}selected{% endif %}>{{ level.name }}</option>
+                      {% endfor %}
+                    </select>
+                    <select name="status">
+                      <option value="" {% if not row.student.status %}selected{% endif %}>Status</option>
+                      <option value="Active" {% if row.student.status == 'Active' %}selected{% endif %}>Active</option>
+                      <option value="Inactive" {% if row.student.status == 'Inactive' %}selected{% endif %}>Inactive</option>
+                    </select>
+                    <select name="student_year">
+                      <option value="">Student year</option>
+                      {% for y in [5, 6, 7, 8, 9, 10] %}
+                      <option value="{{ y }}" {% if (row.student.student_year|string) == (y|string) %}selected{% endif %}>{{ y }}</option>
+                      {% endfor %}
+                    </select>
+                    <input type="email" name="parent_email" value="{{ row.student.parent_email or '' }}" placeholder="Parent email">
+                    <input type="text" name="parent_whatsapp" value="{{ row.student.parent_whatsapp or '' }}" placeholder="Parent WhatsApp">
+                    <button class="secondary" type="submit">Update</button>
+                  </form>
+                </td>
+                <td>
+                  <div>{{ row.student.parent_email or '-' }}</div>
+                  <div><small>{{ row.student.parent_whatsapp or '-' }}</small></div>
+                </td>
+                <td>
+                  <form method="post" action="/students/{{ row.student.id }}/delete" title="Delete student and related attendance/monthly notes" onsubmit="return confirm('Confirm deleting this student and related attendance/monthly notes? This cannot be undone.');">
+                    <input type="hidden" name="section" value="students">
+                    <button class="danger" type="submit">Delete</button>
+                  </form>
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="4">No students found.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if section == 'teachers' %}
+      <div class="panel">
+        <h3>Add Teacher</h3>
+        <form class="inline-form" method="post" action="/teachers/add" title="Add a new teacher" onsubmit="return confirm('Confirm adding this teacher to the live database?');">
+          <input type="hidden" name="section" value="teachers">
+          <input type="text" name="full_name" placeholder="Teacher name" required>
+          <input type="text" name="subject_name" placeholder="Subject / specialization">
+          <input type="text" name="phone" placeholder="Phone">
+          <input type="email" name="email" placeholder="Email">
+          <select name="status">
+            <option value="">Status</option>
+            <option value="Active">Active</option>
+            <option value="On Leave">On Leave</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+          <button type="submit">Add Teacher</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h3>Teachers Overview</h3>
+        <div class="grid-cards" style="margin-top:10px;">
+          <div class="card">
+            <h3>Total Teachers</h3>
+            <div class="metric">{{ teacher_summary.total }}</div>
+          </div>
+          <div class="card">
+            <h3>Active Teachers</h3>
+            <div class="metric">{{ teacher_summary.active }}</div>
+          </div>
+          <div class="card">
+            <h3>Without Levels</h3>
+            <div class="metric">{{ teacher_summary.without_levels }}</div>
+          </div>
+          <div class="card">
+            <h3>Shown Now</h3>
+            <div class="metric">{{ teacher_summary.filtered_total }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Teachers Database</h3>
+        <form class="inline-form" method="get" action="/head/data-root" style="margin-bottom:10px;">
+          <input type="hidden" name="section" value="teachers">
+          <input type="text" name="teacher_search" placeholder="Search name, email, phone, subject" value="{{ teacher_search or '' }}">
+          <select name="teacher_status_filter">
+            <option value="all" {% if teacher_status_filter == 'all' %}selected{% endif %}>All Statuses</option>
+            <option value="active" {% if teacher_status_filter == 'active' %}selected{% endif %}>Active</option>
+            <option value="on leave" {% if teacher_status_filter == 'on leave' %}selected{% endif %}>On Leave</option>
+            <option value="inactive" {% if teacher_status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+          </select>
+          <button class="secondary" type="submit">Apply</button>
+          <a href="/head/data-root?section=teachers">Reset</a>
+        </form>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Teacher Name</th><th>Update</th></tr>
+            </thead>
+            <tbody>
+              {% for row in teacher_rows %}
+              <tr id="level-{{ row.level.id }}">
+                <td>
+                  <strong>{{ row.teacher.full_name }}</strong><br>
+                  <small>{{ row.teacher.subject_name or 'No specialization yet' }}</small><br>
+                  <small>
+                    {% if row.assigned_levels %}
+                    Levels: {{ row.assigned_levels | map(attribute='name') | join(', ') }}
+                    {% else %}
+                    No assigned levels
+                    {% endif %}
+                  </small><br>
+                  <small>Students: {{ row.students_count }} • Status: {{ row.teacher.status or '-' }}</small>
+                </td>
+                <td>
+                  <form class="inline-form" method="post" action="/teachers/{{ row.teacher.id }}/update" title="Update teacher information" onsubmit="return confirm('Confirm updating this teacher record?');">
+                    <input type="hidden" name="section" value="teachers">
+                    <input type="text" name="full_name" value="{{ row.teacher.full_name }}" required>
+                    <input type="text" name="subject_name" value="{{ row.teacher.subject_name or '' }}" placeholder="Subject / specialization">
+                    <input type="text" name="phone" value="{{ row.teacher.phone or '' }}" placeholder="Phone">
+                    <input type="email" name="email" value="{{ row.teacher.email or '' }}" placeholder="Email">
+                    <select name="status">
+                      <option value="" {% if not row.teacher.status %}selected{% endif %}>Status</option>
+                      <option value="Active" {% if row.teacher.status == 'Active' %}selected{% endif %}>Active</option>
+                      <option value="On Leave" {% if row.teacher.status == 'On Leave' %}selected{% endif %}>On Leave</option>
+                      <option value="Inactive" {% if row.teacher.status == 'Inactive' %}selected{% endif %}>Inactive</option>
+                    </select>
+                    <button class="secondary" type="submit">Update</button>
+                  </form>
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="2">No teachers found.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if section == 'levels' %}
+      <div class="panel">
+        <h3>Levels Overview</h3>
+        <div class="grid-cards" style="margin-top:10px;">
+          <div class="card">
+            <h3>Total Levels</h3>
+            <div class="metric">{{ level_summary.total }}</div>
+          </div>
+          <div class="card">
+            <h3>Operationally Complete</h3>
+            <div class="metric">{{ level_summary.complete }}</div>
+          </div>
+          <div class="card">
+            <h3>Missing Teacher</h3>
+            <div class="metric">{{ level_summary.missing_teacher }}</div>
+          </div>
+          <div class="card">
+            <h3>Missing Zoom</h3>
+            <div class="metric">{{ level_summary.missing_zoom }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Levels Database</h3>
+        <form class="inline-form" method="get" action="/head/data-root" style="margin-bottom:10px;">
+          <input type="hidden" name="section" value="levels">
+          <input type="text" name="level_search" placeholder="Search level or teacher" value="{{ level_search or '' }}">
+          <select name="level_health_filter">
+            <option value="all" {% if level_health_filter == 'all' %}selected{% endif %}>All States</option>
+            <option value="missing_teacher" {% if level_health_filter == 'missing_teacher' %}selected{% endif %}>Missing Teacher</option>
+            <option value="missing_zoom" {% if level_health_filter == 'missing_zoom' %}selected{% endif %}>Missing Zoom</option>
+            <option value="missing_homework_board" {% if level_health_filter == 'missing_homework_board' %}selected{% endif %}>Missing Homework Board</option>
+            <option value="missing_class_board" {% if level_health_filter == 'missing_class_board' %}selected{% endif %}>Missing Class Board</option>
+          </select>
+          <button class="secondary" type="submit">Apply</button>
+          <a href="/head/data-root?section=levels">Reset</a>
+        </form>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Level</th><th>Update</th></tr>
+            </thead>
+            <tbody>
+              {% for row in level_rows %}
+              <tr>
+                <td>
+                  <strong>{{ row.level.name }}</strong><br>
+                  <small>Teacher: {{ row.level.teacher.full_name if row.level.teacher else 'Not assigned' }}</small><br>
+                  <small>Students: {{ row.students_count }} • Order: {{ row.level.order_index or '-' }}</small><br>
+                  <small>
+                    {% if row.health_flags %}
+                    Needs: {{ row.health_flags | join(', ') | replace('_', ' ') }}
+                    {% else %}
+                    All core links and assignment fields are complete
+                    {% endif %}
+                  </small>
+                </td>
+                <td>
+                  <form method="post" action="/levels/{{ row.level.id }}/update" title="Update level, teacher, order, and Zoom details" onsubmit="return confirm('Confirm updating this level and related student level names?');">
+                    <input type="hidden" name="section" value="levels">
+                    <div class="inline-form">
+                      <input type="text" name="name" value="{{ row.level.name }}" required>
+                      <select name="teacher_id">
+                        <option value="">No teacher</option>
+                        {% for teacher in teachers %}
+                        <option value="{{ teacher.id }}" {% if row.level.teacher_id == teacher.id %}selected{% endif %}>{{ teacher.full_name }}</option>
+                        {% endfor %}
+                      </select>
+                      <input type="text" name="order_index" value="{{ row.level.order_index or '' }}" placeholder="Order">
+                    </div>
+                    <div class="inline-form" style="margin-top:6px;">
+                      <input type="text" name="zoom_email" value="{{ row.level.zoom_email or '' }}" placeholder="Zoom email">
+                      {% if row.level.zoom_email %}
+                      <button class="secondary copy-action" type="button" data-copy-text="{{ row.level.zoom_email }}">Copy Email</button>
+                      {% endif %}
+                      <input type="text" name="zoom_link" value="{{ row.level.zoom_link or '' }}" placeholder="Zoom link" style="min-width:320px;">
+                      {% if row.level.zoom_link %}
+                      <button class="secondary copy-action" type="button" data-copy-text="{{ row.level.zoom_link }}">Copy Link</button>
+                      {% endif %}
+                      <input type="text" name="zoom_meeting_id" value="{{ row.level.zoom_meeting_id or '' }}" placeholder="Meeting ID">
+                      {% if row.level.zoom_meeting_id %}
+                      <button class="secondary copy-action" type="button" data-copy-text="{{ row.level.zoom_meeting_id }}">Copy ID</button>
+                      {% endif %}
+                      <input type="text" name="zoom_passcode" value="{{ row.level.zoom_passcode or '' }}" placeholder="Passcode">
+                      {% if row.level.zoom_passcode %}
+                      <button class="secondary copy-action" type="button" data-copy-text="{{ row.level.zoom_passcode }}">Copy Passcode</button>
+                      {% endif %}
+                    </div>
+                    <div class="inline-form" style="margin-top:6px;">
+                      <input type="text" name="homework_padlet_url" value="{{ row.level.homework_padlet_url or '' }}" placeholder="Homework Padlet URL" style="min-width:320px;">
+                      <input type="text" name="announcements_padlet_url" value="{{ row.level.announcements_padlet_url or '' }}" placeholder="Announcements Padlet URL" style="min-width:320px;">
+                      <button class="secondary" type="submit">Update Level</button>
+                    </div>
+                  </form>
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="2">No levels found.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if section == 'cleanup' %}
+      <div class="panel">
+        <h3>Data Cleanup Overview</h3>
+        <form class="inline-form" method="get" action="/head/data-root" style="margin-bottom:10px;">
+          <input type="hidden" name="section" value="cleanup">
+          <select name="cleanup_scope">
+            <option value="all" {% if cleanup_scope == 'all' %}selected{% endif %}>All Types</option>
+            <option value="students" {% if cleanup_scope == 'students' %}selected{% endif %}>Students Only</option>
+            <option value="teachers" {% if cleanup_scope == 'teachers' %}selected{% endif %}>Teachers Only</option>
+            <option value="levels" {% if cleanup_scope == 'levels' %}selected{% endif %}>Levels Only</option>
+          </select>
+          <select name="cleanup_priority_filter">
+            <option value="all" {% if cleanup_priority_filter == 'all' %}selected{% endif %}>All Priorities</option>
+            <option value="critical" {% if cleanup_priority_filter == 'critical' %}selected{% endif %}>Critical Only</option>
+            <option value="review" {% if cleanup_priority_filter == 'review' %}selected{% endif %}>Needs Review Only</option>
+          </select>
+          <button class="secondary" type="submit">Apply</button>
+          <a href="/head/data-root?section=cleanup">Reset</a>
+        </form>
+        <div class="grid-cards" style="margin-top:10px;">
+          <div class="card">
+            <h3>Total Items</h3>
+            <div class="metric">{{ cleanup_summary.total_items }}</div>
+          </div>
+          <div class="card">
+            <h3>Critical First</h3>
+            <div class="metric">{{ cleanup_summary.critical_items }}</div>
+          </div>
+          <div class="card">
+            <h3>Students Needing Updates</h3>
+            <div class="metric">{{ cleanup_summary.student_records }}</div>
+          </div>
+          <div class="card">
+            <h3>Teachers Needing Updates</h3>
+            <div class="metric">{{ cleanup_summary.teacher_records }}</div>
+          </div>
+          <div class="card">
+            <h3>Levels Needing Updates</h3>
+            <div class="metric">{{ cleanup_summary.level_records }}</div>
+          </div>
+        </div>
+      </div>
+
+      {% if cleanup_sections.students %}
+      <div class="panel">
+        <h3>Students With Missing Data</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Level</th>
+                <th>Priority</th>
+                <th>Needs</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in cleanup_students %}
+              <tr>
+                <td>{{ row.student.full_name }}<br><small>{{ row.student.student_code }}</small></td>
+                <td>{{ row.student.level.name if row.student.level else row.student.level_name or '-' }}</td>
+                <td><span class="cleanup-priority is-{{ row.priority.tone }}">{{ row.priority.label }}</span></td>
+                <td>{{ row.flags | join(', ') | replace('_', ' ') }}</td>
+                <td>
+                  <form class="inline-form" method="post" action="/cleanup/students/{{ row.student.id }}/quick-fix" style="margin-bottom:6px;">
+                    <input type="hidden" name="section" value="cleanup">
+                    {% if 'missing_parent_email' in row.flags %}
+                    <input type="email" name="parent_email" value="{{ row.student.parent_email or '' }}" placeholder="Parent email">
+                    {% endif %}
+                    {% if 'missing_parent_whatsapp' in row.flags %}
+                    <input type="text" name="parent_whatsapp" value="{{ row.student.parent_whatsapp or '' }}" placeholder="Parent WhatsApp">
+                    {% endif %}
+                    {% if 'missing_status' in row.flags %}
+                    <select name="status">
+                      <option value="">Status</option>
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                    </select>
+                    {% endif %}
+                    {% if 'missing_year' in row.flags %}
+                    <select name="student_year">
+                      <option value="">Student year</option>
+                      {% for y in [5, 6, 7, 8, 9, 10] %}
+                      <option value="{{ y }}">{{ y }}</option>
+                      {% endfor %}
+                    </select>
+                    {% endif %}
+                    {% if 'missing_parent_email' in row.flags or 'missing_parent_whatsapp' in row.flags or 'missing_status' in row.flags or 'missing_year' in row.flags %}
+                    <button class="secondary" type="submit">Quick Save</button>
+                    {% endif %}
+                  </form>
+                  <a class="btn-link" href="/head/data-root?section=students&search={{ row.student.student_code }}#student-{{ row.student.id }}">Fix Now</a>
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="5">No student cleanup items found.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if cleanup_sections.teachers %}
+      <div class="panel">
+        <h3>Teachers With Missing Data</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Teacher</th>
+                <th>Assigned Levels</th>
+                <th>Priority</th>
+                <th>Needs</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in cleanup_teachers %}
+              <tr>
+                <td>{{ row.teacher.full_name }}</td>
+                <td>
+                  {% if row.assigned_levels %}
+                  {{ row.assigned_levels | map(attribute='name') | join(', ') }}
+                  {% else %}
+                  -
+                  {% endif %}
+                </td>
+                <td><span class="cleanup-priority is-{{ row.priority.tone }}">{{ row.priority.label }}</span></td>
+                <td>{{ row.flags | join(', ') | replace('_', ' ') }}</td>
+                <td>
+                  <form class="inline-form" method="post" action="/cleanup/teachers/{{ row.teacher.id }}/quick-fix" style="margin-bottom:6px;">
+                    <input type="hidden" name="section" value="cleanup">
+                    {% if 'missing_phone' in row.flags %}
+                    <input type="text" name="phone" value="{{ row.teacher.phone or '' }}" placeholder="Phone">
+                    {% endif %}
+                    {% if 'missing_email' in row.flags %}
+                    <input type="email" name="email" value="{{ row.teacher.email or '' }}" placeholder="Email">
+                    {% endif %}
+                    {% if 'missing_status' in row.flags %}
+                    <select name="status">
+                      <option value="">Status</option>
+                      <option value="Active">Active</option>
+                      <option value="On Leave">On Leave</option>
+                      <option value="Inactive">Inactive</option>
+                    </select>
+                    {% endif %}
+                    {% if 'missing_phone' in row.flags or 'missing_email' in row.flags or 'missing_status' in row.flags %}
+                    <button class="secondary" type="submit">Quick Save</button>
+                    {% endif %}
+                  </form>
+                  <a class="btn-link" href="/head/data-root?section=teachers&teacher_search={{ row.teacher.full_name|urlencode }}#teacher-{{ row.teacher.id }}">Fix Now</a>
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="5">No teacher cleanup items found.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if cleanup_sections.levels %}
+      <div class="panel">
+        <h3>Levels With Missing Setup</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Teacher</th>
+                <th>Priority</th>
+                <th>Needs</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in cleanup_levels %}
+              <tr>
+                <td>{{ row.level.name }}</td>
+                <td>{{ row.level.teacher.full_name if row.level.teacher else '-' }}</td>
+                <td><span class="cleanup-priority is-{{ row.priority.tone }}">{{ row.priority.label }}</span></td>
+                <td>{{ row.health_flags | join(', ') | replace('_', ' ') }}</td>
+                <td>
+                  <form class="inline-form" method="post" action="/cleanup/levels/{{ row.level.id }}/quick-fix" style="margin-bottom:6px;">
+                    <input type="hidden" name="section" value="cleanup">
+                    {% if 'missing_teacher' in row.health_flags %}
+                    <select name="teacher_id">
+                      <option value="">Select teacher</option>
+                      {% for teacher in teachers %}
+                      <option value="{{ teacher.id }}">{{ teacher.full_name }}</option>
+                      {% endfor %}
+                    </select>
+                    {% endif %}
+                    {% if 'missing_zoom' in row.health_flags %}
+                    <input type="text" name="zoom_link" value="{{ row.level.zoom_link or '' }}" placeholder="Zoom link">
+                    {% endif %}
+                    {% if 'missing_teacher' in row.health_flags or 'missing_zoom' in row.health_flags %}
+                    <button class="secondary" type="submit">Quick Save</button>
+                    {% endif %}
+                  </form>
+                  <a class="btn-link" href="/head/data-root?section=levels&level_search={{ row.level.name|urlencode }}#level-{{ row.level.id }}">Fix Now</a>
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="5">No level cleanup items found.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+      {% endif %}
+
+      {% if section == 'recordings' %}
+      <div class="panel">
+        <h3>Class Recordings Database</h3>
+        <form class="inline-form" method="post" action="/admin/recordings/add" onsubmit="return confirm('Confirm adding this class recording?');">
+          <input type="hidden" name="section" value="recordings">
+          <select name="class_id" required>
+            <option value="">Select class</option>
+            {% for level in levels %}
+            <option value="{{ level.id }}">{{ level.name }}</option>
+            {% endfor %}
+          </select>
+          <input type="text" name="title" placeholder="Recording title" required>
+          <input type="text" name="recording_url" placeholder="Recording URL" style="min-width:320px;" required>
+          <input type="date" name="lesson_date" required>
+          <input type="text" name="summary" placeholder="Short lesson summary" style="min-width:260px;">
+          <button type="submit">Add Recording</button>
+        </form>
+
+        <div class="table-wrap" style="margin-top:10px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Class</th>
+                <th>Date</th>
+                <th>Title</th>
+                <th>Summary</th>
+                <th>URL</th>
+                <th>Update</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for rec, rec_level in recordings %}
+              <tr>
+                <td>{{ rec_level.name }}</td>
+                <td>{{ rec.lesson_date }}</td>
+                <td>{{ rec.title }}</td>
+                <td>{{ rec.summary or '-' }}</td>
+                <td><a href="{{ rec.recording_url }}" target="_blank" rel="noopener noreferrer">Open Recording</a></td>
+                <td>
+                  <form class="inline-form" method="post" action="/admin/recordings/{{ rec.id }}/update" onsubmit="return confirm('Confirm updating this recording?');">
+                    <input type="hidden" name="section" value="recordings">
+                    <select name="class_id" required>
+                      {% for level in levels %}
+                      <option value="{{ level.id }}" {% if rec.class_id == level.id %}selected{% endif %}>{{ level.name }}</option>
+                      {% endfor %}
+                    </select>
+                    <input type="text" name="title" value="{{ rec.title }}" required>
+                    <input type="text" name="recording_url" value="{{ rec.recording_url }}" style="min-width:280px;" required>
+                    <input type="date" name="lesson_date" value="{{ rec.lesson_date }}" required>
+                    <input type="text" name="summary" value="{{ rec.summary or '' }}" placeholder="Short lesson summary" style="min-width:220px;">
+                    <button class="secondary" type="submit">Update</button>
+                  </form>
+                </td>
+                <td>
+                  <form method="post" action="/admin/recordings/{{ rec.id }}/delete" onsubmit="return confirm('Confirm deleting this recording?');">
+                    <input type="hidden" name="section" value="recordings">
+                    <button class="danger" type="submit">Delete</button>
+                  </form>
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="7">No class recordings found.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </body>
+  <script>
+    (() => {
+      const fallbackCopy = (text) => {
+        const input = document.createElement('textarea');
+        input.value = text;
+        input.setAttribute('readonly', '');
+        input.style.position = 'absolute';
+        input.style.left = '-9999px';
+        document.body.appendChild(input);
+        input.select();
+        let ok = false;
+        try {
+          ok = document.execCommand('copy');
+        } catch (err) {
+          ok = false;
+        }
+        document.body.removeChild(input);
+        return ok;
+      };
+      document.querySelectorAll('[data-copy-text]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const original = button.textContent;
+          const text = button.getAttribute('data-copy-text') || '';
+          if (!text) return;
+          let copied = false;
+          if (navigator.clipboard && window.isSecureContext) {
+            try {
+              await navigator.clipboard.writeText(text);
+              copied = true;
+            } catch (err) {
+              copied = fallbackCopy(text);
+            }
+          } else {
+            copied = fallbackCopy(text);
+          }
+          button.textContent = copied ? 'Copied' : 'Failed';
+          window.setTimeout(() => {
+            button.textContent = original;
+          }, 1500);
+        });
+      });
+    })();
+    (() => {
+      const forms = Array.from(document.querySelectorAll('form[method="post"], form[method="POST"]'));
+      const deleteText = "This is a high-impact live database action. Are you sure you want to continue?";
+      const saveText = "This will update live system data immediately. Please confirm before continuing.";
+
+      forms.forEach((form) => {
+        form.addEventListener('submit', (event) => {
+          const submitter = event.submitter;
+          const isDanger = submitter && submitter.classList.contains('danger');
+          const message = isDanger ? deleteText : saveText;
+          if (!window.confirm(message)) {
+            event.preventDefault();
+          }
+        });
+      });
+    })();
+  </script>
+</html>

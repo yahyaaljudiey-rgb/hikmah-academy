@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tr('students_management') }}</title>
+    <link rel="stylesheet" href="/static/ui.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <a class="pill" href="/">{{ tr('back_to_dashboard') }}</a>
+        <a class="pill" href="/head/dashboard">{{ tr('head_dashboard') }}</a>
+        <a class="pill" href="/head/data-root">{{ tr('data_root') }}</a>
+        <span class="pill">{{ tr('language') }}:</span>
+        <a class="pill" href="{{ with_lang('en') }}">EN</a>
+        <a class="pill" href="{{ with_lang('ar') }}">AR</a>
+      </div>
+
+      <h1 class="title">{{ tr('students_management') }}</h1>
+      <p class="subtitle">{{ tr('students_subtitle') }}</p>
+
+      {% if bulk_status == 'success' %}
+      <div class="notice success">{{ bulk_message }}</div>
+      {% elif bulk_status == 'error' %}
+      <div class="notice error">{{ bulk_message }}</div>
+      {% endif %}
+
+      <div class="panel">
+        <h3>{{ tr('add_student') }}</h3>
+        <form class="inline-form" method="post" action="/students/add">
+          <input type="text" name="full_name" placeholder="{{ tr('student_full_name') }}" required>
+          <select name="level_id" required>
+            <option value="">{{ tr('select_a_level') }}</option>
+            {% for level in levels %}
+            <option value="{{ level.id }}">{{ level.name }}</option>
+            {% endfor %}
+          </select>
+          <input type="text" name="status" placeholder="{{ tr('status_optional') }}">
+          <select name="student_year">
+            <option value="">{{ tr('student_year') }}</option>
+            {% for y in [5, 6, 7, 8, 9, 10] %}
+            <option value="{{ y }}">{{ y }}</option>
+            {% endfor %}
+          </select>
+          <input type="email" name="parent_email" placeholder="{{ tr('parent_email_optional') }}">
+          <input type="text" name="parent_whatsapp" placeholder="{{ tr('parent_whatsapp_optional') }}">
+          <button type="submit">{{ tr('add_student') }}</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h3>{{ tr('monthly_reports_review') }}</h3>
+        <p class="subtitle">{{ tr('monthly_review_subtitle') }}</p>
+        <div class="feature-card-actions" style="margin-top:0;">
+          <a class="btn-link" href="/students/reports/monthly-review">{{ tr('open_monthly_review') }}</a>
+        </div>
+      </div>
+
+      {% if arabic_attendance_import_summary.unmatched_rows_count > 0 %}
+      <div class="panel">
+        <h3>{{ tr('arabic_attendance_name_review') }}</h3>
+        <p class="subtitle">{{ tr('arabic_attendance_name_review_subtitle') }}</p>
+        <div class="feature-card-meta" style="margin-bottom:12px;">
+          <span class="pill">{{ tr('unmatched_rows') }}: {{ arabic_attendance_import_summary.unmatched_rows_count }}</span>
+          <span class="pill">{{ tr('matched_rows') }}: {{ arabic_attendance_import_summary.matched_rows_count }}</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ tr('student_name_label') }}</th>
+                <th>{{ tr('level_name') }}</th>
+                <th>{{ tr('best_system_match') }}</th>
+                <th>{{ tr('match_score') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in arabic_attendance_import_summary.unmatched_samples %}
+              <tr>
+                <td>{{ row.workbook_name }}</td>
+                <td>{{ row.level_name }}</td>
+                <td>{{ row.best_match_name or '-' }}</td>
+                <td>{{ row.score }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="4">{{ tr('no_students_found') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>{{ tr('code_label') }}</th>
+              <th>{{ tr('full_name') }}</th>
+              <th>{{ tr('status') }}</th>
+              <th>{{ tr('student_year') }}</th>
+              <th>{{ tr('level_name') }}</th>
+              <th>{{ tr('parent_contact') }}</th>
+              <th>{{ tr('update') }}</th>
+              <th>{{ tr('report') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for student in students %}
+            <tr>
+              <td>{{ student.student_code }}</td>
+              <td>{{ student.full_name }}</td>
+              <td>{{ student.status or '' }}</td>
+              <td>{{ student.student_year or '' }}</td>
+              <td>{{ student.level.name if student.level else student.level_name }}</td>
+              <td>
+                <form class="inline-form" method="post" action="/students/{{ student.id }}/parent-email">
+                  <input type="email" name="parent_email" placeholder="parent@example.com" value="{{ student.parent_email or '' }}">
+                  <input type="text" name="parent_whatsapp" placeholder="+60123456789" value="{{ student.parent_whatsapp or '' }}">
+                  <button class="secondary" type="submit">{{ tr('save') }}</button>
+                </form>
+              </td>
+              <td>
+                <form class="inline-form" method="post" action="/students/{{ student.id }}/update">
+                  <input type="text" name="full_name" value="{{ student.full_name }}" required>
+                  <select name="level_id" required>
+                    {% for level in levels %}
+                    <option value="{{ level.id }}" {% if student.level_id == level.id %}selected{% endif %}>{{ level.name }}</option>
+                    {% endfor %}
+                  </select>
+                  <select name="student_year">
+                    <option value="">{{ tr('student_year') }}</option>
+                    {% for y in [5, 6, 7, 8, 9, 10] %}
+                    <option value="{{ y }}" {% if (student.student_year|string) == (y|string) %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                  </select>
+                  <input type="email" name="parent_email" value="{{ student.parent_email or '' }}" placeholder="{{ tr('parent_email') }}">
+                  <input type="text" name="parent_whatsapp" value="{{ student.parent_whatsapp or '' }}" placeholder="{{ tr('parent_whatsapp') }}">
+                  <button class="secondary" type="submit">{{ tr('update') }}</button>
+                </form>
+              </td>
+              <td><a class="btn-link" href="/students/{{ student.id }}/report">{{ tr('report') }}</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8">{{ tr('no_students_found') }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

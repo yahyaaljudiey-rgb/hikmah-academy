@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Weekly Supervisor Report</title>
+    <link rel="stylesheet" href="/static/ui.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <a class="pill" href="/admin/dashboard">Back To Dashboard</a>
+        <a class="pill" href="/admin/weekly-report.pdf">Download PDF</a>
+      </div>
+
+      <h1 class="title">Weekly Supervisor Report</h1>
+      <p class="subtitle">Teaching week: {{ summary.week_start }} to {{ summary.week_end }} (Monday to Thursday)</p>
+
+      <section class="supervisor-kpi-grid">
+        <article class="supervisor-kpi-card">
+          <span>Teachers Total</span>
+          <strong>{{ summary.teachers_total }}</strong>
+          <small>Teachers included in this weekly review</small>
+        </article>
+        <article class="supervisor-kpi-card">
+          <span>On Track</span>
+          <strong>{{ summary.teachers_on_track }}</strong>
+          <small>Teachers currently on the appreciation path</small>
+        </article>
+        <article class="supervisor-kpi-card">
+          <span>Need Follow-up</span>
+          <strong>{{ summary.teachers_need_followup }}</strong>
+          <small>Teachers still missing required weekly tasks</small>
+        </article>
+        <article class="supervisor-kpi-card">
+          <span>Students Needing Attention</span>
+          <strong>{{ summary.students_need_attention }}</strong>
+          <small>Students flagged by current risk checks</small>
+        </article>
+      </section>
+
+      <div class="supervisor-main-grid">
+        <div class="panel">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">Follow-up</div>
+              <h3>Teachers Needing Follow-up</h3>
+            </div>
+          </div>
+          <div class="announcement-stack">
+            {% for row in follow_up_teachers %}
+            <div class="announcement-card is-warning">
+              <div class="announcement-card-head">
+                <div>
+                  <strong>{{ row.teacher.full_name }}</strong>
+                  <span>Levels: {{ row.levels_count }} • Students: {{ row.students_count }}</span>
+                </div>
+              </div>
+              <p>{{ row.weekly_review_notes }}</p>
+            </div>
+            {% else %}
+            <div class="announcement-card is-info">
+              <strong>No teachers need follow-up</strong>
+              <p>All teachers are currently on track this week.</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">Appreciation</div>
+              <h3>Teachers On Track</h3>
+            </div>
+          </div>
+          <div class="announcement-stack">
+            {% for row in on_track_teachers %}
+            <div class="announcement-card is-info">
+              <div class="announcement-card-head">
+                <div>
+                  <strong>{{ row.teacher.full_name }}</strong>
+                  <span>Levels: {{ row.levels_count }} • Students: {{ row.students_count }}</span>
+                </div>
+              </div>
+              <p>{{ row.weekly_review_notes }}</p>
+            </div>
+            {% else %}
+            <div class="announcement-card is-info">
+              <strong>No teachers on appreciation path yet</strong>
+              <p>Teachers who complete all weekly tasks will appear here.</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">Levels</div>
+            <h3>Levels Needing Attention</h3>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Teacher</th>
+                <th>Attendance</th>
+                <th>Review Queue</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in level_attention_rows %}
+              <tr>
+                <td>{{ row.level.name }}</td>
+                <td>{{ row.level.teacher.full_name if row.level.teacher else '-' }}</td>
+                <td>{{ row.attendance_state }}</td>
+                <td>{{ row.pending_reviews }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="4">No levels currently need additional attention.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">Students</div>
+            <h3>Students Needing Follow-up</h3>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Level</th>
+                <th>Risk</th>
+                <th>Open Assignments</th>
+                <th>Latest Exam</th>
+                <th>Why</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in student_attention_rows %}
+              <tr>
+                <td>{{ row.student.full_name }}</td>
+                <td>{{ row.level_name }}</td>
+                <td>{{ row.risk_label }}</td>
+                <td>{{ row.open_assignments }}</td>
+                <td>{{ row.latest_exam_title or '-' }}</td>
+                <td>{{ row.reasons }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="6">No students currently flagged.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

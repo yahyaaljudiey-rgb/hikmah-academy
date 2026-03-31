@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ level.name }} {{ tr('syllabus_plan') }}</title>
+    <link rel="stylesheet" href="{{ static_asset('ui.css') }}">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="app-sidebar">
+        <div class="app-brand">
+          <span>{{ tr('syllabus_plan') }}</span>
+          <strong>{{ level.name }}</strong>
+        </div>
+        <div class="app-sidebar-card">
+          <span>{{ tr('current_teaching_week') }}</span>
+          <strong>{{ current_teaching_week }}</strong>
+          <small>
+            {% if academic_calendar_status.current_event %}
+            {{ academic_calendar_status.current_event.title }}
+            {% else %}
+            {{ tr('teaching_in_session') }}
+            {% endif %}
+          </small>
+        </div>
+        <nav class="app-nav">
+          <a class="app-nav-link" href="/teacher/dashboard">{{ tr('teacher_dashboard') }}</a>
+          <details class="app-nav-group" open>
+            <summary>{{ tr('daily_workflow') }}</summary>
+            <div class="app-subnav">
+              <a href="/teacher/levels/{{ level.id }}">{{ tr('teacher_level_workspace') }}</a>
+              <a href="/attendance?level_id={{ level.id }}">{{ tr('open_attendance') }}</a>
+              <a href="/teacher/levels/{{ level.id }}/syllabus-plan" class="is-active">{{ tr('open_syllabus_plan') }}</a>
+            </div>
+          </details>
+          <details class="app-nav-group">
+            <summary>{{ tr('class_operations') }}</summary>
+            <div class="app-subnav">
+              <a href="/teacher/levels/{{ level.id }}?workspace=assignments">{{ tr('assignments') }}</a>
+              <a href="/teacher/levels/{{ level.id }}?workspace=recordings">{{ tr('recordings_label') }}</a>
+              <a href="/teacher/levels/{{ level.id }}?workspace=students">{{ tr('students_section') }}</a>
+            </div>
+          </details>
+          <details class="app-nav-group">
+            <summary>{{ tr('language') }}</summary>
+            <div class="app-subnav">
+              <a href="{{ with_lang('en') }}" class="{% if current_lang == 'en' %}is-active{% endif %}">English</a>
+              <a href="{{ with_lang('ar') }}" class="{% if current_lang == 'ar' %}is-active{% endif %}">العربية</a>
+            </div>
+          </details>
+          <details class="app-nav-group">
+            <summary>{{ tr('role_selection') }}</summary>
+            <div class="app-subnav">
+              <a href="/">{{ tr('role_selection') }}</a>
+              <a href="/teacher/logout">{{ tr('logout') }}</a>
+            </div>
+          </details>
+        </nav>
+      </aside>
+      <button class="sidebar-toggle" type="button" aria-label="{{ tr('syllabus_plan') }}" data-sidebar-toggle>
+        <span class="sidebar-toggle-lines"></span>
+      </button>
+      <button class="app-sidebar-backdrop" type="button" aria-label="{{ tr('close_menu') }}" data-sidebar-backdrop></button>
+      <main class="app-main syllabus-main">
+    <div class="container syllabus-page-container">
+
+      <section class="syllabus-hero">
+        <div class="syllabus-hero-main">
+          <span class="syllabus-hero-kicker">{{ tr('syllabus_plan') }}</span>
+          <h1 class="title">{{ level.name }} {{ tr('syllabus_plan') }}</h1>
+          <p class="subtitle">{{ tr('plan_sheet_subtitle') }}</p>
+        </div>
+        <div class="syllabus-hero-side">
+          <div class="syllabus-hero-badge">
+            <span>{{ tr('current_teaching_week') }}</span>
+            <strong>{{ current_teaching_week }}</strong>
+          </div>
+          <div class="syllabus-hero-badge is-soft">
+            <span>{{ tr('progress_percentage') }}</span>
+            <strong>{{ plan_summary.progress_pct if plan_summary else 0 }}%</strong>
+          </div>
+        </div>
+      </section>
+
+      {% if op_status == 'success' %}
+      <div class="notice success">{{ op_message }}</div>
+      {% elif op_status == 'error' %}
+      <div class="notice error">{{ op_message }}</div>
+      {% endif %}
+
+      {% if plan_summary %}
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">{{ tr('current_teaching_week') }}</span>
+          <strong class="stat-value">{{ current_teaching_week }}</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">{{ tr('progress_percentage') }}</span>
+          <strong class="stat-value">{{ plan_summary.progress_pct }}%</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">{{ tr('expected_by_now') }}</span>
+          <strong class="stat-value">{{ plan_summary.expected_count }}</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">{{ tr('delayed_lessons') }}</span>
+          <strong class="stat-value">{{ plan_summary.delayed_count }}</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">{{ tr('unscheduled_plan_rows') }}</span>
+          <strong class="stat-value">{{ plan_summary.unscheduled_count }}</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">{{ tr('current_calendar_status') }}</span>
+          <strong class="stat-value">{{ tr(academic_calendar_status.status_key) }}</strong>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="panel syllabus-plan-panel {% if not plan_edit_open %}is-readonly-mode{% endif %}">
+        <div class="guide syllabus-guide">
+          <h4>{{ tr('daily_workflow') }}</h4>
+          <p>{% if plan_edit_open %}{{ tr('plan_main_fields_hint') }}{% else %}{{ tr('teacher_can_mark_completed_only') }}{% endif %}</p>
+        </div>
+        <div class="feature-card-meta syllabus-plan-statusbar" style="margin-bottom:12px;">
+          <span class="pill">{% if plan_edit_open %}{{ tr('editing_open') }}{% else %}{{ tr('editing_locked') }}{% endif %}</span>
+          <a class="pill" href="/teacher/levels/{{ level.id }}/syllabus-plan.pdf">{{ tr('download_plan_pdf') }}</a>
+          <a class="pill" href="/teacher/levels/{{ level.id }}/syllabus-plan.xlsx">{{ tr('excel_label') }}</a>
+          <a class="pill" href="/teacher/levels/{{ level.id }}/syllabus-plan/template.xlsx">{{ tr('download_plan_template') }}</a>
+          <span class="pill">{{ tr('current_academic_event') }}:
+            {% if academic_calendar_status.current_event %}
+            {{ academic_calendar_status.current_event.title }}
+            {% else %}
+            {{ tr('teaching_in_session') }}
+            {% endif %}
+          </span>
+          {% for event in academic_calendar_status.upcoming_events[:2] %}
+          <span class="pill">{{ event.title }} • {{ event.start_date.strftime('%Y-%m-%d') }}</span>
+          {% endfor %}
+        </div>
+        {% if plan_edit_open %}
+        <div class="guide syllabus-guide" style="margin-bottom:12px;">
+          <h4>{{ tr('import_plan_template') }}</h4>
+          <p>{{ tr('plan_template_hint') }}</p>
+          <form method="post" action="/teacher/levels/{{ level.id }}/syllabus-plan/import" enctype="multipart/form-data" class="inline-form">
+            <label class="syllabus-input-label" for="plan-template-file">{{ tr('plan_template_file_label') }}</label>
+            <input id="plan-template-file" type="file" name="plan_template_file" accept=".xlsx" required>
+            <button type="submit">{{ tr('import_plan_template') }}</button>
+          </form>
+        </div>
+        {% endif %}
+        <p class="subtitle" style="margin-top:0; margin-bottom:12px;">{% if plan_edit_open %}{{ tr('plan_main_fields_hint') }}{% else %}{{ tr('read_only_plan') }}{% endif %}</p>
+        {% if plan_edit_open %}
+        <form method="post" action="/teacher/levels/{{ level.id }}/syllabus-plan/save">
+          <div class="topbar syllabus-plan-toolbar" style="margin-bottom:10px;">
+            <button type="submit">{{ tr('save_plan_sheet') }}</button>
+          </div>
+        {% endif %}
+          <div class="table-wrap syllabus-scroll-wrap" data-drag-scroll>
+            <table class="syllabus-plan-table">
+              <thead>
+                <tr>
+                  <th>{{ tr('week_number') }}</th>
+                  {% for session_number in session_numbers %}
+                  <th>{{ tr('lesson_slot_' ~ session_number) }}</th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in grid_rows %}
+                <tr class="syllabus-week-row {% if row.week_meta.is_current_week %}is-current-week{% endif %} {% if row.week_meta.dominant_event_type %}is-{{ row.week_meta.dominant_event_type|replace('_', '-') }}{% endif %}">
+                  <td class="syllabus-week-label">
+                    <strong>{{ tr('academic_week_label') }} {{ row.academic_week_number }}</strong>
+                    {% if row.week_number %}
+                    <small class="syllabus-week-dates">{{ tr('teaching_week_label') }} {{ row.week_number }}</small>
+                    {% else %}
+                    <span class="pill">{{ tr('non_teaching_week') }}</span>
+                    {% endif %}
+                    {% if row.week_meta.date_label %}
+                    <small class="syllabus-week-dates">{{ row.week_meta.date_label }}</small>
+                    {% endif %}
+                    {% if row.week_meta.is_current_week %}
+                    <span class="pill">{{ tr('current_week_badge') }}</span>
+                    {% endif %}
+                    {% for event in row.week_meta.events %}
+                    <span class="pill">{{ event.title }}</span>
+                    {% endfor %}
+                  </td>
+                  {% if not row.is_instructional_week %}
+                  <td class="syllabus-plan-cell is-empty syllabus-non-teaching-cell" colspan="{{ session_numbers|length }}">
+                    <div class="syllabus-plan-shell">
+                      <div class="syllabus-plan-head">
+                        <strong>{{ tr('non_teaching_week') }}</strong>
+                        <span class="pill">{{ tr('current_calendar_status') }}</span>
+                      </div>
+                      <p class="syllabus-plan-empty-copy">{{ tr('no_lessons_scheduled_this_week') }}</p>
+                    </div>
+                  </td>
+                  {% else %}
+                  {% for session in row.sessions %}
+                  {% set entry = session.entry %}
+                  <td class="syllabus-plan-cell {% if not session.is_available_slot %}is-non-teaching-slot{% elif entry %}has-entry{% else %}is-empty{% endif %} {% if session.is_review %}is-review{% endif %}">
+                    <div class="syllabus-plan-shell">
+                      <div class="syllabus-plan-head">
+                        <strong>{{ tr('lesson_slot_' ~ session.session_number) }}</strong>
+                        {% if not session.is_available_slot %}
+                        <span class="pill">{{ tr('non_teaching_week') }}</span>
+                        {% elif session.is_review %}
+                        <span class="pill">{{ tr('review_lesson') }}</span>
+                        {% elif not entry %}
+                        <span class="pill">{{ tr('empty_plan_cell') }}</span>
+                        {% endif %}
+                      </div>
+                      {% if not session.is_available_slot %}
+                      <p class="syllabus-plan-empty-copy">{{ tr('no_lessons_scheduled_this_week') }}</p>
+                      {% elif not entry %}
+                      <p class="syllabus-plan-empty-copy">{{ tr('fill_plan_cell_hint') }}</p>
+                      {% endif %}
+                    {% if session.is_available_slot %}
+                    {% if plan_edit_open %}
+                    <div class="syllabus-plan-field-group">
+                      <label class="syllabus-input-label">{{ tr('book_name') }}</label>
+                      <input class="syllabus-plan-input" type="text" name="book_name_{{ row.week_number }}_{{ session.session_number }}" value="{{ entry.book_name if entry else '' }}" placeholder="{{ tr('book_name') }}">
+                    </div>
+                    <div class="syllabus-plan-field-group">
+                      <label class="syllabus-input-label">{{ tr('unit_name') }}</label>
+                      <input class="syllabus-plan-input" type="text" name="unit_name_{{ row.week_number }}_{{ session.session_number }}" value="{{ entry.unit_name if entry else '' }}" placeholder="{{ tr('unit_name') }}">
+                    </div>
+                    <div class="syllabus-plan-field-group">
+                      <label class="syllabus-input-label">{{ tr('lesson_name') }}</label>
+                      <input class="syllabus-plan-input syllabus-plan-input-main" type="text" name="lesson_title_{{ row.week_number }}_{{ session.session_number }}" value="{{ entry.lesson_title if entry else '' }}" placeholder="{{ tr('lesson_name') }}">
+                    </div>
+                    <details class="syllabus-plan-details">
+                      <summary>{{ tr('more_details') }}</summary>
+                      <div class="syllabus-plan-detail-grid">
+                        <div class="syllabus-plan-field-group">
+                          <label class="syllabus-input-label">{{ tr('lesson_reference') }}</label>
+                          <input class="syllabus-plan-input" type="text" name="source_reference_{{ row.week_number }}_{{ session.session_number }}" value="{{ entry.source_reference if entry else '' }}" placeholder="{{ tr('lesson_reference') }}">
+                        </div>
+                        <div class="syllabus-plan-field-group">
+                          <label class="syllabus-input-label">{{ tr('learning_objective') }}</label>
+                          <textarea class="syllabus-plan-input" name="learning_objective_{{ row.week_number }}_{{ session.session_number }}" rows="2" placeholder="{{ tr('learning_objective') }}">{{ entry.learning_objective if entry else '' }}</textarea>
+                        </div>
+                        <div class="syllabus-plan-field-group">
+                          <label class="syllabus-input-label">{{ tr('planned_homework_label') }}</label>
+                          <textarea class="syllabus-plan-input" name="planned_homework_{{ row.week_number }}_{{ session.session_number }}" rows="2" placeholder="{{ tr('planned_homework_label') }}">{{ entry.planned_homework if entry else '' }}</textarea>
+                        </div>
+                        <div class="syllabus-plan-field-group">
+                          <label class="syllabus-input-label">{{ tr('plan_note') }}</label>
+                          <textarea class="syllabus-plan-input" name="note_text_{{ row.week_number }}_{{ session.session_number }}" rows="2" placeholder="{{ tr('plan_note') }}">{{ entry.note_text if entry else '' }}</textarea>
+                        </div>
+                      </div>
+                    </details>
+                    {% else %}
+                    {% if entry %}
+                    <div class="syllabus-entry-stack is-readonly">
+                      <div class="syllabus-entry-ribbon">
+                        <span class="syllabus-entry-book">{{ entry.book_name or '-' }}</span>
+                        <span class="syllabus-entry-unit">{{ entry.unit_name or '-' }}</span>
+                      </div>
+                      <strong class="syllabus-entry-lesson">{{ entry.lesson_title }}</strong>
+                      <span class="syllabus-entry-ref">{{ entry.source_reference or '-' }}</span>
+                      {% if entry.learning_objective %}
+                      <div class="syllabus-entry-note">
+                        <strong>{{ tr('learning_objective') }}</strong>
+                        <span>{{ entry.learning_objective }}</span>
+                      </div>
+                      {% endif %}
+                      {% if entry.planned_homework %}
+                      <div class="syllabus-entry-note is-homework">
+                        <strong>{{ tr('planned_homework_label') }}</strong>
+                        <span>{{ entry.planned_homework }}</span>
+                      </div>
+                      {% endif %}
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                    {% if entry %}
+                    <div class="feature-card-meta syllabus-plan-meta">
+                      <span class="pill">{{ tr('execution_status') }}: {{ tr(entry.status ~ '_state') if entry.status in ['planned','in_progress','completed','postponed'] else tr('planned_state') }}</span>
+                      {% if session.is_expected %}
+                      <span class="pill">{{ tr('expected_by_now') }}</span>
+                      {% endif %}
+                      {% if entry.completed_on %}
+                      <span class="pill">{{ tr('completed_on') }}: {{ entry.completed_on.strftime('%Y-%m-%d') }}</span>
+                      {% endif %}
+                    </div>
+                    {% if entry.status != 'completed' %}
+                    <button
+                      type="submit"
+                      formmethod="post"
+                      formaction="/teacher/syllabus-plan/{{ entry.id }}/complete"
+                      name="complete_previous"
+                      value="0"
+                      data-has-incomplete-previous="{{ '1' if session.has_incomplete_previous else '0' }}"
+                      style="margin-top:8px;"
+                    >
+                      {{ tr('mark_completed') }}
+                    </button>
+                    {% endif %}
+                    {% endif %}
+                    {% endif %}
+                    </div>
+                  </td>
+                  {% endfor %}
+                  {% endif %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% if plan_edit_open %}
+          <div class="topbar" style="margin-top:10px;">
+            <button type="submit">{{ tr('save_plan_sheet') }}</button>
+          </div>
+        </form>
+        {% endif %}
+        {% if plan_summary and plan_summary.unscheduled_rows %}
+        <div class="panel" style="margin-top:16px;">
+          <h4>{{ tr('reserve_plan_rows') }}</h4>
+          <p class="subtitle" style="margin-top:0;">{{ tr('unscheduled_plan_caption') }}</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>{{ tr('book_name') }}</th>
+                  <th>{{ tr('unit_name') }}</th>
+                  <th>{{ tr('lesson_name') }}</th>
+                  <th>{{ tr('lesson_reference') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for entry in plan_summary.unscheduled_rows %}
+                <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{ entry.book_name or '-' }}</td>
+                  <td>{{ entry.unit_name or '-' }}</td>
+                  <td>{{ entry.lesson_title or '-' }}</td>
+                  <td>{{ entry.source_reference or '-' }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+      </main>
+    </div>
+    <script>
+      (() => {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('[data-sidebar-toggle]');
+        const backdrop = document.querySelector('[data-sidebar-backdrop]');
+        if (!sidebar || !toggle) return;
+        const setOpen = (open) => {
+          sidebar.classList.toggle('is-open', open);
+          if (backdrop) backdrop.classList.toggle('is-open', open);
+          document.body.classList.toggle('sidebar-open', open);
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        };
+        toggle.addEventListener('click', () => setOpen(!sidebar.classList.contains('is-open')));
+        if (backdrop) backdrop.addEventListener('click', () => setOpen(false));
+        sidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setOpen(false)));
+        window.addEventListener('resize', () => {
+          if (window.innerWidth > 700) setOpen(false);
+        });
+      })();
+      (() => {
+        const wraps = Array.from(document.querySelectorAll('[data-drag-scroll]'));
+        wraps.forEach((wrap) => {
+          let isDown = false;
+          let startX = 0;
+          let startScrollLeft = 0;
+
+          const rtl = document.documentElement.getAttribute('dir') === 'rtl';
+          if (rtl) {
+            requestAnimationFrame(() => {
+              wrap.scrollLeft = wrap.scrollWidth;
+            });
+          }
+
+          wrap.addEventListener('mousedown', (event) => {
+            isDown = true;
+            wrap.classList.add('is-dragging');
+            startX = event.pageX;
+            startScrollLeft = wrap.scrollLeft;
+          });
+
+          wrap.addEventListener('mouseleave', () => {
+            isDown = false;
+            wrap.classList.remove('is-dragging');
+          });
+
+          wrap.addEventListener('mouseup', () => {
+            isDown = false;
+            wrap.classList.remove('is-dragging');
+          });
+
+          wrap.addEventListener('mousemove', (event) => {
+            if (!isDown) return;
+            event.preventDefault();
+            const walk = event.pageX - startX;
+            wrap.scrollLeft = startScrollLeft - walk;
+          });
+        });
+      })();
+      (() => {
+        const buttons = Array.from(document.querySelectorAll('button[name="complete_previous"]'));
+        const previousPrompt = {{ tr('complete_previous_prompt')|tojson }};
+        const currentOnlyPrompt = {{ tr('complete_only_current_prompt')|tojson }};
+
+        buttons.forEach((button) => {
+          button.addEventListener('click', (event) => {
+            if (button.dataset.hasIncompletePrevious !== '1') {
+              button.value = '0';
+              return;
+            }
+
+            const completePrevious = window.confirm(previousPrompt);
+            if (completePrevious) {
+              button.value = '1';
+              return;
+            }
+
+            const completeCurrentOnly = window.confirm(currentOnlyPrompt);
+            if (completeCurrentOnly) {
+              button.value = '0';
+              return;
+            }
+
+            event.preventDefault();
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tr('attendance') }}</title>
+    <link rel="stylesheet" href="/static/ui.css">
+  </head>
+  <body>
+    <div class="container attendance-shell">
+      <div class="topbar">
+        {% if session.get('is_admin') %}
+        <a class="pill" href="/admin/dashboard">{{ tr('admin_dashboard') }}</a>
+        {% else %}
+        <a class="pill" href="/teacher/dashboard">{{ tr('teacher_dashboard') }}</a>
+        {% endif %}
+        <a class="pill" href="/attendance/list">{{ tr('attendance_records') }}</a>
+        <span class="pill">{{ tr('language') }}:</span>
+        <a class="pill" href="{{ with_lang('en') }}">EN</a>
+        <a class="pill" href="{{ with_lang('ar') }}">AR</a>
+      </div>
+
+      <h1 class="title">{{ tr('attendance') }}</h1>
+      <p class="subtitle">{{ tr('choose_class_date') }}</p>
+
+      {% if saved %}
+      <div class="notice success">{{ tr('attendance_saved_successfully') }}</div>
+      {% endif %}
+
+      {% if error_message %}
+      <div class="notice error">{{ error_message }}</div>
+      {% endif %}
+
+      <section class="attendance-hero">
+        <div class="panel attendance-hero-main">
+          <div class="section-kicker">{{ tr('daily_attendance') }}</div>
+          <h3>{% if selected_level %}{{ selected_level.name }}{% else %}{{ tr('select_a_level') }}{% endif %}</h3>
+          <p>
+            {% if selected_level %}
+            {{ tr('mark_students_for_date', date=attendance_date) }}
+            {% else %}
+            {{ tr('start_by_selecting_class') }}
+            {% endif %}
+          </p>
+        </div>
+        <div class="panel attendance-hero-side">
+          <div class="metric-chip">
+            <span>{{ tr('selected_date') }}</span>
+            <strong>{{ attendance_date }}</strong>
+          </div>
+          <div class="metric-chip">
+            <span>{{ tr('students') }}</span>
+            <strong>{{ students|length }}</strong>
+          </div>
+          <div class="metric-chip">
+            <span>{{ tr('preset_default') }}</span>
+            <strong>{{ tr('present') }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <div class="panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('load_attendance') }}</div>
+            <h3>{{ tr('class_and_date') }}</h3>
+          </div>
+        </div>
+        <form method="get" action="/attendance" class="inline-form">
+          <select id="level_id" name="level_id" required>
+            <option value="">{{ tr('select_a_level') }}</option>
+            {% for level in levels %}
+            <option value="{{ level.id }}" {% if selected_level and level.id == selected_level.id %}selected{% endif %}>{{ level.name }}</option>
+            {% endfor %}
+          </select>
+          <input id="attendance_date" type="date" name="attendance_date" value="{{ attendance_date }}" required>
+          <button type="submit">{{ tr('load_students') }}</button>
+        </form>
+      </div>
+
+      {% if selected_level and students %}
+      {% if saved %}
+      <div class="panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('saved_summary') }}</div>
+            <h3>{{ tr('attendance_summary_after_saving') }}</h3>
+          </div>
+        </div>
+        <section class="supervisor-kpi-grid">
+          <article class="supervisor-kpi-card">
+            <span>{{ tr('present') }}</span>
+            <strong>{{ attendance_summary.present }}</strong>
+            <small>{{ tr('students_marked_present') }}</small>
+          </article>
+          <article class="supervisor-kpi-card">
+            <span>{{ tr('absent') }}</span>
+            <strong>{{ attendance_summary.absent }}</strong>
+            <small>{{ tr('students_marked_absent') }}</small>
+          </article>
+          <article class="supervisor-kpi-card">
+            <span>{{ tr('late') }}</span>
+            <strong>{{ attendance_summary.late }}</strong>
+            <small>{{ tr('students_marked_late') }}</small>
+          </article>
+          <article class="supervisor-kpi-card">
+            <span>{{ tr('excused') }}</span>
+            <strong>{{ attendance_summary.excused }}</strong>
+            <small>{{ tr('students_marked_excused') }}</small>
+          </article>
+          <article class="supervisor-kpi-card">
+            <span>{{ tr('present_rate') }}</span>
+            <strong>{{ attendance_summary.present_rate }}%</strong>
+            <small>{{ tr('present_students_out_of_class') }}</small>
+          </article>
+        </section>
+      </div>
+      {% endif %}
+
+      <div class="panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('quick_actions') }}</div>
+            <h3>{{ tr('fast_attendance_shortcuts') }}</h3>
+          </div>
+        </div>
+        <div class="feature-card-actions">
+          <button type="button" class="secondary" onclick="setAllAttendance('Present')">{{ tr('mark_all_present') }}</button>
+          <button type="button" class="secondary" onclick="setAllAttendance('Absent')">{{ tr('mark_all_absent') }}</button>
+          <button type="button" class="secondary" onclick="setAllAttendance('Late')">{{ tr('mark_all_late') }}</button>
+          <button type="button" class="secondary" onclick="setAllAttendance('Excused')">{{ tr('mark_all_excused') }}</button>
+        </div>
+      </div>
+
+      <form method="post" action="/attendance" class="panel">
+        <input type="hidden" name="level_id" value="{{ selected_level.id }}">
+        <input type="hidden" name="attendance_date" value="{{ attendance_date }}">
+
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('student_register') }}</div>
+            <h3>{{ selected_level.name }} {{ tr('attendance_list_title') }}</h3>
+          </div>
+          <button type="submit">{{ tr('save_attendance') }}</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>{{ tr('student_code') }}</th>
+                <th>{{ tr('student_name_label') }}</th>
+                <th>{{ tr('status') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for student in students %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ student.student_code }}</td>
+                <td>{{ student.full_name }}</td>
+                <td>
+                  <select class="attendance-status-select" name="status_{{ student.id }}" required>
+                    {% set current_status = existing_statuses.get(student.id, 'Present') %}
+                    {% for status in statuses %}
+                    <option value="{{ status }}" {% if status == current_status %}selected{% endif %}>{{ tr(status|lower) }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="feature-card-actions" style="margin-top:14px;">
+          <button type="submit">{{ tr('save_attendance') }}</button>
+        </div>
+      </form>
+      {% elif selected_level %}
+      <div class="panel">
+        <p>{{ tr('no_students_for_level') }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <script>
+      function setAllAttendance(status) {
+        document.querySelectorAll('.attendance-status-select').forEach(function (select) {
+          select.value = status;
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hikmah Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              hikmah: {
+                DEFAULT: '#4a99ad',
+                soft: '#eef7f9',
+                deep: '#2f6f80',
+                mint: '#dff3f7',
+                rose: '#f8eef2',
+                sky: '#eef5fb'
+              }
+            },
+            boxShadow: {
+              soft: '0 12px 30px rgba(15, 23, 42, 0.08)',
+              lift: '0 22px 50px rgba(15, 23, 42, 0.12)'
+            },
+            keyframes: {
+              fadeUp: {
+                '0%': { opacity: '0', transform: 'translateY(14px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' }
+              }
+            },
+            animation: {
+              'fade-up': 'fadeUp 480ms ease-out both'
+            }
+          }
+        }
+      };
+    </script>
+    <link rel="stylesheet" href="{{ static_asset('ui.css') }}">
+  </head>
+  <body class="bg-slate-50 text-slate-800">
+    {% set is_ar = current_lang == 'ar' %}
+    <div class="min-h-screen bg-[radial-gradient(circle_at_top_right,_rgba(74,153,173,0.20),_transparent_28%),radial-gradient(circle_at_0%_0%,_rgba(74,153,173,0.12),_transparent_24%),linear-gradient(180deg,_#f8fbfc_0%,_#f3f5f7_100%)]">
+      <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div class="mb-4 flex justify-end">
+          <div class="inline-flex rounded-2xl border border-slate-200 bg-white p-1 shadow-soft">
+            <a href="{{ with_lang('en') }}" class="rounded-xl px-4 py-2 text-sm font-semibold transition {% if current_lang == 'en' %}bg-[#4a99ad] text-white{% else %}text-slate-600 hover:bg-slate-50{% endif %}">English</a>
+            <a href="{{ with_lang('ar') }}" class="rounded-xl px-4 py-2 text-sm font-semibold transition {% if current_lang == 'ar' %}bg-[#4a99ad] text-white{% else %}text-slate-600 hover:bg-slate-50{% endif %}">العربية</a>
+          </div>
+        </div>
+        <section class="animate-fade-up overflow-hidden rounded-[32px] border border-white/80 bg-gradient-to-br from-[#4a99ad] via-[#5aa7ba] to-[#78b7c6] text-white shadow-lift">
+          <div class="grid items-center gap-10 px-6 py-8 md:grid-cols-[minmax(0,1fr)_220px] lg:px-10 lg:py-12">
+            <div class="space-y-5">
+              <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold backdrop-blur">
+                <span class="inline-flex h-2.5 w-2.5 rounded-full bg-white"></span>
+                {{ 'بوابة قسم اللغة العربية' if is_ar else 'Arabic Department Gateway' }}
+              </div>
+
+              <div class="space-y-3">
+                <h1 class="text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">Hikmah Academy</h1>
+                <p class="text-xl font-bold text-white/95 sm:text-2xl">Arabic Department Control Panel</p>
+                <p class="text-lg font-medium text-white/85 sm:text-xl">{{ 'لوحة تحكم قسم اللغة العربية' if is_ar else 'Arabic Department Control Panel' }}</p>
+              </div>
+
+              <p class="max-w-2xl text-sm leading-8 text-white/85 sm:text-base">
+                {{ 'مدخل حديث وواضح للطالب والمعلم والإشراف، مع تجربة أكثر ترتيباً وسرعة في الوصول.' if is_ar else 'A modern, clearer entrance for students, teachers, and supervision with faster access and calmer visual structure.' }}
+              </p>
+
+              <div class="flex flex-wrap gap-3">
+                <a class="inline-flex min-h-12 items-center justify-center rounded-2xl bg-white px-5 py-3 text-base font-bold text-[#2f6f80] shadow-soft transition duration-300 hover:scale-[1.02] hover:shadow-lift" href="/teacher/login">
+                  {{ 'دخول المعلم' if is_ar else 'Teacher Access' }}
+                </a>
+                <a class="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/25 bg-white/10 px-5 py-3 text-base font-bold text-white backdrop-blur transition duration-300 hover:scale-[1.02] hover:bg-white/15" href="/admin/dashboard">
+                  {{ 'دخول الإشراف' if is_ar else 'Supervisor Access' }}
+                </a>
+              </div>
+            </div>
+
+            <div class="flex justify-center md:justify-end">
+              <div class="flex h-44 w-44 items-center justify-center rounded-[34px] border border-white/40 bg-white/95 p-5 shadow-lift">
+                <img src="{{ url_for('static', filename='academy-logo.jpg') }}" alt="Hikmah Academy logo" class="max-h-full max-w-full object-contain">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mt-8 grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
+          <div class="animate-fade-up rounded-[28px] border border-slate-200/70 bg-white/90 p-6 shadow-soft backdrop-blur sm:p-8">
+            <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-hikmah-soft px-4 py-2 text-sm font-semibold text-hikmah-deep">
+              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-11.25a.75.75 0 0 0-1.5 0v3.19c0 .2.08.39.22.53l2 2a.75.75 0 0 0 1.06-1.06l-1.78-1.78V6.75Z" clip-rule="evenodd" />
+              </svg>
+              {{ 'وصول موحّد' if is_ar else 'Unified Access' }}
+            </div>
+            <h2 class="text-3xl font-black leading-tight text-slate-900 sm:text-4xl">{{ 'ابدأ من البوابة المناسبة مباشرة' if is_ar else 'Start from the right entrance' }}</h2>
+            <p class="mt-4 max-w-2xl text-sm leading-8 text-slate-600 sm:text-base">
+              {{ 'كل بوابة تقود إلى نفس وظائفها الحالية، لكن بمدخل بصري أكثر وضوحاً وسهولة.' if is_ar else 'Each entrance keeps the same functions while presenting them in a cleaner and more approachable way.' }}
+            </p>
+          </div>
+
+          <aside class="animate-fade-up rounded-[28px] border border-hikmah/10 bg-white/90 p-6 shadow-soft backdrop-blur sm:p-8">
+            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-hikmah-soft text-hikmah-deep">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-black text-slate-900">{{ 'طريقة الاستخدام' if is_ar else 'How to Use' }}</h3>
+            <div class="mt-4 space-y-3 text-sm leading-7 text-slate-600">
+              <p>{{ 'الطالب وولي الأمر: الدخول عبر كود الطالب.' if is_ar else 'Student and parent: enter with the student code.' }}</p>
+              <p>{{ 'المعلم: الدخول من بوابة المعلم.' if is_ar else 'Teacher: enter from the teacher gateway.' }}</p>
+              <p>{{ 'الإشراف: الدخول من بوابة الإدارة والمتابعة.' if is_ar else 'Supervisor: enter from the administration and follow-up gateway.' }}</p>
+            </div>
+          </aside>
+        </section>
+
+        <section class="mt-8">
+          <div class="mb-5">
+            <p class="text-sm font-semibold uppercase tracking-[0.22em] text-hikmah-deep">{{ 'بوابات الدخول' if is_ar else 'Entrances' }}</p>
+            <h2 class="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">{{ 'اختر المسار المناسب' if is_ar else 'Choose the right path' }}</h2>
+          </div>
+
+          <div class="grid gap-6 md:grid-cols-3">
+            <article class="group animate-fade-up rounded-[28px] border border-slate-200/70 bg-white p-6 shadow-soft transition duration-300 hover:-translate-y-1.5 hover:shadow-lift">
+              <div class="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-hikmah-mint text-hikmah-deep">
+                <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372A3.375 3.375 0 0 0 21 16.125V6.75A2.25 2.25 0 0 0 18.75 4.5H5.25A2.25 2.25 0 0 0 3 6.75v9.375A3.375 3.375 0 0 0 6.375 19.5A9.38 9.38 0 0 0 9 19.128" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                </svg>
+              </div>
+              <p class="mb-3 text-xs font-bold uppercase tracking-[0.22em] text-hikmah-deep">{{ 'بوابة الأسرة' if is_ar else 'Family Access' }}</p>
+              <h3 class="text-2xl font-black text-slate-900">{{ 'الطالب / ولي الأمر' if is_ar else 'Student / Parent' }}</h3>
+              <p class="mt-3 text-sm leading-7 text-slate-600">
+                {{ 'التقارير، الواجبات، التسجيلات، وروابط الفصل عبر كود الطالب.' if is_ar else 'Reports, homework, recordings, and class links through one student code.' }}
+              </p>
+              <a class="mt-6 inline-flex min-h-12 items-center justify-center rounded-2xl bg-[#4a99ad] px-5 py-3 text-base font-bold text-white shadow-soft transition duration-300 hover:scale-[1.02] hover:bg-[#3f889b] hover:shadow-lift" href="/student/dashboard">
+                {{ 'دخول واجهة الطالب' if is_ar else 'Open Student Interface' }}
+              </a>
+            </article>
+
+            <article class="group animate-fade-up rounded-[28px] border border-slate-200/70 bg-white p-6 shadow-soft transition duration-300 hover:-translate-y-1.5 hover:shadow-lift">
+              <div class="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-hikmah-sky text-sky-700">
+                <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 14.25c2.485 0 4.5-2.015 4.5-4.5S14.485 5.25 12 5.25 7.5 7.265 7.5 9.75s2.015 4.5 4.5 4.5Z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 20.25a6 6 0 1 1 12 0" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 8.25h2.25m-1.125-1.125v2.25" />
+                </svg>
+              </div>
+              <p class="mb-3 text-xs font-bold uppercase tracking-[0.22em] text-sky-700">{{ 'بوابة التدريس' if is_ar else 'Teaching Access' }}</p>
+              <h3 class="text-2xl font-black text-slate-900">{{ 'المعلم' if is_ar else 'Teacher' }}</h3>
+              <p class="mt-3 text-sm leading-7 text-slate-600">
+                {{ 'الحضور، الخطة، التسجيلات، الواجبات، ومساحة الفصل اليومية.' if is_ar else 'Attendance, plan progress, recordings, homework, and the daily class workspace.' }}
+              </p>
+              <a class="mt-6 inline-flex min-h-12 items-center justify-center rounded-2xl bg-[#4a99ad] px-5 py-3 text-base font-bold text-white shadow-soft transition duration-300 hover:scale-[1.02] hover:bg-[#3f889b] hover:shadow-lift" href="/teacher/login">
+                {{ 'دخول واجهة المعلم' if is_ar else 'Open Teacher Interface' }}
+              </a>
+            </article>
+
+            <article class="group animate-fade-up rounded-[28px] border border-slate-200/70 bg-white p-6 shadow-soft transition duration-300 hover:-translate-y-1.5 hover:shadow-lift">
+              <div class="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-hikmah-rose text-rose-700">
+                <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.25h16.5v10.5H3.75V5.25Z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 20.25h7.5" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 15.75v4.5m4.5-4.5v4.5" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 9h9m-9 3h6" />
+                </svg>
+              </div>
+              <p class="mb-3 text-xs font-bold uppercase tracking-[0.22em] text-rose-700">{{ 'بوابة الإشراف' if is_ar else 'Operations Access' }}</p>
+              <h3 class="text-2xl font-black text-slate-900">{{ 'الإدارة / الإشراف' if is_ar else 'Administration / Supervision' }}</h3>
+              <p class="mt-3 text-sm leading-7 text-slate-600">
+                {{ 'المتابعة اليومية، التقارير، الإعلانات، وتنظيف البيانات.' if is_ar else 'Daily follow-up, reports, announcements, and data cleanup.' }}
+              </p>
+              <a class="mt-6 inline-flex min-h-12 items-center justify-center rounded-2xl bg-[#4a99ad] px-5 py-3 text-base font-bold text-white shadow-soft transition duration-300 hover:scale-[1.02] hover:bg-[#3f889b] hover:shadow-lift" href="/admin/dashboard">
+                {{ 'دخول لوحة الإشراف' if is_ar else 'Open Admin Interface' }}
+              </a>
+            </article>
+          </div>
+        </section>
+
+        <section class="mt-8">
+          <div class="mb-5">
+            <p class="text-sm font-semibold uppercase tracking-[0.22em] text-hikmah-deep">{{ 'نظرة عامة' if is_ar else 'Overview' }}</p>
+            <h2 class="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">{{ 'أرقام سريعة' if is_ar else 'Quick Overview' }}</h2>
+          </div>
+
+          <div class="grid gap-5 md:grid-cols-3">
+            <div class="animate-fade-up rounded-[24px] border border-hikmah/10 bg-hikmah-mint p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-lift">
+              <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-hikmah-deep shadow-sm">
+                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372A3.375 3.375 0 0 0 21 16.125V6.75A2.25 2.25 0 0 0 18.75 4.5H5.25A2.25 2.25 0 0 0 3 6.75v9.375A3.375 3.375 0 0 0 6.375 19.5A9.38 9.38 0 0 0 9 19.128" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                </svg>
+              </div>
+              <p class="text-sm font-semibold text-hikmah-deep">{{ 'إجمالي الطلاب' if is_ar else 'Total Students' }}</p>
+              <p class="mt-2 text-5xl font-black text-slate-900">{{ total_students }}</p>
+            </div>
+
+            <div class="animate-fade-up rounded-[24px] border border-sky-100 bg-hikmah-sky p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-lift">
+              <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-sky-700 shadow-sm">
+                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 6.75h15" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 4.5v15m10.5-15v15" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 17.25h15" />
+                </svg>
+              </div>
+              <p class="text-sm font-semibold text-sky-700">{{ 'المستويات النشطة' if is_ar else 'Active Levels' }}</p>
+              <p class="mt-2 text-5xl font-black text-slate-900">{{ total_levels }}</p>
+            </div>
+
+            <div class="animate-fade-up rounded-[24px] border border-rose-100 bg-hikmah-rose p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-lift">
+              <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-rose-700 shadow-sm">
+                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 14.25c2.485 0 4.5-2.015 4.5-4.5S14.485 5.25 12 5.25 7.5 7.265 7.5 9.75s2.015 4.5 4.5 4.5Z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 20.25a6 6 0 1 1 12 0" />
+                </svg>
+              </div>
+              <p class="text-sm font-semibold text-rose-700">{{ 'فريق المعلمين' if is_ar else 'Teaching Team' }}</p>
+              <p class="mt-2 text-5xl font-black text-slate-900">{{ total_teachers }}</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>

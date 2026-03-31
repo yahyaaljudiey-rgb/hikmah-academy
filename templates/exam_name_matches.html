@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Exam Name Matching</title>
+    <link rel="stylesheet" href="/static/ui.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <a class="pill" href="/admin/dashboard">Admin Dashboard</a>
+        <a class="pill" href="/head/dashboard">Head Dashboard</a>
+        <a class="pill" href="/admin/logout">Logout</a>
+      </div>
+
+      <h1 class="title">Exam Name Matching</h1>
+      <p class="subtitle">Resolve unmatched student names from imported exam sheets, then reimport the saved file.</p>
+
+      {% if op_status == 'success' %}
+      <div class="notice success">{{ op_message }}</div>
+      {% elif op_status == 'error' %}
+      <div class="notice error">{{ op_message }}</div>
+      {% endif %}
+
+      <div class="panel">
+        <p><strong>Unresolved names:</strong> {{ total_issues }}</p>
+        {% if issue_rows %}
+        <form class="inline-form" method="post" action="/admin/exam-name-matches/reimport">
+          <input type="hidden" name="source_file_name" value="{{ issue_rows[0].issue.source_file_name }}">
+          <button type="submit">Reimport Latest Saved File</button>
+        </form>
+        {% endif %}
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Source File</th>
+              <th>Level</th>
+              <th>Name In Sheet</th>
+              <th>Exam</th>
+              <th>Match To Student</th>
+              <th>Create New</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in issue_rows %}
+            <tr>
+              <td>{{ row.issue.source_file_name }}</td>
+              <td>{{ row.issue.level_name or '-' }}</td>
+              <td>{{ row.issue.alias_name }}</td>
+              <td>{{ row.issue.exam_title or '-' }}</td>
+              <td>
+                <form class="inline-form" method="post" action="/admin/exam-name-matches/link">
+                  <input type="hidden" name="issue_id" value="{{ row.issue.id }}">
+                  <select name="student_id" required style="min-width:280px;">
+                    <option value="">Select student</option>
+                    {% for student in row.suggested_students %}
+                    <option value="{{ student.id }}">{{ student.full_name }}{% if student.level %} - {{ student.level.name }}{% elif student.level_name %} - {{ student.level_name }}{% endif %}</option>
+                    {% endfor %}
+                  </select>
+                  <button type="submit">Save Match</button>
+                </form>
+              </td>
+              <td>
+                <form method="post" action="/admin/exam-name-matches/create-student" onsubmit="return confirm('Create a new student from this unmatched exam name?');">
+                  <input type="hidden" name="issue_id" value="{{ row.issue.id }}">
+                  <button class="secondary" type="submit">Create New Student</button>
+                </form>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6">No unmatched exam names found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tr('student_report') }}</title>
+    <link rel="stylesheet" href="{{ static_asset('ui.css') }}">
+    <style>
+      .report-shell {
+        max-width: 980px;
+      }
+      .report-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 14px;
+      }
+      .report-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .report-kpi {
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: var(--shadow);
+      }
+      .report-kpi span,
+      .report-kpi strong {
+        display: block;
+      }
+      .report-kpi span {
+        color: var(--muted);
+        font-size: 12px;
+        margin-bottom: 8px;
+      }
+      .report-kpi strong {
+        font-size: 28px;
+      }
+      .report-summary-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      .report-line-list {
+        display: grid;
+        gap: 10px;
+      }
+      .report-line {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 10px;
+        border-bottom: 1px dashed var(--line);
+      }
+      .report-line:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+      }
+      .report-line span {
+        color: var(--muted);
+      }
+      .report-line strong {
+        text-align: end;
+      }
+      @media print {
+        .no-print {
+          display: none !important;
+        }
+        body {
+          background: #fff;
+        }
+        .panel,
+        .report-kpi {
+          box-shadow: none;
+        }
+      }
+      @media (max-width: 700px) {
+        .report-summary-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="app-sidebar no-print">
+        <div class="app-brand">
+          <span>{{ tr('student_report') }}</span>
+          <strong>{{ student.full_name }}</strong>
+        </div>
+        <div class="app-sidebar-card">
+          <span>{{ tr('level') }}</span>
+          <strong>{{ level_name }}</strong>
+          <small>{{ teacher_name }}</small>
+        </div>
+        <nav class="app-nav">
+          {% if can_manage_actions %}
+          <a class="app-nav-link" href="/students">{{ tr('back_to_students') }}</a>
+          {% else %}
+          <a class="app-nav-link" href="/student/dashboard">{{ tr('back_to_student_interface') }}</a>
+          {% endif %}
+          <a class="app-nav-link is-active" href="/students/{{ student.id }}/report?period={{ period }}">{{ tr('student_report') }}</a>
+          <details class="app-nav-group" open>
+            <summary>{{ tr('period') }}</summary>
+            <div class="app-subnav">
+              <a href="/students/{{ student.id }}/report?period=week&lang={{ current_lang }}" class="{% if period == 'week' %}is-active{% endif %}">{{ tr('this_week') }}</a>
+              <a href="/students/{{ student.id }}/report?period=month&lang={{ current_lang }}" class="{% if period == 'month' %}is-active{% endif %}">{{ tr('this_month') }}</a>
+            </div>
+          </details>
+          <details class="app-nav-group">
+            <summary>{{ tr('language') }}</summary>
+            <div class="app-subnav">
+              <a href="{{ with_lang('en') }}" class="{% if current_lang == 'en' %}is-active{% endif %}">English</a>
+              <a href="{{ with_lang('ar') }}" class="{% if current_lang == 'ar' %}is-active{% endif %}">العربية</a>
+            </div>
+          </details>
+        </nav>
+      </aside>
+      <button class="sidebar-toggle no-print" type="button" aria-label="{{ tr('student_report') }}" data-sidebar-toggle>
+        <span class="sidebar-toggle-lines"></span>
+      </button>
+      <button class="app-sidebar-backdrop no-print" type="button" aria-label="{{ tr('close_menu') }}" data-sidebar-backdrop></button>
+      <main class="app-main">
+    <div class="container report-shell">
+    <h1 class="title">{{ tr('student_report') }}</h1>
+
+    <div class="panel no-print">
+      <form class="report-toolbar report-toolbar-elevated" method="get" action="/students/{{ student.id }}/report">
+        <label for="period"><strong>{{ tr('period') }}:</strong></label>
+        <select id="period" name="period">
+          <option value="week" {% if period == 'week' %}selected{% endif %}>{{ tr('this_week') }}</option>
+          <option value="month" {% if period == 'month' %}selected{% endif %}>{{ tr('this_month') }}</option>
+        </select>
+        <button type="submit">{{ tr('apply') }}</button>
+        <a class="btn-link reports-btn secondary" href="/students/{{ student.id }}/report.pdf?period={{ period }}">{{ tr('student_full_pdf') }}</a>
+        {% if can_manage_actions %}
+        <a class="btn-link reports-btn" href="/students/{{ student.id }}/report.xlsx?period={{ period }}">{{ tr('student_full_excel') }}</a>
+        {% endif %}
+      </form>
+    </div>
+
+    {% if can_manage_actions and email_status == 'sent' %}
+    <div class="notice success no-print">{{ email_message }}</div>
+    {% elif can_manage_actions and email_status == 'error' %}
+    <div class="notice error no-print">{{ email_message }}</div>
+    {% endif %}
+    {% if can_manage_actions and note_status == 'success' %}
+    <div class="notice success no-print">{{ note_message }}</div>
+    {% elif can_manage_actions and note_status == 'error' %}
+    <div class="notice error no-print">{{ note_message }}</div>
+    {% endif %}
+
+    <div class="report-kpi-grid">
+      <div class="report-kpi"><span>{{ tr('present_count') }}</span><strong>{{ present_count }}</strong></div>
+      <div class="report-kpi"><span>{{ tr('absent_count') }}</span><strong>{{ absent_count }}</strong></div>
+      <div class="report-kpi"><span>{{ tr('late_count') }}</span><strong>{{ late_count }}</strong></div>
+      <div class="report-kpi"><span>{{ tr('excused_count') }}</span><strong>{{ excused_count }}</strong></div>
+      <div class="report-kpi"><span>{{ tr('attendance_percentage') }}</span><strong>{{ attendance_percentage }}%</strong></div>
+      {% if period == 'month' %}
+      <div class="report-kpi"><span>{{ tr('homework_completion') }}</span><strong>{{ homework_completion_rate }}%</strong></div>
+      {% endif %}
+    </div>
+
+    <div class="report-summary-grid">
+      <div class="panel">
+        <div class="admin-template-header">
+          <div>
+            <strong>{{ student.full_name }}</strong>
+            <span>{{ level_name }} • {{ teacher_name }}</span>
+          </div>
+        </div>
+        <div class="report-line-list" style="margin-top:12px;">
+          <div class="report-line"><span>{{ tr('student_name') }}</span><strong>{{ student.full_name }}</strong></div>
+          <div class="report-line"><span>{{ tr('level') }}</span><strong>{{ level_name }}</strong></div>
+          <div class="report-line"><span>{{ tr('teacher_label') }}</span><strong>{{ teacher_name }}</strong></div>
+          <div class="report-line"><span>{{ tr('date_range') }}</span><strong>{{ start_date }} - {{ end_date }}</strong></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="admin-template-header">
+          <div>
+            <strong>{{ tr('monthly_report') if period == 'month' else tr('attendance') }}</strong>
+            <span>{{ tr('study_snapshot') }}</span>
+          </div>
+        </div>
+        <div class="report-line-list" style="margin-top:12px;">
+          {% if period == 'month' %}
+          <div class="report-line"><span>{{ tr('homework_given') }}</span><strong>{{ homework_total }}</strong></div>
+          <div class="report-line"><span>{{ tr('homework_submitted') }}</span><strong>{{ homework_submitted }}</strong></div>
+          <div class="report-line"><span>{{ tr('homework_reviewed') }}</span><strong>{{ homework_reviewed }}</strong></div>
+          <div class="report-line"><span>{{ tr('homework_waiting_review') }}</span><strong>{{ homework_pending_review }}</strong></div>
+          <div class="report-line"><span>{{ tr('homework_missing') }}</span><strong>{{ homework_missing }}</strong></div>
+          {% else %}
+          <div class="report-line"><span>{{ tr('present_count') }}</span><strong>{{ present_count }}</strong></div>
+          <div class="report-line"><span>{{ tr('absent_count') }}</span><strong>{{ absent_count }}</strong></div>
+          <div class="report-line"><span>{{ tr('late_count') }}</span><strong>{{ late_count }}</strong></div>
+          <div class="report-line"><span>{{ tr('excused_count') }}</span><strong>{{ excused_count }}</strong></div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if imported_arabic_attendance %}
+    <div class="panel">
+      <div class="admin-template-header">
+        <div>
+          <strong>{{ tr('imported_arabic_attendance') }}</strong>
+          <span>{{ tr('imported_arabic_attendance_subtitle') }}</span>
+        </div>
+      </div>
+      <div class="report-kpi-grid" style="margin-top:12px; margin-bottom:12px;">
+        <div class="report-kpi"><span>{{ tr('present_count') }}</span><strong>{{ imported_arabic_attendance.present_count }}</strong></div>
+        <div class="report-kpi"><span>{{ tr('absent_count') }}</span><strong>{{ imported_arabic_attendance.absent_count }}</strong></div>
+        <div class="report-kpi"><span>{{ tr('late_count') }}</span><strong>{{ imported_arabic_attendance.late_count }}</strong></div>
+        <div class="report-kpi"><span>{{ tr('total_sessions') }}</span><strong>{{ imported_arabic_attendance.total_count }}</strong></div>
+        <div class="report-kpi"><span>{{ tr('attendance_percentage') }}</span><strong>{{ imported_arabic_attendance.attendance_percentage }}%</strong></div>
+      </div>
+      <div class="report-line-list">
+        <div class="report-line"><span>{{ tr('source_sheet') }}</span><strong>{{ imported_arabic_attendance.sheet_name }}</strong></div>
+        <div class="report-line"><span>{{ tr('attendance_snapshot_matched_name') }}</span><strong>{{ imported_arabic_attendance.student_name }}</strong></div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if period == 'month' %}
+    <div class="panel">
+      <div class="admin-template-header">
+        <div>
+          <strong>{{ tr('monthly_teacher_note') }}</strong>
+          <span>{{ tr('student_updates_now') }}</span>
+        </div>
+      </div>
+      <p style="margin-top:12px;">{{ monthly_note_text or '-' }}</p>
+    </div>
+    {% endif %}
+
+    {% if period == 'month' and can_manage_actions %}
+    <div class="panel no-print">
+      <p><strong>{{ tr('monthly_teacher_note_for_student') }}</strong></p>
+      <form method="post" action="/students/{{ student.id }}/monthly-note">
+        <input type="hidden" name="month_key" value="{{ month_key }}">
+        <textarea name="note_text" rows="5" style="width:100%;padding:8px;">{{ monthly_note_text or '' }}</textarea>
+        <div style="margin-top:8px;">
+          <button type="submit">{{ tr('save_monthly_note') }}</button>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+
+    {% if can_manage_actions %}
+    <div class="panel no-print">
+      <p><strong>{{ tr('send_report_to_parent_email') }}</strong></p>
+      <form method="post" action="/students/{{ student.id }}/report/email">
+        <input type="hidden" name="period" value="{{ period }}">
+        <label for="parent_email">{{ tr('parent_email') }}:</label>
+        <input id="parent_email" type="email" name="parent_email" required value="{{ parent_email or '' }}">
+        <label for="parent_whatsapp">{{ tr('parent_whatsapp') }}:</label>
+        <input id="parent_whatsapp" type="text" value="{{ parent_whatsapp or '' }}" readonly>
+        <button type="submit">{{ tr('send_report') }}</button>
+      </form>
+    </div>
+    {% else %}
+    <div class="panel no-print">
+      <p><strong>{{ tr('view_only') }}:</strong> {{ tr('student_view_only_report') }}</p>
+    </div>
+    {% endif %}
+
+    {% if can_manage_actions %}
+    <p class="no-print"><a href="/students">{{ tr('back_to_students') }}</a></p>
+    {% else %}
+    <p class="no-print"><a href="/student/dashboard">{{ tr('back_to_student_interface') }}</a></p>
+    {% endif %}
+    </div>
+      </main>
+    </div>
+    <script>
+      (() => {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('[data-sidebar-toggle]');
+        const backdrop = document.querySelector('[data-sidebar-backdrop]');
+        if (!sidebar || !toggle) return;
+        const setOpen = (open) => {
+          sidebar.classList.toggle('is-open', open);
+          if (backdrop) backdrop.classList.toggle('is-open', open);
+          document.body.classList.toggle('sidebar-open', open);
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        };
+        toggle.addEventListener('click', () => setOpen(!sidebar.classList.contains('is-open')));
+        if (backdrop) backdrop.addEventListener('click', () => setOpen(false));
+        sidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setOpen(false)));
+        window.addEventListener('resize', () => {
+          if (window.innerWidth > 700) setOpen(false);
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tr('teacher_dashboard') }}</title>
+    <link rel="stylesheet" href="{{ static_asset('ui.css') }}">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="app-sidebar">
+        <div class="app-brand">
+          <span>{{ tr('teacher_label') }}</span>
+          <strong>{{ teacher.full_name }}</strong>
+        </div>
+        <div class="app-sidebar-card">
+          <span>{{ tr('today_tasks') }}</span>
+          <strong>{{ quick_tasks|length }}</strong>
+          <small>{{ tr('focus_on_these_first') }}</small>
+        </div>
+        <nav class="app-nav">
+          <a class="app-nav-link is-active" href="/teacher/dashboard">{{ tr('teacher_dashboard') }}</a>
+          <details class="app-nav-group" open>
+            <summary>{{ tr('daily_workflow') }}</summary>
+            <div class="app-subnav">
+              <a href="/attendance">{{ tr('open_attendance') }}</a>
+              {% if level_rows %}
+              <a href="/teacher/levels/{{ level_rows[0].level.id }}">{{ tr('open_first_workspace') }}</a>
+              <a href="/teacher/levels/{{ level_rows[0].level.id }}/syllabus-plan">{{ tr('open_syllabus_plan') }}</a>
+              {% endif %}
+            </div>
+          </details>
+          {% if level_rows %}
+          <details class="app-nav-group">
+            <summary>{{ tr('class_operations') }}</summary>
+            <div class="app-subnav">
+              <a href="/teacher/levels/{{ level_rows[0].level.id }}?workspace=assignments">{{ tr('assignments') }}</a>
+              <a href="/teacher/levels/{{ level_rows[0].level.id }}?workspace=recordings">{{ tr('recordings_label') }}</a>
+              <a href="/teacher/levels/{{ level_rows[0].level.id }}?workspace=students">{{ tr('students_section') }}</a>
+            </div>
+          </details>
+          {% endif %}
+          <details class="app-nav-group">
+            <summary>{{ tr('language') }}</summary>
+            <div class="app-subnav">
+              <a href="{{ with_lang('en') }}" class="{% if current_lang == 'en' %}is-active{% endif %}">English</a>
+              <a href="{{ with_lang('ar') }}" class="{% if current_lang == 'ar' %}is-active{% endif %}">العربية</a>
+            </div>
+          </details>
+          <details class="app-nav-group">
+            <summary>{{ tr('role_selection') }}</summary>
+            <div class="app-subnav">
+              <a href="/">{{ tr('role_selection') }}</a>
+              <a href="/teacher/logout">{{ tr('logout') }}</a>
+            </div>
+          </details>
+        </nav>
+      </aside>
+      <button class="sidebar-toggle" type="button" aria-label="{{ tr('quick_actions') }}" data-sidebar-toggle>
+        <span class="sidebar-toggle-lines"></span>
+      </button>
+      <button class="app-sidebar-backdrop" type="button" aria-label="{{ tr('close_menu') }}" data-sidebar-backdrop></button>
+      <main class="app-main">
+    <div class="container">
+
+      <section class="teacher-hero">
+        <div class="teacher-hero-main">
+          <div class="feature-card-kicker">{{ tr('teaching_day') }}</div>
+          <h1 class="title">{{ tr('teacher_dashboard') }}</h1>
+          <p class="subtitle">{{ tr('teacher_dashboard_subtitle') }}</p>
+          <div class="notice success" style="margin-bottom:0;">{{ tr('teacher_signed_in_as', name=teacher.full_name) }}</div>
+          <div class="feature-card-actions teacher-hero-actions">
+            <a class="btn-link reports-btn" href="/attendance">{{ tr('open_attendance') }}</a>
+            {% if level_rows %}
+            <a class="btn-link reports-btn secondary" href="/teacher/levels/{{ level_rows[0].level.id }}">{{ tr('open_first_workspace') }}</a>
+            <a class="btn-link reports-btn secondary" href="/teacher/levels/{{ level_rows[0].level.id }}/syllabus-plan">{{ tr('open_syllabus_plan') }}</a>
+            {% endif %}
+          </div>
+        </div>
+        <div class="teacher-hero-side panel teacher-hero-summary-card">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('today_tasks') }}</div>
+              <h3>{{ tr('quick_actions') }}</h3>
+            </div>
+            <span class="pill">{% if weekly_review_summary.status == 'follow_up' %}{{ tr('needs_completion') }}{% else %}{{ tr('all_clear') }}{% endif %}</span>
+          </div>
+          <div class="teacher-hero-metrics">
+            <div class="metric-chip">
+              <span>{{ tr('today_tasks') }}</span>
+              <strong>{{ quick_tasks|length }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ tr('my_levels') }}</span>
+              <strong>{{ level_rows|length }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ tr('current_teaching_week') }}</span>
+              <strong>{{ syllabus_plan_summary.current_week }}</strong>
+            </div>
+          </div>
+          <div class="teacher-level-status-copy" style="margin-top:12px;">
+            <strong>{{ tr('current_academic_event') }}:</strong>
+            <span>
+              {% if academic_calendar_status.current_event %}
+              {{ academic_calendar_status.current_event.title }}
+              {% else %}
+              {{ tr('teaching_in_session') }}
+              {% endif %}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <div class="panel teacher-section-panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('academic_calendar_status') }}</div>
+            <h3>{{ tr('this_week') }}</h3>
+          </div>
+          <span class="pill">{{ tr('current_teaching_week') }}: {{ academic_calendar_status.current_week }}</span>
+        </div>
+        <div class="feature-card-meta" style="margin-bottom:12px;">
+          <span class="pill">{{ tr('current_calendar_status') }}: {{ tr(academic_calendar_status.status_key) }}</span>
+          {% if academic_calendar_status.is_exam_period %}
+          <span class="pill">{{ tr('exam_week_status') }}</span>
+          {% elif academic_calendar_status.is_holiday_period %}
+          <span class="pill">{{ tr('holiday_status') }}</span>
+          {% endif %}
+          <span class="pill">
+            {{ tr('current_academic_event') }}:
+            {% if academic_calendar_status.current_event %}
+            {{ academic_calendar_status.current_event.title }}
+            {% else %}
+            {{ tr('teaching_in_session') }}
+            {% endif %}
+          </span>
+          {% if academic_calendar_status.next_event %}
+          <span class="pill">{{ tr('next_academic_event') }}: {{ academic_calendar_status.next_event.title }} • {{ academic_calendar_status.next_event_countdown_label }}</span>
+          {% endif %}
+        </div>
+        <div class="feature-card-meta">
+          {% for event in academic_calendar_status.upcoming_events %}
+          <span class="pill">
+            {{ event.title }} • {{ event.start_date.strftime('%Y-%m-%d') }}
+            {% if event.end_date != event.start_date %}→ {{ event.end_date.strftime('%Y-%m-%d') }}{% endif %}
+          </span>
+          {% else %}
+          <span class="pill">{{ tr('no_upcoming_academic_events') }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <section class="supervisor-kpi-grid">
+        {% for item in kpis %}
+        <article class="supervisor-kpi-card">
+          <span>{{ tr(item.label_key) }}</span>
+          <strong>{{ item.value }}</strong>
+          <small>{{ tr(item.caption_key, **(item.caption_params or {})) }}</small>
+        </article>
+        {% endfor %}
+      </section>
+
+      <div class="panel teacher-section-panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('today_tasks') }}</div>
+            <h3>{{ tr('focus_on_these_first') }}</h3>
+          </div>
+          <span class="pill">{% if weekly_review_summary.status == 'follow_up' %}{{ tr('needs_completion') }}{% else %}{{ tr('all_clear') }}{% endif %}</span>
+        </div>
+        <p class="subtitle" style="margin-top:0;">{{ tr('review_window', start=weekly_review_summary.week_start, end=weekly_review_summary.week_end) }}</p>
+        <div class="dashboard-card-grid">
+          {% for task in quick_tasks %}
+          <div class="announcement-card is-{{ task.tone }}">
+            <strong>{{ tr(task.title_key) }}</strong>
+            <p>{{ tr(task.body_key, **(task.body_params or {})) }}</p>
+            <div class="feature-card-actions">
+              <a class="btn-link" href="{{ task.href }}">{{ tr(task.cta_key) }}</a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="panel teacher-section-panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('teacher_plan_checkpoint') }}</div>
+            <h3>{{ tr('syllabus_plan') }}</h3>
+          </div>
+          {% if level_rows %}
+          <a class="btn-link reports-btn" href="/teacher/levels/{{ level_rows[0].level.id }}/syllabus-plan">{{ tr('open_syllabus_plan') }}</a>
+          {% endif %}
+        </div>
+        <div class="dashboard-card-grid" style="margin-bottom:12px;">
+          <div class="feature-card teacher-level-card is-praise">
+            <div class="feature-card-kicker">{{ tr('current_teaching_week') }}</div>
+            <h3>{{ syllabus_plan_summary.current_week }}</h3>
+            <div class="feature-card-meta">
+              <span class="pill">{{ tr('progress_percentage') }}: {{ syllabus_plan_summary.progress_pct }}%</span>
+              <span class="pill">{{ tr('expected_by_now') }}: {{ syllabus_plan_summary.expected_count }}</span>
+              <span class="pill">{{ tr('completed_lessons') }}: {{ syllabus_plan_summary.completed_count }}</span>
+              <span class="pill">{{ tr('delayed_lessons') }}: {{ syllabus_plan_summary.delayed_count }}</span>
+            </div>
+            {% if level_rows %}
+            <div class="feature-card-actions">
+              <a class="btn-link" href="/teacher/levels/{{ level_rows[0].level.id }}/syllabus-plan">{{ tr('open_syllabus_plan') }}</a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="panel teacher-section-panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('class_operations') }}</div>
+            <h3>{{ tr('my_levels') }}</h3>
+          </div>
+          <span class="pill">{{ tr('current_teaching_week') }}: {{ syllabus_plan_summary.current_week }}</span>
+        </div>
+        <div class="dashboard-card-grid">
+          {% for row in level_rows %}
+          <div class="feature-card teacher-level-card {% if row.weekly_status == 'follow_up' or (row.syllabus_plan and row.syllabus_plan.delayed_count > 0) or not row.marked_count %}is-follow-up{% else %}is-praise{% endif %}">
+            <div class="admin-template-header" style="align-items:flex-start;">
+              <div>
+                <div class="feature-card-kicker">{{ tr('assigned_level') }}</div>
+                <h3>{{ row.level.name }}</h3>
+              </div>
+              <span class="teacher-status-badge {% if row.weekly_status == 'follow_up' or (row.syllabus_plan and row.syllabus_plan.delayed_count > 0) or not row.marked_count %}is-follow-up{% else %}is-praise{% endif %}">
+                {% if row.weekly_status == 'follow_up' or (row.syllabus_plan and row.syllabus_plan.delayed_count > 0) or not row.marked_count %}{{ tr('needs_completion') }}{% else %}{{ tr('on_track') }}{% endif %}
+              </span>
+            </div>
+            <div class="feature-card-meta">
+              <span class="pill">{{ tr('students') }}: {{ row.students_count }}</span>
+              <span class="pill">{{ tr('attendance_today') }}: {% if row.marked_count %}{{ row.marked_count }}/{{ row.students_count }}{% else %}{{ tr('not_started') }}{% endif %}</span>
+              <span class="pill">{{ tr('review_queue') }}: {{ row.review_queue }}</span>
+              <span class="pill">{{ tr('assignments') }}: {{ row.active_assignments }}</span>
+              <span class="pill">{{ tr('delayed_lessons') }}: {{ row.syllabus_plan.delayed_count if row.syllabus_plan else 0 }}</span>
+              {% if row.attendance_rate is not none %}
+              <span class="pill">{{ tr('present_label') }}: {{ row.attendance_rate }}%</span>
+              {% endif %}
+            </div>
+            <div class="teacher-level-status-copy">
+              <strong>{{ tr('weekly_review') }}:</strong>
+              <span>{% if row.weekly_issues %}{{ row.weekly_issues|join(', ') }}{% else %}{{ tr('class_ready') }}{% endif %}</span>
+            </div>
+            {% if row.syllabus_plan %}
+            <div class="teacher-level-status-copy">
+              <strong>{{ tr('curriculum_plan_progress') }}:</strong>
+              <span>{{ row.syllabus_plan.progress_pct }}% | {{ tr('expected_by_now') }} {{ row.syllabus_plan.expected_count }} | {{ tr('completed_lessons') }} {{ row.syllabus_plan.completed_count }}</span>
+            </div>
+            {% endif %}
+            {% if row.next_exam %}
+            <div class="guide" style="margin-top:12px;">
+              <h4>{{ tr('next_exam') }}</h4>
+              <p>{{ row.next_exam.title }} - {{ row.next_exam.exam_date }}</p>
+            </div>
+            {% endif %}
+            <div class="feature-card-actions">
+              <a class="btn-link" href="/teacher/levels/{{ row.level.id }}" title="{{ tr('open_workspace') }}">{{ tr('open_workspace') }}</a>
+              <a class="btn-link" href="/attendance?level_id={{ row.level.id }}" title="{{ tr('take_attendance') }}">{{ tr('take_attendance') }}</a>
+              <a class="btn-link" href="/teacher/levels/{{ row.level.id }}/syllabus-plan" title="{{ tr('open_syllabus_plan') }}">{{ tr('open_syllabus_plan') }}</a>
+              {% if row.level.zoom_link %}
+              <a class="btn-link" href="{{ row.level.zoom_link }}" target="_blank" rel="noopener noreferrer">{{ tr('join_zoom') }}</a>
+              <button class="secondary copy-action" type="button" data-copy-text="{{ row.level.zoom_link }}">{{ tr('copy_zoom_link') }}</button>
+              {% endif %}
+            </div>
+          </div>
+          {% else %}
+          <div class="panel">
+            <p>{{ tr('no_assigned_levels') }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="panel teacher-section-panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('administrative_board') }}</div>
+            <h3>{{ tr('supervisor_announcements') }}</h3>
+          </div>
+        </div>
+        <div class="announcement-stack">
+          {% for row in teacher_announcements %}
+          <div class="announcement-card is-{{ row.tone }}">
+            <div class="announcement-card-head">
+              <div>
+                <strong>{{ row.announcement.title }}</strong>
+                <span>{{ row.category_label }}{% if row.announcement.level %} • {{ row.announcement.level.name }}{% endif %}</span>
+              </div>
+              {% if row.announcement.is_pinned %}
+              <span class="pill">{{ tr('pinned') }}</span>
+              {% endif %}
+            </div>
+            <p>{{ row.announcement.body }}</p>
+          </div>
+          {% else %}
+          <div class="announcement-card is-info">
+            <strong>{{ tr('no_administrative_announcements') }}</strong>
+            <p>{{ tr('supervisor_messages_here') }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="panel teacher-section-panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('priority_students') }}</div>
+            <h3>{{ tr('needs_followup') }}</h3>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ tr('students') }}</th>
+                <th>{{ tr('level') }}</th>
+                <th>{{ tr('attendance_14d') }}</th>
+                <th>{{ tr('open_assignments') }}</th>
+                <th>{{ tr('latest_exam') }}</th>
+                <th>{{ tr('why') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in student_focus_rows %}
+              <tr>
+                <td><a href="/students/{{ row.student.id }}/report?period=month">{{ row.student.full_name }}</a></td>
+                <td>{{ row.level_name }}</td>
+                <td>
+                  {{ row.attendance_rate_display if row.attendance_rate_display is not none else '-' }}{% if row.attendance_rate_display is not none %}%{% endif %}
+                  {% if row.attendance_source_key %}
+                  <br><small>{{ tr(row.attendance_source_key) }}</small>
+                  {% endif %}
+                </td>
+                <td>{{ row.open_assignments }}</td>
+                <td>
+                  {% if row.latest_exam_title %}
+                  {{ row.latest_exam_title }}<br><small>{{ row.latest_exam_percentage if row.latest_exam_percentage is not none else '-' }}{% if row.latest_exam_percentage is not none %}%{% endif %}</small>
+                  {% else %}
+                  -
+                  {% endif %}
+                </td>
+                <td>{{ row.reasons }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="6">{{ tr('no_students_flagged') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+      </main>
+    </div>
+    <script>
+      (() => {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('[data-sidebar-toggle]');
+        const backdrop = document.querySelector('[data-sidebar-backdrop]');
+        if (!sidebar || !toggle) return;
+        const setOpen = (open) => {
+          sidebar.classList.toggle('is-open', open);
+          if (backdrop) backdrop.classList.toggle('is-open', open);
+          document.body.classList.toggle('sidebar-open', open);
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        };
+        toggle.addEventListener('click', () => setOpen(!sidebar.classList.contains('is-open')));
+        if (backdrop) backdrop.addEventListener('click', () => setOpen(false));
+        sidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setOpen(false)));
+        window.addEventListener('resize', () => {
+          if (window.innerWidth > 700) setOpen(false);
+        });
+      })();
+      (() => {
+        const fallbackCopy = (text) => {
+          const input = document.createElement('textarea');
+          input.value = text;
+          input.setAttribute('readonly', '');
+          input.style.position = 'absolute';
+          input.style.left = '-9999px';
+          document.body.appendChild(input);
+          input.select();
+          let ok = false;
+          try {
+            ok = document.execCommand('copy');
+          } catch (err) {
+            ok = false;
+          }
+          document.body.removeChild(input);
+          return ok;
+        };
+        document.querySelectorAll('[data-copy-text]').forEach((button) => {
+          button.addEventListener('click', async () => {
+            const original = button.textContent;
+            const text = button.getAttribute('data-copy-text') || '';
+            if (!text) return;
+            let copied = false;
+            if (navigator.clipboard && window.isSecureContext) {
+              try {
+                await navigator.clipboard.writeText(text);
+                copied = true;
+              } catch (err) {
+                copied = fallbackCopy(text);
+              }
+            } else {
+              copied = fallbackCopy(text);
+            }
+            button.textContent = copied ? "{{ tr('copied_label') }}" : "{{ tr('copy_failed_label') }}";
+            window.setTimeout(() => {
+              button.textContent = original;
+            }, 1500);
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

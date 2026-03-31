@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tr('level_attendance_report') }}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 24px;
+      }
+      h1, h2 {
+        margin-bottom: 10px;
+      }
+      .card {
+        border: 1px solid #ddd;
+        padding: 14px;
+        margin-bottom: 16px;
+        max-width: 700px;
+      }
+      p {
+        margin: 6px 0;
+      }
+      select, button {
+        padding: 6px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background: #f5f5f5;
+      }
+      tr:nth-child(even) {
+        background: #fafafa;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <a class="pill" href="/levels/{{ level.id }}">{{ tr('back_to_level_details') }}</a>
+      <span class="pill">{{ tr('language') }}:</span>
+      <a class="pill" href="{{ with_lang('en') }}">EN</a>
+      <a class="pill" href="{{ with_lang('ar') }}">AR</a>
+    </div>
+
+    <h1>{{ tr('level_attendance_report') }} - {{ level.name }}</h1>
+
+    <div class="card">
+      <h2>{{ tr('summary_label') }}</h2>
+      <p><strong>{{ tr('level') }}:</strong> {{ level.name }}</p>
+      <p><strong>{{ tr('teacher_label') }}:</strong> {{ teacher_name }}</p>
+      <p><strong>{{ tr('students') }}:</strong> {{ students_count }}</p>
+      <p><strong>{{ tr('date_range') }}:</strong> {{ start_date }} to {{ end_date }}</p>
+      <p><strong>{{ tr('total_present') }}:</strong> {{ totals.present }}</p>
+      <p><strong>{{ tr('total_absent') }}:</strong> {{ totals.absent }}</p>
+      <p><strong>{{ tr('total_late') }}:</strong> {{ totals.late }}</p>
+      <p><strong>{{ tr('total_excused') }}:</strong> {{ totals.excused }}</p>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>{{ tr('student_name_label') }}</th>
+          <th>{{ tr('present_count') }}</th>
+          <th>{{ tr('absent_count') }}</th>
+          <th>{{ tr('late_count') }}</th>
+          <th>{{ tr('excused_count') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in report_rows %}
+        <tr>
+          <td>{{ row.student_name }}</td>
+          <td>{{ row.present_count }}</td>
+          <td>{{ row.absent_count }}</td>
+          <td>{{ row.late_count }}</td>
+          <td>{{ row.excused_count }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5">{{ tr('no_students_for_level') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p><a href="/levels/{{ level.id }}">{{ tr('back_to_level_details') }}</a></p>
+    <p><a href="/levels">{{ tr('back_to_levels') }}</a></p>
+  </body>
+</html>

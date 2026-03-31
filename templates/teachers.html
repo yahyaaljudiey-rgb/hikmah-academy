@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Teachers</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 24px;
+      }
+      h1 {
+        margin-bottom: 16px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background: #f5f5f5;
+      }
+      tr:nth-child(even) {
+        background: #fafafa;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Teachers</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Full Name</th>
+          <th>Subject</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Level</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for teacher in teachers %}
+        <tr>
+          <td>{{ teacher.full_name }}</td>
+          <td>{{ teacher.subject_name or '' }}</td>
+          <td>{{ teacher.phone or '' }}</td>
+          <td>{{ teacher.email or '' }}</td>
+          <td>{{ teacher.level_name or '' }}</td>
+          <td>{{ teacher.status or '' }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6">No teachers found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tr('system_action_log') }}</title>
+    <link rel="stylesheet" href="/static/ui.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <a class="pill" href="/admin/dashboard">{{ tr('supervisor_dashboard') }}</a>
+        <a class="pill" href="/head/dashboard">{{ tr('head_dashboard') }}</a>
+        <a class="pill" href="/head/data-root">{{ tr('data_root') }}</a>
+        <span class="pill">{{ tr('language') }}:</span>
+        <a class="pill" href="{{ with_lang('en') }}">EN</a>
+        <a class="pill" href="{{ with_lang('ar') }}">AR</a>
+      </div>
+
+      <h1 class="title">{{ tr('system_action_log') }}</h1>
+      <p class="subtitle">{{ tr('action_log_subtitle') }}</p>
+
+      <section class="supervisor-kpi-grid">
+        <article class="supervisor-kpi-card">
+          <span>{{ tr('all_actions') }}</span>
+          <strong>{{ summary.total }}</strong>
+          <small>{{ tr('latest_logged_updates') }}</small>
+        </article>
+        <article class="supervisor-kpi-card">
+          <span>{{ tr('supervisor_role') }}</span>
+          <strong>{{ summary.admin }}</strong>
+          <small>{{ tr('recent_system_actions') }}</small>
+        </article>
+        <article class="supervisor-kpi-card">
+          <span>{{ tr('teacher_role') }}</span>
+          <strong>{{ summary.teacher }}</strong>
+          <small>{{ tr('recent_system_actions') }}</small>
+        </article>
+        <article class="supervisor-kpi-card">
+          <span>{{ tr('system_role') }}</span>
+          <strong>{{ summary.system }}</strong>
+          <small>{{ tr('recent_system_actions') }}</small>
+        </article>
+      </section>
+
+      <div class="panel">
+        <form class="inline-form" method="get" action="/admin/action-log">
+          <select name="actor_role">
+            <option value="">{{ tr('all_roles') }}</option>
+            <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>{{ tr('supervisor_role') }}</option>
+            <option value="teacher" {% if role_filter == 'teacher' %}selected{% endif %}>{{ tr('teacher_role') }}</option>
+            <option value="system" {% if role_filter == 'system' %}selected{% endif %}>{{ tr('system_role') }}</option>
+          </select>
+          <select name="action_type">
+            <option value="">{{ tr('all_actions') }}</option>
+            {% for action_type in action_types %}
+            <option value="{{ action_type }}" {% if action_filter == action_type %}selected{% endif %}>{{ tr(action_type) }}</option>
+            {% endfor %}
+          </select>
+          <select name="level_id">
+            <option value="">{{ tr('all_levels') }}</option>
+            {% for level in levels %}
+            <option value="{{ level.id }}" {% if level_filter == (level.id|string) %}selected{% endif %}>{{ level.name }}</option>
+            {% endfor %}
+          </select>
+          <input type="text" name="q" value="{{ search_query }}" placeholder="{{ tr('search_actions_placeholder') }}">
+          <button type="submit">{{ tr('apply') }}</button>
+          <a class="btn-link" href="/admin/action-log">{{ tr('reset') }}</a>
+        </form>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>{{ tr('logged_time') }}</th>
+              <th>{{ tr('actor') }}</th>
+              <th>{{ tr('action') }}</th>
+              <th>{{ tr('level') }}</th>
+              <th>{{ tr('entity') }}</th>
+              <th>{{ tr('action_details') }}</th>
+              <th>{{ tr('open_link') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in action_rows %}
+            <tr>
+              <td>{{ row.log.created_at.strftime('%Y-%m-%d %H:%M') if row.log.created_at else '-' }}</td>
+              <td>{{ row.log.actor_name }}<br><small>{{ tr(row.role_label_key) }}</small></td>
+              <td>{{ tr(row.log.action_type) }}</td>
+              <td>{{ row.log.level.name if row.log.level else '-' }}</td>
+              <td>{{ row.log.entity_label or '-' }}</td>
+              <td>{{ row.log.details or '-' }}</td>
+              <td>
+                {% if row.target_url %}
+                <a class="btn-link" href="{{ row.target_url }}">{{ tr(row.target_label_key) }}</a>
+                {% else %}
+                -
+                {% endif %}
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="7">{{ tr('no_recent_actions') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

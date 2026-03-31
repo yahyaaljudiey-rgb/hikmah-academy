@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ 'دخول الإشراف' if current_lang == 'ar' else 'Supervisor Access' }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              hikmah: {
+                DEFAULT: '#4a99ad',
+                soft: '#eef7f9',
+                deep: '#2f6f80',
+                rose: '#d86a8b'
+              }
+            },
+            boxShadow: {
+              soft: '0 18px 45px rgba(15, 23, 42, 0.08)'
+            }
+          }
+        }
+      };
+    </script>
+    <link rel="stylesheet" href="{{ static_asset('ui.css') }}">
+  </head>
+  <body class="bg-slate-100 text-slate-800">
+    {% set is_ar = current_lang == 'ar' %}
+    <div class="min-h-screen bg-[radial-gradient(circle_at_top_right,_rgba(74,153,173,0.18),_transparent_28%),radial-gradient(circle_at_top_left,_rgba(216,106,139,0.10),_transparent_20%),linear-gradient(180deg,_#f8fafc_0%,_#f3f5f7_100%)]">
+      <div class="mx-auto flex min-h-screen max-w-6xl items-center px-4 py-8 sm:px-6 lg:px-8">
+        <div class="absolute top-6 {% if is_ar %}left-6{% else %}right-6{% endif %} z-10 inline-flex rounded-2xl border border-slate-200 bg-white p-1 shadow-soft">
+          <a href="{{ with_lang('en') }}" class="rounded-xl px-4 py-2 text-sm font-semibold transition {% if current_lang == 'en' %}bg-[#4a99ad] text-white{% else %}text-slate-600 hover:bg-slate-50{% endif %}">English</a>
+          <a href="{{ with_lang('ar') }}" class="rounded-xl px-4 py-2 text-sm font-semibold transition {% if current_lang == 'ar' %}bg-[#4a99ad] text-white{% else %}text-slate-600 hover:bg-slate-50{% endif %}">العربية</a>
+        </div>
+        <div class="grid w-full gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+          <section class="overflow-hidden rounded-[30px] border border-white/70 bg-white/90 p-6 shadow-soft backdrop-blur sm:p-8 lg:p-10">
+            <div class="mb-6 flex items-center gap-4">
+              <div class="flex h-20 w-20 items-center justify-center rounded-[24px] bg-gradient-to-br from-white via-hikmah-soft to-white p-3 shadow-md ring-1 ring-slate-100">
+                <img src="{{ url_for('static', filename='academy-logo.jpg') }}" alt="Hikmah Academy logo" class="max-h-full max-w-full object-contain">
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-hikmah-deep">Hikmah Academy</p>
+                <h1 class="text-3xl font-black text-slate-900 sm:text-4xl">{{ 'بوابة الإشراف' if is_ar else 'Supervisor Gateway' }}</h1>
+              </div>
+            </div>
+
+            <div class="mb-5 inline-flex items-center gap-2 rounded-full bg-hikmah-soft px-4 py-2 text-sm font-semibold text-hikmah-deep">
+              <span class="inline-flex h-2.5 w-2.5 rounded-full bg-hikmah"></span>
+              {{ 'إدارة ومتابعة وتشغيل' if is_ar else 'Oversight, Follow-up, and Control' }}
+            </div>
+
+            <p class="max-w-2xl text-sm leading-8 text-slate-600 sm:text-base">
+              {{ 'هذه البوابة مخصصة للإشراف الأكاديمي والإدارة التنفيذية، وتشمل متابعة التقارير، النواقص اليومية، الخطة الدراسية، الإعلانات، وتنظيف البيانات.' if is_ar else 'This gateway is for academic supervision and operational administration, including reports, daily gaps, syllabus follow-up, announcements, and data cleanup.' }}
+            </p>
+
+            <div class="mt-8 grid gap-4 sm:grid-cols-2">
+              <div class="rounded-2xl border border-hikmah/10 bg-hikmah-soft px-5 py-5">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-hikmah-deep">{{ 'التقارير' if is_ar else 'Reports' }}</p>
+                <p class="mt-2 text-lg font-black text-slate-900">{{ 'التقارير والمتابعة' if is_ar else 'Reports and Follow-up' }}</p>
+                <p class="mt-2 text-sm leading-7 text-slate-600">{{ 'مراجعة شهرية، تقارير أسبوعية، ومتابعة أداء المعلمين والطلاب.' if is_ar else 'Monthly review, weekly reports, and follow-up for teacher and student performance.' }}</p>
+              </div>
+              <div class="rounded-2xl border border-rose-100 bg-rose-50 px-5 py-5">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-rose-700">{{ 'التحكم' if is_ar else 'Control' }}</p>
+                <p class="mt-2 text-lg font-black text-slate-900">{{ 'التحكم التشغيلي' if is_ar else 'Operational Control' }}</p>
+                <p class="mt-2 text-sm leading-7 text-slate-600">{{ 'إعلانات إدارية، متابعة النواقص، ومراقبة الالتزام العام داخل النظام.' if is_ar else 'Administrative announcements, follow-up on gaps, and high-level monitoring across the system.' }}</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="rounded-[30px] border border-white/70 bg-white/95 p-6 shadow-soft backdrop-blur sm:p-8 lg:p-10">
+            <div class="mb-6">
+              <p class="text-sm font-semibold text-hikmah-deep">{{ 'دخول الإشراف' if is_ar else 'Supervisor Access' }}</p>
+              <h2 class="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">{{ 'تسجيل دخول المشرف' if is_ar else 'Supervisor Login' }}</h2>
+              <p class="mt-3 text-sm leading-7 text-slate-600">{{ 'أدخل كود الإشراف للوصول إلى لوحة الإدارة والمتابعة.' if is_ar else 'Enter the supervisor code to access the management and follow-up area.' }}</p>
+            </div>
+
+            {% if error %}
+            <div class="notice error">{{ error }}</div>
+            {% endif %}
+
+            <form method="post" action="/admin/login" class="space-y-5">
+              <input type="hidden" name="next" value="{{ next_url }}">
+
+              <div class="space-y-2">
+                <label for="access_code" class="block text-sm font-bold text-slate-700">{{ 'كود الإشراف' if is_ar else 'Supervisor Code' }}</label>
+                <input id="access_code" type="password" name="access_code" required class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base outline-none transition focus:border-hikmah focus:bg-white focus:ring-4 focus:ring-hikmah/10">
+              </div>
+
+              <div class="flex flex-col gap-3 pt-2 sm:flex-row">
+                <button type="submit" class="inline-flex min-h-12 flex-1 items-center justify-center rounded-2xl bg-[#4a99ad] px-5 py-3 text-base font-bold text-white shadow-lg shadow-hikmah/20 transition duration-300 hover:scale-[1.01] hover:bg-[#3f889b]">
+                  {{ 'دخول لوحة الإشراف' if is_ar else 'Enter Supervisor Area' }}
+                </button>
+                <a class="inline-flex min-h-12 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-base font-bold text-slate-700 transition hover:border-hikmah/30 hover:text-hikmah" href="/">
+                  {{ 'رجوع' if is_ar else 'Back' }}
+                </a>
+              </div>
+            </form>
+          </section>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

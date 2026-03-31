@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tr('attendance_records_title') }}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 24px;
+      }
+      h1 {
+        margin-bottom: 12px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background: #f5f5f5;
+      }
+      tr:nth-child(even) {
+        background: #fafafa;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <a class="pill" href="/attendance">{{ tr('attendance') }}</a>
+      <span class="pill">{{ tr('language') }}:</span>
+      <a class="pill" href="{{ with_lang('en') }}">EN</a>
+      <a class="pill" href="{{ with_lang('ar') }}">AR</a>
+    </div>
+
+    <h1>{{ tr('attendance_records_title') }}</h1>
+
+    <table>
+      <thead>
+        <tr>
+          <th>{{ tr('date') }}</th>
+          <th>{{ tr('student_name_label') }}</th>
+          <th>{{ tr('level') }}</th>
+          <th>{{ tr('status') }}</th>
+          <th>{{ tr('notes') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for attendance, student, level in records %}
+        <tr>
+          <td>{{ attendance.attendance_date }}</td>
+          <td>{{ student.full_name }}</td>
+          <td>{{ level.name if level else (student.level.name if student.level else student.level_name) }}</td>
+          <td>{{ attendance.status }}</td>
+          <td>{{ attendance.notes or '' }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5">{{ tr('no_attendance_records_found') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p><a href="/attendance">{{ tr('back_to_attendance_entry') }}</a></p>
+    <p><a href="/">{{ tr('back_to_dashboard') }}</a></p>
+  </body>
+</html>

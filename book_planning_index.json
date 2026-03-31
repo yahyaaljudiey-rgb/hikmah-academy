@@ -1,0 +1,1476 @@
+{
+  "book_title": "العربية بين يديك - كتاب الطالب الثاني - الجزء الثاني",
+  "source_pdf": "العربية_بين_يديك_Al_Arabiyyah_Bayna_Yadayk_Book_2_Part_2_PDFDrive.pdf",
+  "source_type": "scanned_pdf",
+  "toc_pdf_page": 4,
+  "page_mapping": {
+    "rule": "printed_page ~= pdf_page + 206",
+    "confidence": "medium"
+  },
+  "units": [
+    {
+      "unit_number": 9,
+      "unit_title": "العالم قرية صغيرة",
+      "printed_pages": {
+        "start": 231,
+        "end": 251
+      },
+      "estimated_pdf_pages": {
+        "start": 25,
+        "end": 45
+      },
+      "lessons": [
+        {
+          "unit_lesson_position": 1,
+          "textbook_lesson_number": 105,
+          "title": "الشبكة الدولية",
+          "printed_pages": {
+            "start": 232,
+            "end": 233
+          },
+          "estimated_pdf_pages": {
+            "start": 26,
+            "end": 27
+          }
+        },
+        {
+          "unit_lesson_position": 2,
+          "textbook_lesson_number": 106,
+          "title": "أصوات",
+          "printed_pages": {
+            "start": 234,
+            "end": 234
+          },
+          "estimated_pdf_pages": {
+            "start": 28,
+            "end": 28
+          }
+        },
+        {
+          "unit_lesson_position": 3,
+          "textbook_lesson_number": 107,
+          "title": "بناء فعل الأمر",
+          "printed_pages": {
+            "start": 235,
+            "end": 235
+          },
+          "estimated_pdf_pages": {
+            "start": 29,
+            "end": 29
+          }
+        },
+        {
+          "unit_lesson_position": 4,
+          "textbook_lesson_number": 108,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 236,
+            "end": 236
+          },
+          "estimated_pdf_pages": {
+            "start": 30,
+            "end": 30
+          }
+        },
+        {
+          "unit_lesson_position": 5,
+          "textbook_lesson_number": 109,
+          "title": "وسائل النقل والاتصال قديما وحديثا",
+          "printed_pages": {
+            "start": 237,
+            "end": 238
+          },
+          "estimated_pdf_pages": {
+            "start": 31,
+            "end": 32
+          }
+        },
+        {
+          "unit_lesson_position": 6,
+          "textbook_lesson_number": 110,
+          "title": "بناء الفعل الماضي",
+          "printed_pages": {
+            "start": 239,
+            "end": 240
+          },
+          "estimated_pdf_pages": {
+            "start": 33,
+            "end": 34
+          }
+        },
+        {
+          "unit_lesson_position": 7,
+          "textbook_lesson_number": 111,
+          "title": "ندوة عن العولمة",
+          "printed_pages": {
+            "start": 241,
+            "end": 242
+          },
+          "estimated_pdf_pages": {
+            "start": 35,
+            "end": 36
+          }
+        },
+        {
+          "unit_lesson_position": 8,
+          "textbook_lesson_number": 112,
+          "title": "علامات الإعراب الأصلية",
+          "printed_pages": {
+            "start": 243,
+            "end": 243
+          },
+          "estimated_pdf_pages": {
+            "start": 37,
+            "end": 37
+          }
+        },
+        {
+          "unit_lesson_position": 9,
+          "textbook_lesson_number": 113,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 244,
+            "end": 244
+          },
+          "estimated_pdf_pages": {
+            "start": 38,
+            "end": 38
+          }
+        },
+        {
+          "unit_lesson_position": 10,
+          "textbook_lesson_number": 114,
+          "title": "دول الشمال ودول الجنوب",
+          "printed_pages": {
+            "start": 245,
+            "end": 246
+          },
+          "estimated_pdf_pages": {
+            "start": 39,
+            "end": 40
+          }
+        },
+        {
+          "unit_lesson_position": 11,
+          "textbook_lesson_number": 115,
+          "title": "إعراب الفعل المضارع",
+          "printed_pages": {
+            "start": 247,
+            "end": 248
+          },
+          "estimated_pdf_pages": {
+            "start": 41,
+            "end": 42
+          }
+        },
+        {
+          "unit_lesson_position": 12,
+          "textbook_lesson_number": 116,
+          "title": "تعبير موجّه",
+          "printed_pages": {
+            "start": 249,
+            "end": 250
+          },
+          "estimated_pdf_pages": {
+            "start": 43,
+            "end": 44
+          }
+        },
+        {
+          "unit_lesson_position": 13,
+          "textbook_lesson_number": 117,
+          "title": "الخط والإملاء",
+          "printed_pages": {
+            "start": 251,
+            "end": 251
+          },
+          "estimated_pdf_pages": {
+            "start": 45,
+            "end": 45
+          }
+        }
+      ]
+    },
+    {
+      "unit_number": 10,
+      "unit_title": "النظافة",
+      "printed_pages": {
+        "start": 253,
+        "end": 273
+      },
+      "estimated_pdf_pages": {
+        "start": 47,
+        "end": 67
+      },
+      "lessons": [
+        {
+          "unit_lesson_position": 1,
+          "textbook_lesson_number": 118,
+          "title": "المسلم يهتم بالنظافة",
+          "printed_pages": {
+            "start": 254,
+            "end": 255
+          },
+          "estimated_pdf_pages": {
+            "start": 48,
+            "end": 49
+          }
+        },
+        {
+          "unit_lesson_position": 2,
+          "textbook_lesson_number": 119,
+          "title": "أصوات",
+          "printed_pages": {
+            "start": 256,
+            "end": 256
+          },
+          "estimated_pdf_pages": {
+            "start": 50,
+            "end": 50
+          }
+        },
+        {
+          "unit_lesson_position": 3,
+          "textbook_lesson_number": 120,
+          "title": "الاسم الموصول",
+          "printed_pages": {
+            "start": 257,
+            "end": 257
+          },
+          "estimated_pdf_pages": {
+            "start": 51,
+            "end": 51
+          }
+        },
+        {
+          "unit_lesson_position": 4,
+          "textbook_lesson_number": 121,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 258,
+            "end": 258
+          },
+          "estimated_pdf_pages": {
+            "start": 52,
+            "end": 52
+          }
+        },
+        {
+          "unit_lesson_position": 5,
+          "textbook_lesson_number": 122,
+          "title": "الإسلام والطهارة",
+          "printed_pages": {
+            "start": 259,
+            "end": 260
+          },
+          "estimated_pdf_pages": {
+            "start": 53,
+            "end": 54
+          }
+        },
+        {
+          "unit_lesson_position": 6,
+          "textbook_lesson_number": 123,
+          "title": "المثنى",
+          "printed_pages": {
+            "start": 261,
+            "end": 262
+          },
+          "estimated_pdf_pages": {
+            "start": 55,
+            "end": 56
+          }
+        },
+        {
+          "unit_lesson_position": 7,
+          "textbook_lesson_number": 124,
+          "title": "الأكلات السريعة",
+          "printed_pages": {
+            "start": 263,
+            "end": 264
+          },
+          "estimated_pdf_pages": {
+            "start": 57,
+            "end": 58
+          }
+        },
+        {
+          "unit_lesson_position": 8,
+          "textbook_lesson_number": 125,
+          "title": "أدوات الاستفهام",
+          "printed_pages": {
+            "start": 265,
+            "end": 265
+          },
+          "estimated_pdf_pages": {
+            "start": 59,
+            "end": 59
+          }
+        },
+        {
+          "unit_lesson_position": 9,
+          "textbook_lesson_number": 126,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 266,
+            "end": 266
+          },
+          "estimated_pdf_pages": {
+            "start": 60,
+            "end": 60
+          }
+        },
+        {
+          "unit_lesson_position": 10,
+          "textbook_lesson_number": 127,
+          "title": "نظافة البيئة",
+          "printed_pages": {
+            "start": 267,
+            "end": 268
+          },
+          "estimated_pdf_pages": {
+            "start": 61,
+            "end": 62
+          }
+        },
+        {
+          "unit_lesson_position": 11,
+          "textbook_lesson_number": 128,
+          "title": "حذف نون المثنى وجمع المذكر السالم عند الإضافة",
+          "printed_pages": {
+            "start": 269,
+            "end": 270
+          },
+          "estimated_pdf_pages": {
+            "start": 63,
+            "end": 64
+          }
+        },
+        {
+          "unit_lesson_position": 12,
+          "textbook_lesson_number": 129,
+          "title": "تعبير موجّه",
+          "printed_pages": {
+            "start": 271,
+            "end": 272
+          },
+          "estimated_pdf_pages": {
+            "start": 65,
+            "end": 66
+          }
+        },
+        {
+          "unit_lesson_position": 13,
+          "textbook_lesson_number": 130,
+          "title": "الخط والإملاء",
+          "printed_pages": {
+            "start": 273,
+            "end": 273
+          },
+          "estimated_pdf_pages": {
+            "start": 67,
+            "end": 67
+          }
+        }
+      ]
+    },
+    {
+      "unit_number": 11,
+      "unit_title": "الإسلام",
+      "printed_pages": {
+        "start": 279,
+        "end": 299
+      },
+      "estimated_pdf_pages": {
+        "start": 73,
+        "end": 93
+      },
+      "lessons": [
+        {
+          "unit_lesson_position": 1,
+          "textbook_lesson_number": 131,
+          "title": "كيف نفهم الإسلام فهما صحيحا؟",
+          "printed_pages": {
+            "start": 280,
+            "end": 281
+          },
+          "estimated_pdf_pages": {
+            "start": 74,
+            "end": 75
+          }
+        },
+        {
+          "unit_lesson_position": 2,
+          "textbook_lesson_number": 132,
+          "title": "أصوات",
+          "printed_pages": {
+            "start": 282,
+            "end": 282
+          },
+          "estimated_pdf_pages": {
+            "start": 76,
+            "end": 76
+          }
+        },
+        {
+          "unit_lesson_position": 3,
+          "textbook_lesson_number": 133,
+          "title": "الحروف الصحيحة والمعتلة",
+          "printed_pages": {
+            "start": 283,
+            "end": 283
+          },
+          "estimated_pdf_pages": {
+            "start": 77,
+            "end": 77
+          }
+        },
+        {
+          "unit_lesson_position": 4,
+          "textbook_lesson_number": 134,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 284,
+            "end": 284
+          },
+          "estimated_pdf_pages": {
+            "start": 78,
+            "end": 78
+          }
+        },
+        {
+          "unit_lesson_position": 5,
+          "textbook_lesson_number": 135,
+          "title": "حقيقة الإسلام",
+          "printed_pages": {
+            "start": 285,
+            "end": 286
+          },
+          "estimated_pdf_pages": {
+            "start": 79,
+            "end": 80
+          }
+        },
+        {
+          "unit_lesson_position": 6,
+          "textbook_lesson_number": 136,
+          "title": "جمع التكسير",
+          "printed_pages": {
+            "start": 287,
+            "end": 288
+          },
+          "estimated_pdf_pages": {
+            "start": 81,
+            "end": 82
+          }
+        },
+        {
+          "unit_lesson_position": 7,
+          "textbook_lesson_number": 137,
+          "title": "لماذا أسلم كارلس؟",
+          "printed_pages": {
+            "start": 289,
+            "end": 290
+          },
+          "estimated_pdf_pages": {
+            "start": 83,
+            "end": 84
+          }
+        },
+        {
+          "unit_lesson_position": 8,
+          "textbook_lesson_number": 138,
+          "title": "إعراب جمع المؤنث السالم",
+          "printed_pages": {
+            "start": 291,
+            "end": 291
+          },
+          "estimated_pdf_pages": {
+            "start": 85,
+            "end": 85
+          }
+        },
+        {
+          "unit_lesson_position": 9,
+          "textbook_lesson_number": 139,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 292,
+            "end": 292
+          },
+          "estimated_pdf_pages": {
+            "start": 86,
+            "end": 86
+          }
+        },
+        {
+          "unit_lesson_position": 10,
+          "textbook_lesson_number": 140,
+          "title": "أركان الإسلام الخمسة",
+          "printed_pages": {
+            "start": 293,
+            "end": 294
+          },
+          "estimated_pdf_pages": {
+            "start": 87,
+            "end": 88
+          }
+        },
+        {
+          "unit_lesson_position": 11,
+          "textbook_lesson_number": 141,
+          "title": "تمييز الأعداد من 3 إلى 10",
+          "printed_pages": {
+            "start": 295,
+            "end": 296
+          },
+          "estimated_pdf_pages": {
+            "start": 89,
+            "end": 90
+          }
+        },
+        {
+          "unit_lesson_position": 12,
+          "textbook_lesson_number": 142,
+          "title": "تعبير موجّه",
+          "printed_pages": {
+            "start": 297,
+            "end": 298
+          },
+          "estimated_pdf_pages": {
+            "start": 91,
+            "end": 92
+          }
+        },
+        {
+          "unit_lesson_position": 13,
+          "textbook_lesson_number": 143,
+          "title": "الخط والإملاء",
+          "printed_pages": {
+            "start": 299,
+            "end": 299
+          },
+          "estimated_pdf_pages": {
+            "start": 93,
+            "end": 93
+          }
+        }
+      ]
+    },
+    {
+      "unit_number": 12,
+      "unit_title": "الشباب",
+      "printed_pages": {
+        "start": 301,
+        "end": 321
+      },
+      "estimated_pdf_pages": {
+        "start": 95,
+        "end": 115
+      },
+      "lessons": [
+        {
+          "unit_lesson_position": 1,
+          "textbook_lesson_number": 144,
+          "title": "مرحلة المراهقة",
+          "printed_pages": {
+            "start": 302,
+            "end": 303
+          },
+          "estimated_pdf_pages": {
+            "start": 96,
+            "end": 97
+          }
+        },
+        {
+          "unit_lesson_position": 2,
+          "textbook_lesson_number": 145,
+          "title": "أصوات",
+          "printed_pages": {
+            "start": 304,
+            "end": 304
+          },
+          "estimated_pdf_pages": {
+            "start": 98,
+            "end": 98
+          }
+        },
+        {
+          "unit_lesson_position": 3,
+          "textbook_lesson_number": 146,
+          "title": "جزم الفعل المضارع المعتل الآخر",
+          "printed_pages": {
+            "start": 305,
+            "end": 305
+          },
+          "estimated_pdf_pages": {
+            "start": 99,
+            "end": 99
+          }
+        },
+        {
+          "unit_lesson_position": 4,
+          "textbook_lesson_number": 147,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 306,
+            "end": 306
+          },
+          "estimated_pdf_pages": {
+            "start": 100,
+            "end": 100
+          }
+        },
+        {
+          "unit_lesson_position": 5,
+          "textbook_lesson_number": 148,
+          "title": "مرحلة الشباب",
+          "printed_pages": {
+            "start": 307,
+            "end": 308
+          },
+          "estimated_pdf_pages": {
+            "start": 101,
+            "end": 102
+          }
+        },
+        {
+          "unit_lesson_position": 6,
+          "textbook_lesson_number": 149,
+          "title": "النكرة والمعرفة",
+          "printed_pages": {
+            "start": 309,
+            "end": 310
+          },
+          "estimated_pdf_pages": {
+            "start": 103,
+            "end": 104
+          }
+        },
+        {
+          "unit_lesson_position": 7,
+          "textbook_lesson_number": 150,
+          "title": "العلاقة بين الآباء والأبناء",
+          "printed_pages": {
+            "start": 311,
+            "end": 312
+          },
+          "estimated_pdf_pages": {
+            "start": 105,
+            "end": 106
+          }
+        },
+        {
+          "unit_lesson_position": 8,
+          "textbook_lesson_number": 151,
+          "title": "إن وأن",
+          "printed_pages": {
+            "start": 313,
+            "end": 313
+          },
+          "estimated_pdf_pages": {
+            "start": 107,
+            "end": 107
+          }
+        },
+        {
+          "unit_lesson_position": 9,
+          "textbook_lesson_number": 152,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 314,
+            "end": 314
+          },
+          "estimated_pdf_pages": {
+            "start": 108,
+            "end": 108
+          }
+        },
+        {
+          "unit_lesson_position": 10,
+          "textbook_lesson_number": 153,
+          "title": "من مشكلات الشباب",
+          "printed_pages": {
+            "start": 315,
+            "end": 316
+          },
+          "estimated_pdf_pages": {
+            "start": 109,
+            "end": 110
+          }
+        },
+        {
+          "unit_lesson_position": 11,
+          "textbook_lesson_number": 154,
+          "title": "(4) ضمائر الجر المتصلة",
+          "printed_pages": {
+            "start": 317,
+            "end": 318
+          },
+          "estimated_pdf_pages": {
+            "start": 111,
+            "end": 112
+          }
+        },
+        {
+          "unit_lesson_position": 12,
+          "textbook_lesson_number": 155,
+          "title": "تعبير موجّه",
+          "printed_pages": {
+            "start": 319,
+            "end": 320
+          },
+          "estimated_pdf_pages": {
+            "start": 113,
+            "end": 114
+          }
+        },
+        {
+          "unit_lesson_position": 13,
+          "textbook_lesson_number": 156,
+          "title": "الخط والإملاء",
+          "printed_pages": {
+            "start": 321,
+            "end": 321
+          },
+          "estimated_pdf_pages": {
+            "start": 115,
+            "end": 115
+          }
+        }
+      ]
+    },
+    {
+      "unit_number": 13,
+      "unit_title": "العالم الإسلامي",
+      "printed_pages": {
+        "start": 327,
+        "end": 347
+      },
+      "estimated_pdf_pages": {
+        "start": 121,
+        "end": 141
+      },
+      "lessons": [
+        {
+          "unit_lesson_position": 1,
+          "textbook_lesson_number": 157,
+          "title": "مسابقة إسلامية",
+          "printed_pages": {
+            "start": 328,
+            "end": 329
+          },
+          "estimated_pdf_pages": {
+            "start": 122,
+            "end": 123
+          }
+        },
+        {
+          "unit_lesson_position": 2,
+          "textbook_lesson_number": 158,
+          "title": "أصوات",
+          "printed_pages": {
+            "start": 330,
+            "end": 330
+          },
+          "estimated_pdf_pages": {
+            "start": 124,
+            "end": 124
+          }
+        },
+        {
+          "unit_lesson_position": 3,
+          "textbook_lesson_number": 159,
+          "title": "ظرف المكان",
+          "printed_pages": {
+            "start": 331,
+            "end": 331
+          },
+          "estimated_pdf_pages": {
+            "start": 125,
+            "end": 125
+          }
+        },
+        {
+          "unit_lesson_position": 4,
+          "textbook_lesson_number": 160,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 332,
+            "end": 332
+          },
+          "estimated_pdf_pages": {
+            "start": 126,
+            "end": 126
+          }
+        },
+        {
+          "unit_lesson_position": 5,
+          "textbook_lesson_number": 161,
+          "title": "ميزات العالم الإسلامي",
+          "printed_pages": {
+            "start": 333,
+            "end": 334
+          },
+          "estimated_pdf_pages": {
+            "start": 127,
+            "end": 128
+          }
+        },
+        {
+          "unit_lesson_position": 6,
+          "textbook_lesson_number": 162,
+          "title": "الفعل الصحيح والفعل المعتل",
+          "printed_pages": {
+            "start": 335,
+            "end": 336
+          },
+          "estimated_pdf_pages": {
+            "start": 129,
+            "end": 130
+          }
+        },
+        {
+          "unit_lesson_position": 7,
+          "textbook_lesson_number": 163,
+          "title": "أسباب ضعف المسلمين",
+          "printed_pages": {
+            "start": 337,
+            "end": 338
+          },
+          "estimated_pdf_pages": {
+            "start": 131,
+            "end": 132
+          }
+        },
+        {
+          "unit_lesson_position": 8,
+          "textbook_lesson_number": 164,
+          "title": "ظرف الزمان",
+          "printed_pages": {
+            "start": 339,
+            "end": 339
+          },
+          "estimated_pdf_pages": {
+            "start": 133,
+            "end": 133
+          }
+        },
+        {
+          "unit_lesson_position": 9,
+          "textbook_lesson_number": 165,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 340,
+            "end": 340
+          },
+          "estimated_pdf_pages": {
+            "start": 134,
+            "end": 134
+          }
+        },
+        {
+          "unit_lesson_position": 10,
+          "textbook_lesson_number": 166,
+          "title": "من الدول الإسلامية",
+          "printed_pages": {
+            "start": 341,
+            "end": 342
+          },
+          "estimated_pdf_pages": {
+            "start": 135,
+            "end": 136
+          }
+        },
+        {
+          "unit_lesson_position": 11,
+          "textbook_lesson_number": 167,
+          "title": "الأفعال الخمسة",
+          "printed_pages": {
+            "start": 343,
+            "end": 344
+          },
+          "estimated_pdf_pages": {
+            "start": 137,
+            "end": 138
+          }
+        },
+        {
+          "unit_lesson_position": 12,
+          "textbook_lesson_number": 168,
+          "title": "تعبير موجّه",
+          "printed_pages": {
+            "start": 345,
+            "end": 346
+          },
+          "estimated_pdf_pages": {
+            "start": 139,
+            "end": 140
+          }
+        },
+        {
+          "unit_lesson_position": 13,
+          "textbook_lesson_number": 169,
+          "title": "الخط والإملاء",
+          "printed_pages": {
+            "start": 347,
+            "end": 347
+          },
+          "estimated_pdf_pages": {
+            "start": 141,
+            "end": 141
+          }
+        }
+      ]
+    },
+    {
+      "unit_number": 14,
+      "unit_title": "الأمن",
+      "printed_pages": {
+        "start": 349,
+        "end": 369
+      },
+      "estimated_pdf_pages": {
+        "start": 143,
+        "end": 163
+      },
+      "lessons": [
+        {
+          "unit_lesson_position": 1,
+          "textbook_lesson_number": 170,
+          "title": "حادث سرقة",
+          "printed_pages": {
+            "start": 350,
+            "end": 351
+          },
+          "estimated_pdf_pages": {
+            "start": 144,
+            "end": 145
+          }
+        },
+        {
+          "unit_lesson_position": 2,
+          "textbook_lesson_number": 171,
+          "title": "أصوات",
+          "printed_pages": {
+            "start": 352,
+            "end": 352
+          },
+          "estimated_pdf_pages": {
+            "start": 146,
+            "end": 146
+          }
+        },
+        {
+          "unit_lesson_position": 3,
+          "textbook_lesson_number": 172,
+          "title": "تمييز الأعداد (11-90) (100،1000)",
+          "printed_pages": {
+            "start": 353,
+            "end": 353
+          },
+          "estimated_pdf_pages": {
+            "start": 147,
+            "end": 147
+          }
+        },
+        {
+          "unit_lesson_position": 4,
+          "textbook_lesson_number": 173,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 354,
+            "end": 354
+          },
+          "estimated_pdf_pages": {
+            "start": 148,
+            "end": 148
+          }
+        },
+        {
+          "unit_lesson_position": 5,
+          "textbook_lesson_number": 174,
+          "title": "الحرب والسلام",
+          "printed_pages": {
+            "start": 355,
+            "end": 356
+          },
+          "estimated_pdf_pages": {
+            "start": 149,
+            "end": 150
+          }
+        },
+        {
+          "unit_lesson_position": 6,
+          "textbook_lesson_number": 175,
+          "title": "النداء",
+          "printed_pages": {
+            "start": 357,
+            "end": 358
+          },
+          "estimated_pdf_pages": {
+            "start": 151,
+            "end": 152
+          }
+        },
+        {
+          "unit_lesson_position": 7,
+          "textbook_lesson_number": 176,
+          "title": "أسباب الجريمة",
+          "printed_pages": {
+            "start": 359,
+            "end": 360
+          },
+          "estimated_pdf_pages": {
+            "start": 153,
+            "end": 154
+          }
+        },
+        {
+          "unit_lesson_position": 8,
+          "textbook_lesson_number": 177,
+          "title": "الأسماء الخمسة",
+          "printed_pages": {
+            "start": 361,
+            "end": 361
+          },
+          "estimated_pdf_pages": {
+            "start": 155,
+            "end": 155
+          }
+        },
+        {
+          "unit_lesson_position": 9,
+          "textbook_lesson_number": 178,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 362,
+            "end": 362
+          },
+          "estimated_pdf_pages": {
+            "start": 156,
+            "end": 156
+          }
+        },
+        {
+          "unit_lesson_position": 10,
+          "textbook_lesson_number": 179,
+          "title": "أثر الأمن في الحياة",
+          "printed_pages": {
+            "start": 363,
+            "end": 364
+          },
+          "estimated_pdf_pages": {
+            "start": 157,
+            "end": 158
+          }
+        },
+        {
+          "unit_lesson_position": 11,
+          "textbook_lesson_number": 180,
+          "title": "الحال",
+          "printed_pages": {
+            "start": 365,
+            "end": 366
+          },
+          "estimated_pdf_pages": {
+            "start": 159,
+            "end": 160
+          }
+        },
+        {
+          "unit_lesson_position": 12,
+          "textbook_lesson_number": 181,
+          "title": "تعبير موجّه",
+          "printed_pages": {
+            "start": 367,
+            "end": 368
+          },
+          "estimated_pdf_pages": {
+            "start": 161,
+            "end": 162
+          }
+        },
+        {
+          "unit_lesson_position": 13,
+          "textbook_lesson_number": 182,
+          "title": "الخط والإملاء",
+          "printed_pages": {
+            "start": 369,
+            "end": 369
+          },
+          "estimated_pdf_pages": {
+            "start": 163,
+            "end": 163
+          }
+        }
+      ]
+    },
+    {
+      "unit_number": 15,
+      "unit_title": "التلوث",
+      "printed_pages": {
+        "start": 375,
+        "end": 395
+      },
+      "estimated_pdf_pages": {
+        "start": 169,
+        "end": 189
+      },
+      "lessons": [
+        {
+          "unit_lesson_position": 1,
+          "textbook_lesson_number": 183,
+          "title": "دفن النفايات",
+          "printed_pages": {
+            "start": 376,
+            "end": 377
+          },
+          "estimated_pdf_pages": {
+            "start": 170,
+            "end": 171
+          }
+        },
+        {
+          "unit_lesson_position": 2,
+          "textbook_lesson_number": 184,
+          "title": "أصوات",
+          "printed_pages": {
+            "start": 378,
+            "end": 378
+          },
+          "estimated_pdf_pages": {
+            "start": 172,
+            "end": 172
+          }
+        },
+        {
+          "unit_lesson_position": 3,
+          "textbook_lesson_number": 185,
+          "title": "فعل الأمر المعتل",
+          "printed_pages": {
+            "start": 379,
+            "end": 379
+          },
+          "estimated_pdf_pages": {
+            "start": 173,
+            "end": 173
+          }
+        },
+        {
+          "unit_lesson_position": 4,
+          "textbook_lesson_number": 186,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 380,
+            "end": 380
+          },
+          "estimated_pdf_pages": {
+            "start": 174,
+            "end": 174
+          }
+        },
+        {
+          "unit_lesson_position": 5,
+          "textbook_lesson_number": 187,
+          "title": "أنواع تلوث البيئة",
+          "printed_pages": {
+            "start": 381,
+            "end": 382
+          },
+          "estimated_pdf_pages": {
+            "start": 175,
+            "end": 176
+          }
+        },
+        {
+          "unit_lesson_position": 6,
+          "textbook_lesson_number": 188,
+          "title": "علامات الرفع في الأسماء والأفعال",
+          "printed_pages": {
+            "start": 383,
+            "end": 384
+          },
+          "estimated_pdf_pages": {
+            "start": 177,
+            "end": 178
+          }
+        },
+        {
+          "unit_lesson_position": 7,
+          "textbook_lesson_number": 189,
+          "title": "من يحمي البيئة ومن يفسدها؟",
+          "printed_pages": {
+            "start": 385,
+            "end": 386
+          },
+          "estimated_pdf_pages": {
+            "start": 179,
+            "end": 180
+          }
+        },
+        {
+          "unit_lesson_position": 8,
+          "textbook_lesson_number": 190,
+          "title": "علامات النصب في الأسماء والأفعال",
+          "printed_pages": {
+            "start": 387,
+            "end": 387
+          },
+          "estimated_pdf_pages": {
+            "start": 181,
+            "end": 181
+          }
+        },
+        {
+          "unit_lesson_position": 9,
+          "textbook_lesson_number": 191,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 388,
+            "end": 388
+          },
+          "estimated_pdf_pages": {
+            "start": 182,
+            "end": 182
+          }
+        },
+        {
+          "unit_lesson_position": 10,
+          "textbook_lesson_number": 192,
+          "title": "وسائل المحافظة على البيئة",
+          "printed_pages": {
+            "start": 389,
+            "end": 390
+          },
+          "estimated_pdf_pages": {
+            "start": 183,
+            "end": 184
+          }
+        },
+        {
+          "unit_lesson_position": 11,
+          "textbook_lesson_number": 193,
+          "title": "علامات جزم الفعل المضارع",
+          "printed_pages": {
+            "start": 391,
+            "end": 392
+          },
+          "estimated_pdf_pages": {
+            "start": 185,
+            "end": 186
+          }
+        },
+        {
+          "unit_lesson_position": 12,
+          "textbook_lesson_number": 194,
+          "title": "تعبير موجّه",
+          "printed_pages": {
+            "start": 393,
+            "end": 394
+          },
+          "estimated_pdf_pages": {
+            "start": 187,
+            "end": 188
+          }
+        },
+        {
+          "unit_lesson_position": 13,
+          "textbook_lesson_number": 195,
+          "title": "الخط والإملاء",
+          "printed_pages": {
+            "start": 395,
+            "end": 395
+          },
+          "estimated_pdf_pages": {
+            "start": 189,
+            "end": 189
+          }
+        }
+      ]
+    },
+    {
+      "unit_number": 16,
+      "unit_title": "الطاقة",
+      "printed_pages": {
+        "start": 397,
+        "end": 417
+      },
+      "estimated_pdf_pages": {
+        "start": 191,
+        "end": 211
+      },
+      "lessons": [
+        {
+          "unit_lesson_position": 1,
+          "textbook_lesson_number": 196,
+          "title": "فاتورة الكهرباء",
+          "printed_pages": {
+            "start": 398,
+            "end": 399
+          },
+          "estimated_pdf_pages": {
+            "start": 192,
+            "end": 193
+          }
+        },
+        {
+          "unit_lesson_position": 2,
+          "textbook_lesson_number": 197,
+          "title": "أصوات مراجعة",
+          "printed_pages": {
+            "start": 400,
+            "end": 400
+          },
+          "estimated_pdf_pages": {
+            "start": 194,
+            "end": 194
+          }
+        },
+        {
+          "unit_lesson_position": 3,
+          "textbook_lesson_number": 198,
+          "title": "علامات جر الاسم",
+          "printed_pages": {
+            "start": 401,
+            "end": 401
+          },
+          "estimated_pdf_pages": {
+            "start": 195,
+            "end": 195
+          }
+        },
+        {
+          "unit_lesson_position": 4,
+          "textbook_lesson_number": 199,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 402,
+            "end": 402
+          },
+          "estimated_pdf_pages": {
+            "start": 196,
+            "end": 196
+          }
+        },
+        {
+          "unit_lesson_position": 5,
+          "textbook_lesson_number": 200,
+          "title": "النفط",
+          "printed_pages": {
+            "start": 403,
+            "end": 404
+          },
+          "estimated_pdf_pages": {
+            "start": 197,
+            "end": 198
+          }
+        },
+        {
+          "unit_lesson_position": 6,
+          "textbook_lesson_number": 201,
+          "title": "مراجعة نحوية (1)",
+          "printed_pages": {
+            "start": 405,
+            "end": 406
+          },
+          "estimated_pdf_pages": {
+            "start": 199,
+            "end": 200
+          }
+        },
+        {
+          "unit_lesson_position": 7,
+          "textbook_lesson_number": 202,
+          "title": "أزمة النفط",
+          "printed_pages": {
+            "start": 407,
+            "end": 408
+          },
+          "estimated_pdf_pages": {
+            "start": 201,
+            "end": 202
+          }
+        },
+        {
+          "unit_lesson_position": 8,
+          "textbook_lesson_number": 203,
+          "title": "مراجعة نحوية (2)",
+          "printed_pages": {
+            "start": 409,
+            "end": 409
+          },
+          "estimated_pdf_pages": {
+            "start": 203,
+            "end": 203
+          }
+        },
+        {
+          "unit_lesson_position": 9,
+          "textbook_lesson_number": 204,
+          "title": "فهم المسموع",
+          "printed_pages": {
+            "start": 410,
+            "end": 410
+          },
+          "estimated_pdf_pages": {
+            "start": 204,
+            "end": 204
+          }
+        },
+        {
+          "unit_lesson_position": 10,
+          "textbook_lesson_number": 205,
+          "title": "الطاقة الشمسية",
+          "printed_pages": {
+            "start": 411,
+            "end": 412
+          },
+          "estimated_pdf_pages": {
+            "start": 205,
+            "end": 206
+          }
+        },
+        {
+          "unit_lesson_position": 11,
+          "textbook_lesson_number": 206,
+          "title": "مراجعة نحوية (3)",
+          "printed_pages": {
+            "start": 413,
+            "end": 414
+          },
+          "estimated_pdf_pages": {
+            "start": 207,
+            "end": 208
+          }
+        },
+        {
+          "unit_lesson_position": 12,
+          "textbook_lesson_number": 207,
+          "title": "تعبير موجّه",
+          "printed_pages": {
+            "start": 415,
+            "end": 416
+          },
+          "estimated_pdf_pages": {
+            "start": 209,
+            "end": 210
+          }
+        },
+        {
+          "unit_lesson_position": 13,
+          "textbook_lesson_number": 208,
+          "title": "الخط والإملاء",
+          "printed_pages": {
+            "start": 417,
+            "end": 417
+          },
+          "estimated_pdf_pages": {
+            "start": 211,
+            "end": 211
+          }
+        }
+      ]
+    }
+  ]
+}

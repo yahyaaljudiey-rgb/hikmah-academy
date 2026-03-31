@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Level Details</title>
+    <link rel="stylesheet" href="/static/ui.css">
+    <style>
+      .copy-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+      .copy-value { font-family: monospace; word-break: break-all; }
+      .copy-msg { color: #0f766e; font-size: 13px; margin-left: 6px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <a class="pill" href="/levels">Back to Levels</a>
+        <a class="pill" href="/levels/{{ level.id }}/attendance-report">Attendance Report</a>
+      </div>
+
+      <h1 class="title">Level Details</h1>
+
+      <div class="panel">
+        <p><strong>Level Name:</strong> {{ display_level_name }}</p>
+        <p><strong>Teacher:</strong> {{ level.teacher.full_name if level.teacher else '' }}</p>
+        <p>
+          {% if level.zoom_link %}
+          <a class="btn-link" href="{{ level.zoom_link }}" target="_blank" rel="noopener noreferrer">Join Zoom</a>
+          {% else %}
+          <strong>Join Zoom:</strong> -
+          {% endif %}
+        </p>
+
+        <h3>Zoom Details (Manual Entry)</h3>
+
+        <p>
+          <strong>Zoom Link:</strong>
+          {% if level.zoom_link %}
+          <span class="copy-value">{{ level.zoom_link }}</span>
+          {% else %}
+          -
+          {% endif %}
+        </p>
+
+        <div class="copy-row">
+          <strong>Zoom Email:</strong>
+          <span id="zoom-email" class="copy-value">{{ level.zoom_email or '-' }}</span>
+          {% if level.zoom_email %}
+          <button class="secondary" type="button" onclick="copyField('zoom-email')">Copy</button>
+          {% endif %}
+        </div>
+
+        <div class="copy-row">
+          <strong>Zoom Meeting ID:</strong>
+          <span id="zoom-id" class="copy-value">{{ level.zoom_meeting_id or '-' }}</span>
+          {% if level.zoom_meeting_id %}
+          <button class="secondary" type="button" onclick="copyField('zoom-id')">Copy</button>
+          {% endif %}
+        </div>
+
+        <div class="copy-row">
+          <strong>Zoom Passcode:</strong>
+          <span id="zoom-pass" class="copy-value">{{ level.zoom_passcode or '-' }}</span>
+          {% if level.zoom_passcode %}
+          <button class="secondary" type="button" onclick="copyField('zoom-pass')">Copy</button>
+          {% endif %}
+          <span id="copy-msg" class="copy-msg"></span>
+        </div>
+      </div>
+
+      <h2>Students ({{ students_count }})</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Student Code</th>
+              <th>Student Name</th>
+              <th>Status</th>
+              <th>Student Year</th>
+              <th>Report</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for student in students %}
+            <tr>
+              <td>{{ student.student_code }}</td>
+              <td>{{ student.full_name }}</td>
+              <td>{{ student.status or '' }}</td>
+              <td>{{ student.student_year or '' }}</td>
+              <td><a href="/students/{{ student.id }}/report">Report</a></td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5">No students found in this level.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      function showCopyMessage(text) {
+        const msg = document.getElementById("copy-msg");
+        if (!msg) return;
+        msg.textContent = text;
+        setTimeout(() => { msg.textContent = ""; }, 1400);
+      }
+
+      function copyWithFallback(text) {
+        const temp = document.createElement("textarea");
+        temp.value = text;
+        temp.setAttribute("readonly", "");
+        temp.style.position = "absolute";
+        temp.style.left = "-9999px";
+        document.body.appendChild(temp);
+        temp.select();
+        temp.setSelectionRange(0, temp.value.length);
+        let ok = false;
+        try {
+          ok = document.execCommand("copy");
+        } catch (e) {
+          ok = false;
+        }
+        document.body.removeChild(temp);
+        return ok;
+      }
+
+      function copyField(elementId) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        const text = (el.textContent || "").trim();
+        if (!text || text === "-") return;
+
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text)
+            .then(() => showCopyMessage("Copied"))
+            .catch(() => {
+              const ok = copyWithFallback(text);
+              showCopyMessage(ok ? "Copied" : "Copy failed");
+            });
+        } else {
+          const ok = copyWithFallback(text);
+          showCopyMessage(ok ? "Copied" : "Copy failed");
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ 'دخول المعلم' if current_lang == 'ar' else 'Teacher Login' }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              hikmah: {
+                DEFAULT: '#4a99ad',
+                soft: '#eef7f9',
+                deep: '#2f6f80',
+                rose: '#d86a8b'
+              }
+            },
+            boxShadow: {
+              soft: '0 18px 45px rgba(15, 23, 42, 0.08)'
+            }
+          }
+        }
+      };
+    </script>
+    <link rel="stylesheet" href="{{ static_asset('ui.css') }}">
+  </head>
+  <body class="bg-slate-100 text-slate-800">
+    {% set is_ar = current_lang == 'ar' %}
+    <div class="min-h-screen bg-[radial-gradient(circle_at_top_right,_rgba(74,153,173,0.18),_transparent_28%),radial-gradient(circle_at_top_left,_rgba(216,106,139,0.10),_transparent_20%),linear-gradient(180deg,_#f8fafc_0%,_#f3f5f7_100%)]">
+      <div class="mx-auto flex min-h-screen max-w-6xl items-center px-4 py-8 sm:px-6 lg:px-8">
+        <div class="absolute top-6 {% if is_ar %}left-6{% else %}right-6{% endif %} z-10 inline-flex rounded-2xl border border-slate-200 bg-white p-1 shadow-soft">
+          <a href="{{ with_lang('en') }}" class="rounded-xl px-4 py-2 text-sm font-semibold transition {% if current_lang == 'en' %}bg-[#4a99ad] text-white{% else %}text-slate-600 hover:bg-slate-50{% endif %}">English</a>
+          <a href="{{ with_lang('ar') }}" class="rounded-xl px-4 py-2 text-sm font-semibold transition {% if current_lang == 'ar' %}bg-[#4a99ad] text-white{% else %}text-slate-600 hover:bg-slate-50{% endif %}">العربية</a>
+        </div>
+        <div class="grid w-full gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+          <section class="overflow-hidden rounded-[30px] border border-white/70 bg-white/90 p-6 shadow-soft backdrop-blur sm:p-8 lg:p-10">
+            <div class="mb-6 flex items-center gap-4">
+              <div class="flex h-20 w-20 items-center justify-center rounded-[24px] bg-gradient-to-br from-white via-hikmah-soft to-white p-3 shadow-md ring-1 ring-slate-100">
+                <img src="{{ url_for('static', filename='academy-logo.jpg') }}" alt="Hikmah Academy logo" class="max-h-full max-w-full object-contain">
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-hikmah-deep">Hikmah Academy</p>
+                <h1 class="text-3xl font-black text-slate-900 sm:text-4xl">{{ 'بوابة المعلم' if is_ar else 'Teacher Gateway' }}</h1>
+              </div>
+            </div>
+
+            <div class="mb-5 inline-flex items-center gap-2 rounded-full bg-hikmah-soft px-4 py-2 text-sm font-semibold text-hikmah-deep">
+              <span class="inline-flex h-2.5 w-2.5 rounded-full bg-hikmah"></span>
+              {{ 'دخول يومي واضح وسريع' if is_ar else 'Clear Daily Access' }}
+            </div>
+
+            <p class="max-w-2xl text-sm leading-8 text-slate-600 sm:text-base">
+              {{ 'ادخل إلى فصولك، سجّل الحضور، تابع الخطة الدراسية، وارفع التسجيلات والواجبات من مساحة عمل موحدة ومنظمة.' if is_ar else 'Open your classes, mark attendance, follow the syllabus plan, and manage recordings and homework from one organized workspace.' }}
+            </p>
+
+            <div class="mt-8 rounded-[26px] border border-hikmah/10 bg-hikmah-soft/70 p-5">
+              <h3 class="text-lg font-black text-slate-900">{{ 'خطوات الدخول' if is_ar else 'How to Sign In' }}</h3>
+              <div class="mt-4 grid gap-3 sm:grid-cols-3">
+                <div class="rounded-2xl bg-white px-4 py-4 shadow-sm ring-1 ring-slate-100">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-hikmah-deep">{{ 'الخطوة 1' if is_ar else 'Step 1' }}</p>
+                  <p class="mt-2 text-sm font-semibold text-slate-800">{{ 'اختر اسمك من القائمة' if is_ar else 'Choose your name from the list' }}</p>
+                </div>
+                <div class="rounded-2xl bg-white px-4 py-4 shadow-sm ring-1 ring-slate-100">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-hikmah-deep">{{ 'الخطوة 2' if is_ar else 'Step 2' }}</p>
+                  <p class="mt-2 text-sm font-semibold text-slate-800">{{ 'أدخل كود المعلمين إذا كان مطلوباً' if is_ar else 'Enter the teacher code if required' }}</p>
+                </div>
+                <div class="rounded-2xl bg-white px-4 py-4 shadow-sm ring-1 ring-slate-100">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-hikmah-deep">{{ 'الخطوة 3' if is_ar else 'Step 3' }}</p>
+                  <p class="mt-2 text-sm font-semibold text-slate-800">{{ 'افتح لوحة المعلم وابدأ مهامك اليومية' if is_ar else 'Open your dashboard and start the day' }}</p>
+                </div>
+              </div>
+              {% if teacher_code_required %}
+              <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
+                {{ 'هذا الرابط يتطلب كود المعلمين قبل الدخول.' if is_ar else 'This shared link requires the teacher access code before sign in.' }}
+              </div>
+              {% endif %}
+            </div>
+          </section>
+
+          <section class="rounded-[30px] border border-white/70 bg-white/95 p-6 shadow-soft backdrop-blur sm:p-8 lg:p-10">
+            <div class="mb-6">
+              <p class="text-sm font-semibold text-hikmah-deep">{{ 'دخول المعلم' if is_ar else 'Teacher Access' }}</p>
+              <h2 class="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">{{ 'تسجيل دخول المعلم' if is_ar else 'Teacher Login' }}</h2>
+              <p class="mt-3 text-sm leading-7 text-slate-600">{{ 'اختر اسمك أولاً، ثم أكمل الدخول إلى لوحة المعلم.' if is_ar else 'Select your name first, then continue to your teacher workspace.' }}</p>
+            </div>
+
+            {% if error %}
+            <div class="notice error">{{ error }}</div>
+            {% endif %}
+
+            <form method="post" action="/teacher/login" class="space-y-5">
+              <input type="hidden" name="next" value="{{ next_url }}">
+
+              {% if teacher_code_required %}
+              <div class="space-y-2">
+                <label for="teacher_access_code" class="block text-sm font-bold text-slate-700">{{ 'كود المعلمين' if is_ar else 'Teacher Access Code' }}</label>
+                <input id="teacher_access_code" type="password" name="teacher_access_code" placeholder="{{ 'أدخل كود المعلمين' if is_ar else 'Enter teacher access code' }}" required class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base outline-none transition focus:border-hikmah focus:bg-white focus:ring-4 focus:ring-hikmah/10">
+              </div>
+              {% endif %}
+
+              <div class="space-y-2">
+                <label for="teacher_id" class="block text-sm font-bold text-slate-700">{{ 'اسم المعلم' if is_ar else 'Teacher Name' }}</label>
+                <select id="teacher_id" name="teacher_id" required class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base outline-none transition focus:border-hikmah focus:bg-white focus:ring-4 focus:ring-hikmah/10">
+                  <option value="">{{ 'اختر المعلم' if is_ar else 'Select Teacher' }}</option>
+                  {% for teacher in teachers %}
+                  <option value="{{ teacher.id }}">{{ teacher.full_name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="flex flex-col gap-3 pt-2 sm:flex-row">
+                <button type="submit" class="inline-flex min-h-12 flex-1 items-center justify-center rounded-2xl bg-[#4a99ad] px-5 py-3 text-base font-bold text-white shadow-lg shadow-hikmah/20 transition duration-300 hover:scale-[1.01] hover:bg-[#3f889b]">
+                  {{ 'دخول لوحة المعلم' if is_ar else 'Open Teacher Dashboard' }}
+                </button>
+                <a class="inline-flex min-h-12 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-base font-bold text-slate-700 transition hover:border-hikmah/30 hover:text-hikmah" href="/">
+                  {{ 'رجوع' if is_ar else 'Back' }}
+                </a>
+              </div>
+            </form>
+          </section>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

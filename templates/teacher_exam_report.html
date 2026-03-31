@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Teacher Exam Report</title>
+    <link rel="stylesheet" href="/static/ui.css">
+  </head>
+  <body>
+    <div class="container" style="max-width:900px;">
+      <div class="topbar">
+        <a class="pill" href="/teacher/levels/{{ level.id }}">Back To Workspace</a>
+        <a class="pill" href="/teacher/students/{{ student.id }}/exam-report.pdf?exam_title={{ exam_summary.exam_title|urlencode }}">Download PDF</a>
+      </div>
+
+      <div class="exam-sheet">
+        <div class="exam-sheet-header">
+          <div>
+            <h4>{{ exam_summary.exam_title }}</h4>
+            <p>{{ exam_summary.exam_date or '-' }}</p>
+            <p><strong>{{ student.full_name }}</strong> • {{ student.student_code }} • {{ level.name }}</p>
+          </div>
+          <div class="exam-sheet-metrics">
+            <div class="metric-chip">
+              <span>Total</span>
+              <strong>
+                {% if exam_summary.computed_total is not none %}
+                  {{ exam_summary.computed_total }}{% if exam_summary.computed_max_total is not none %} / {{ exam_summary.computed_max_total }}{% endif %}
+                {% else %}
+                  -
+                {% endif %}
+              </strong>
+            </div>
+            <div class="metric-chip">
+              <span>Percentage</span>
+              <strong>{% if exam_summary.computed_percentage is not none %}{{ exam_summary.computed_percentage }}%{% else %}-{% endif %}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>Grade</span>
+              <strong>{{ exam_summary.computed_grade }}</strong>
+            </div>
+          </div>
+        </div>
+        {% if exam_summary.shared_note %}
+        <p><strong>Notes:</strong> {{ exam_summary.shared_note }}</p>
+        {% endif %}
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Branch</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for result in exam_summary.components %}
+              <tr>
+                <td>{{ result.subject_name }}</td>
+                <td>{{ result.score_value }}{% if result.max_score %} / {{ result.max_score }}{% endif %}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="2">No branch details available yet.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tr('reports_center') }}</title>
+    <link rel="stylesheet" href="{{ static_asset('ui.css') }}">
+  </head>
+  <body>
+    <div class="container reports-shell">
+      <div class="topbar reports-topbar">
+        <a class="pill" href="/admin/dashboard">{{ tr('supervisor_dashboard') }}</a>
+        <span class="pill">{{ tr('language') }}:</span>
+        <a class="pill" href="{{ with_lang('en') }}">EN</a>
+        <a class="pill" href="{{ with_lang('ar') }}">AR</a>
+      </div>
+
+      <section class="reports-hero">
+        <div class="reports-hero-copy">
+          <span class="reports-kicker">{{ tr('reports_center') }}</span>
+          <h1 class="title reports-title">{{ tr('reports_center') }}</h1>
+          <p class="subtitle reports-subtitle">{{ tr('executive_reports_exports') }}</p>
+        </div>
+        <div class="reports-hero-metrics">
+          <article class="reports-metric-card is-teal">
+            <span>01</span>
+            <strong>{{ tr('teachers_master_report') }}</strong>
+            <small>{{ tr('teachers_master_excel') }} / {{ tr('teachers_master_pdf') }}</small>
+          </article>
+          <article class="reports-metric-card is-blue">
+            <span>02</span>
+            <strong>{{ tr('level_full_report') }}</strong>
+            <small>{{ tr('level_full_excel') }} / {{ tr('level_full_pdf') }}</small>
+          </article>
+          <article class="reports-metric-card is-sand">
+            <span>03</span>
+            <strong>{{ tr('student_full_report') }}</strong>
+            <small>{{ tr('student_full_excel') }} / {{ tr('student_full_pdf') }}</small>
+          </article>
+        </div>
+      </section>
+
+      <div class="reports-grid">
+        <div class="panel reports-card">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('teacher_monthly_report') }}</div>
+              <h3>{{ tr('teachers_master_report') }}</h3>
+            </div>
+            <div class="feature-card-actions reports-actions">
+              <a class="btn-link reports-btn" href="/admin/reports/teachers.xlsx">{{ tr('teachers_master_excel') }}</a>
+              <a class="btn-link reports-btn secondary" href="/admin/reports/teachers.pdf">{{ tr('teachers_master_pdf') }}</a>
+            </div>
+          </div>
+          <p class="subtitle" style="margin-top:0;">{{ tr('download_unified_teacher_sheet') }}</p>
+        </div>
+
+        <div class="panel reports-card">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('level') }}</div>
+              <h3>{{ tr('level_full_report') }}</h3>
+            </div>
+          </div>
+          <p class="subtitle" style="margin-top:0;">{{ tr('select_level_to_export') }}</p>
+          <form class="inline-form" method="get" action="/admin/reports">
+            <select name="level_id" required>
+              <option value="">{{ tr('select_a_level') }}</option>
+              {% for level in levels %}
+              <option value="{{ level.id }}" {% if selected_level_id == level.id|string %}selected{% endif %}>{{ level.name }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit">{{ tr('apply') }}</button>
+            {% if selected_level_id %}
+            <a class="btn-link reports-btn" href="/admin/levels/{{ selected_level_id }}/follow-up.xlsx">{{ tr('export_selected_level_excel') }}</a>
+            <a class="btn-link reports-btn secondary" href="/admin/levels/{{ selected_level_id }}/follow-up.pdf">{{ tr('level_full_pdf') }}</a>
+            {% endif %}
+          </form>
+        </div>
+
+        <div class="panel reports-card">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('student_label') }}</div>
+              <h3>{{ tr('student_full_report') }}</h3>
+            </div>
+          </div>
+          <p class="subtitle" style="margin-top:0;">{{ tr('select_student_to_export') }}</p>
+          <form class="inline-form" method="get" action="/admin/reports">
+            <select name="student_id" required>
+              <option value="">{{ tr('student_name_label') }}</option>
+              {% for student in students %}
+              <option value="{{ student.id }}" {% if selected_student_id == student.id|string %}selected{% endif %}>{{ student.full_name }}{% if student.level_name %} • {{ student.level_name }}{% endif %}</option>
+              {% endfor %}
+            </select>
+            <select name="period">
+              <option value="month" {% if student_period == 'month' %}selected{% endif %}>{{ tr('this_month') }}</option>
+              <option value="week" {% if student_period == 'week' %}selected{% endif %}>{{ tr('this_week') }}</option>
+            </select>
+            <button type="submit">{{ tr('apply') }}</button>
+            {% if selected_student_id %}
+            <a class="btn-link reports-btn" href="/students/{{ selected_student_id }}/report.xlsx?period={{ student_period }}">{{ tr('export_selected_student_excel') }}</a>
+            <a class="btn-link reports-btn secondary" href="/students/{{ selected_student_id }}/report.pdf?period={{ student_period }}">{{ tr('student_full_pdf') }}</a>
+            {% endif %}
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

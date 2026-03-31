@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Monthly Report</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 24px;
+      }
+      h1, h2 {
+        margin-bottom: 12px;
+      }
+      .summary {
+        border: 1px solid #ddd;
+        padding: 12px;
+        max-width: 520px;
+        margin-bottom: 20px;
+      }
+      p {
+        margin: 8px 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background: #f5f5f5;
+      }
+      tr:nth-child(even) {
+        background: #fafafa;
+      }
+      .links {
+        margin-top: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Monthly Report</h1>
+
+    <div class="summary">
+      <p><strong>Total Students:</strong> {{ total_students }}</p>
+      <p><strong>Total Levels:</strong> {{ total_levels }}</p>
+      <p><strong>Generated At:</strong> {{ generated_at }}</p>
+    </div>
+
+    <h2>Students Per Level</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Level</th>
+          <th>Students Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in students_per_level %}
+        <tr>
+          <td>{{ row.level_name }}</td>
+          <td>{{ row.students_count }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="2">No data found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="links">
+      <a href="/">Back to dashboard</a>
+    </div>
+  </body>
+</html>

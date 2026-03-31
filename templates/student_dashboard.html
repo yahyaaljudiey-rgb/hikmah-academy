@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tr('student_interface') }}</title>
+    <link rel="stylesheet" href="{{ static_asset('ui.css') }}">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="app-sidebar">
+        <div class="app-brand">
+          <span>{{ tr('student_interface') }}</span>
+          <strong>{{ student.full_name if student else tr('find_student') }}</strong>
+        </div>
+        {% if student %}
+        <div class="app-sidebar-card">
+          <span>{{ tr('code_label') }}</span>
+          <strong>{{ student.student_code }}</strong>
+          <small>{{ level.name if level else (student.level.name if student.level else student.level_name) }}</small>
+        </div>
+        {% endif %}
+        <nav class="app-nav">
+          <a class="app-nav-link is-active" href="/student/dashboard">{{ tr('student_interface') }}</a>
+          {% if student %}
+          <details class="app-nav-group" open>
+            <summary>{{ tr('study_snapshot') }}</summary>
+            <div class="app-subnav">
+              <a href="/students/{{ student.id }}/report?period=month">{{ tr('monthly_report') }}</a>
+              {% if level and level.homework_padlet_url %}
+              <a href="{{ level.homework_padlet_url }}" target="_blank" rel="noopener noreferrer">{{ tr('homework_board') }}</a>
+              {% endif %}
+              {% if level and level.announcements_padlet_url %}
+              <a href="{{ level.announcements_padlet_url }}" target="_blank" rel="noopener noreferrer">{{ tr('class_board') }}</a>
+              {% endif %}
+            </div>
+          </details>
+          <details class="app-nav-group">
+            <summary>{{ tr('daily_workflow') }}</summary>
+            <div class="app-subnav">
+              <a href="#student-alerts">{{ tr('what_needs_attention') }}</a>
+              <a href="#student-homework">{{ tr('homework_board') }}</a>
+              <a href="#student-recordings">{{ tr('class_recordings') }}</a>
+              <a href="#student-results">{{ tr('my_results') }}</a>
+            </div>
+          </details>
+          {% endif %}
+          <details class="app-nav-group">
+            <summary>{{ tr('language') }}</summary>
+            <div class="app-subnav">
+              <a href="{{ with_lang('en') }}" class="{% if current_lang == 'en' %}is-active{% endif %}">English</a>
+              <a href="{{ with_lang('ar') }}" class="{% if current_lang == 'ar' %}is-active{% endif %}">العربية</a>
+            </div>
+          </details>
+          <details class="app-nav-group">
+            <summary>{{ tr('role_selection') }}</summary>
+            <div class="app-subnav">
+              <a href="/">{{ tr('role_selection') }}</a>
+            </div>
+          </details>
+        </nav>
+      </aside>
+      <button class="sidebar-toggle" type="button" aria-label="{{ tr('student_interface') }}" data-sidebar-toggle>
+        <span class="sidebar-toggle-lines"></span>
+      </button>
+      <button class="app-sidebar-backdrop" type="button" aria-label="{{ tr('close_menu') }}" data-sidebar-backdrop></button>
+      <main class="app-main">
+    <div class="container student-shell" style="max-width:980px;">
+      {% if not student %}
+      <section class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <div class="overflow-hidden rounded-[30px] border border-white/70 bg-white/90 p-6 shadow-soft backdrop-blur sm:p-8">
+          <div class="mb-6 flex items-center gap-4">
+            <div class="flex h-20 w-20 items-center justify-center rounded-[24px] bg-gradient-to-br from-white via-hikmah-soft to-white p-3 shadow-md ring-1 ring-slate-100">
+              <img src="{{ url_for('static', filename='academy-logo.jpg') }}" alt="Hikmah Academy logo" class="max-h-full max-w-full object-contain">
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-hikmah-deep">Hikmah Academy</p>
+              <h1 class="text-3xl font-black text-slate-900 sm:text-4xl">{{ tr('student_interface') }}</h1>
+            </div>
+          </div>
+          {% set is_ar = current_lang == 'ar' %}
+          <div class="mb-5 inline-flex items-center gap-2 rounded-full bg-hikmah-soft px-4 py-2 text-sm font-semibold text-hikmah-deep">
+            <span class="inline-flex h-2.5 w-2.5 rounded-full bg-hikmah"></span>
+            {{ 'بوابة الطالب وولي الأمر' if is_ar else 'Student and Parent Gateway' }}
+          </div>
+          <p class="max-w-2xl text-sm leading-8 text-slate-600 sm:text-base">
+            {{ 'ادخل باستخدام كود الطالب للوصول إلى الواجبات والتسجيلات والتقارير والروابط الصفية في واجهة واضحة ومنظمة.' if is_ar else 'Enter with the student code to access homework, recordings, reports, and class links in one clear interface.' }}
+          </p>
+          <div class="mt-8 grid gap-4 sm:grid-cols-3">
+            <div class="rounded-2xl border border-hikmah/10 bg-hikmah-soft px-4 py-4">
+              <p class="text-xs font-bold uppercase tracking-[0.2em] text-hikmah-deep">{{ 'التقارير' if is_ar else 'Reports' }}</p>
+              <p class="mt-2 text-sm font-semibold text-slate-800">{{ 'التقارير الشهرية' if is_ar else 'Monthly reports' }}</p>
+            </div>
+            <div class="rounded-2xl border border-sky-100 bg-sky-50 px-4 py-4">
+              <p class="text-xs font-bold uppercase tracking-[0.2em] text-sky-700">{{ 'الواجبات' if is_ar else 'Homework' }}</p>
+              <p class="mt-2 text-sm font-semibold text-slate-800">{{ 'الواجبات والتسليم' if is_ar else 'Homework and submissions' }}</p>
+            </div>
+            <div class="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-4">
+              <p class="text-xs font-bold uppercase tracking-[0.2em] text-rose-700">{{ 'التسجيلات' if is_ar else 'Recordings' }}</p>
+              <p class="mt-2 text-sm font-semibold text-slate-800">{{ 'التسجيلات والمواد' if is_ar else 'Recordings and materials' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-[30px] border border-white/70 bg-white/95 p-6 shadow-soft backdrop-blur sm:p-8">
+          <div class="mb-6">
+            <p class="text-sm font-semibold text-hikmah-deep">{{ tr('find_student') }}</p>
+            <h2 class="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">{{ tr('enter_student_code') }}</h2>
+          </div>
+          <div class="guide" style="margin-bottom:14px;">
+            <h4>{{ tr('find_student') }}</h4>
+            <p>{{ tr('enter_student_code') }}</p>
+          </div>
+          <form class="inline-form" method="get" action="/student/dashboard">
+            <input type="text" name="student_code" placeholder="{{ tr('student_code_placeholder') }}" value="{{ student_code or '' }}" required class="rounded-2xl">
+            <button type="submit" class="rounded-2xl">{{ tr('find_student') }}</button>
+          </form>
+        </div>
+      </section>
+      {% else %}
+      <h1 class="title">{{ tr('student_interface') }}</h1>
+      <p class="subtitle">{{ tr('enter_student_code') }}</p>
+
+      <div class="panel">
+        <form class="inline-form" method="get" action="/student/dashboard">
+          <input type="text" name="student_code" placeholder="{{ tr('student_code_placeholder') }}" value="{{ student_code or '' }}" required class="rounded-2xl">
+          <button type="submit" class="rounded-2xl">{{ tr('find_student') }}</button>
+        </form>
+      </div>
+      {% endif %}
+
+      {% if student_code and not student %}
+      <div class="notice error">{{ tr('student_not_found', code=student_code) }}</div>
+      {% endif %}
+
+      {% if student %}
+      <section class="student-hero">
+        <div class="student-hero-main">
+          <div class="student-hero-kicker">{{ tr('welcome_back') }}</div>
+          <h2>{{ student.full_name }}</h2>
+          <p>{{ level.name if level else (student.level.name if student.level else student.level_name) }}{% if level and level.teacher %} • {{ tr('teacher_label') }}: {{ level.teacher.full_name }}{% endif %}</p>
+          <div class="student-hero-actions">
+            {% for action in student_dashboard_summary.quick_actions %}
+            <a class="student-action-btn {% if action.kind == 'secondary' %}secondary{% endif %}" href="{{ action.href }}" {% if action.external %}target="_blank" rel="noopener noreferrer"{% endif %}>{{ action.label }}</a>
+            {% endfor %}
+            <a class="student-action-btn secondary" href="/students/{{ student.id }}/report?period=month">{{ tr('monthly_report') }}</a>
+          </div>
+        </div>
+        <div class="student-hero-side">
+          <div class="student-code-badge">{{ tr('code_label') }}: {{ student.student_code }}</div>
+          <div class="student-quick-grid">
+            {% for metric in student_dashboard_summary.metrics %}
+            <div class="student-quick-card">
+              <span>{{ metric.label }}</span>
+              <strong>{{ metric.value }}</strong>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+
+      <div class="panel workspace-start-panel student-panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('start_here') }}</div>
+            <h3>{{ tr('daily_workflow') }}</h3>
+          </div>
+          <span class="pill">{{ tr('current_teaching_week') }}: {{ academic_calendar_status.current_week }}</span>
+        </div>
+        <div class="workspace-start-grid">
+          <a class="workspace-start-card" href="#student-homework">
+            <span class="workspace-start-step">1</span>
+            <strong>{{ tr('homework_board') }}</strong>
+            <small>{{ tr('open_homework') }}</small>
+          </a>
+          <a class="workspace-start-card" href="/students/{{ student.id }}/report?period=month">
+            <span class="workspace-start-step">2</span>
+            <strong>{{ tr('monthly_report') }}</strong>
+            <small>{{ tr('student_report') }}</small>
+          </a>
+          <a class="workspace-start-card" href="#student-recordings">
+            <span class="workspace-start-step">3</span>
+            <strong>{{ tr('class_recordings') }}</strong>
+            <small>{{ tr('latest_recording') }}</small>
+          </a>
+        </div>
+      </div>
+
+      <div class="panel student-panel">
+        <div class="admin-template-header">
+          <div>
+            <h3 style="margin-bottom:6px;">{{ tr('academic_calendar_status') }}</h3>
+            <span>{{ tr('calendar_driven_week_hint') }}</span>
+          </div>
+          <span class="pill">{{ tr('current_teaching_week') }}: {{ academic_calendar_status.current_week }}</span>
+        </div>
+        <div class="feature-card-meta" style="margin-bottom:12px;">
+          <span class="pill">{{ tr('current_calendar_status') }}: {{ tr(academic_calendar_status.status_key) }}</span>
+          {% if academic_calendar_status.is_exam_period %}
+          <span class="pill">{{ tr('exam_week_status') }}</span>
+          {% elif academic_calendar_status.is_holiday_period %}
+          <span class="pill">{{ tr('holiday_status') }}</span>
+          {% endif %}
+          <span class="pill">
+            {{ tr('current_academic_event') }}:
+            {% if academic_calendar_status.current_event %}
+            {{ academic_calendar_status.current_event.title }}
+            {% else %}
+            {{ tr('teaching_in_session') }}
+            {% endif %}
+          </span>
+          {% if academic_calendar_status.next_event %}
+          <span class="pill">{{ tr('next_academic_event') }}: {{ academic_calendar_status.next_event.title }} • {{ academic_calendar_status.next_event_countdown_label }}</span>
+          {% endif %}
+        </div>
+        <div class="feature-card-meta">
+          {% for event in academic_calendar_status.upcoming_events[:3] %}
+          <span class="pill">
+            {{ event.title }} • {{ event.start_date.strftime('%Y-%m-%d') }}
+            {% if event.end_date != event.start_date %}→ {{ event.end_date.strftime('%Y-%m-%d') }}{% endif %}
+          </span>
+          {% else %}
+          <span class="pill">{{ tr('no_upcoming_academic_events') }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="student-overview-grid">
+        <div class="panel student-panel" id="student-alerts">
+          <div class="admin-template-header">
+            <div>
+              <h3 style="margin-bottom:6px;">{{ tr('what_needs_attention') }}</h3>
+              <span>{{ tr('latest_result') }}, {{ tr('next_exam') }}, {{ tr('latest_recording') }}</span>
+            </div>
+          </div>
+          <div class="supervisor-alert-stack">
+            {% for alert in student_dashboard_summary.alerts %}
+            <div class="supervisor-alert-card is-{{ alert.tone }}">
+              <strong>{{ alert.title }}</strong>
+              <p>{{ alert.body }}</p>
+            </div>
+            {% else %}
+            <div class="supervisor-alert-card is-success">
+              <strong>{{ tr('all_clear') }}</strong>
+              <p>{{ tr('no_student_alerts') }}</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="panel student-panel">
+          <div class="admin-template-header">
+            <div>
+              <h3 style="margin-bottom:6px;">{{ tr('study_snapshot') }}</h3>
+              <span>{{ tr('student_updates_now') }}</span>
+            </div>
+          </div>
+          <div class="student-snapshot-stack">
+            <div class="student-snapshot-card">
+              <span>{{ tr('latest_result') }}</span>
+              <strong>{{ student_dashboard_summary.latest_exam.exam_title if student_dashboard_summary.latest_exam else tr('no_result_yet') }}</strong>
+              <small>
+                {% if student_dashboard_summary.latest_exam and student_dashboard_summary.latest_exam.computed_percentage is not none %}
+                {{ student_dashboard_summary.latest_exam.computed_percentage }}% • {{ student_dashboard_summary.latest_exam.computed_grade }}
+                {% else %}
+                {{ tr('next_published_result_here') }}
+                {% endif %}
+              </small>
+            </div>
+            <div class="student-snapshot-card">
+              <span>{{ tr('next_exam') }}</span>
+              <strong>{{ student_dashboard_summary.next_exam.title if student_dashboard_summary.next_exam else tr('no_exam_announced') }}</strong>
+              <small>
+                {% if student_dashboard_summary.next_exam %}
+                {{ student_dashboard_summary.next_exam.exam_date }}{% if student_dashboard_summary.next_exam.exam_time %} • {{ student_dashboard_summary.next_exam.exam_time }}{% endif %}
+                {% else %}
+                {{ tr('check_back_exam_announcements') }}
+                {% endif %}
+              </small>
+            </div>
+            <div class="student-snapshot-card">
+              <span>{{ tr('latest_recording') }}</span>
+              <strong>{{ student_dashboard_summary.latest_recording.title if student_dashboard_summary.latest_recording else tr('no_recording_yet') }}</strong>
+              <small>
+                {% if student_dashboard_summary.latest_recording %}
+                {{ student_dashboard_summary.latest_recording.lesson_date }}
+                {% else %}
+                {{ tr('recordings_appear_after_lessons') }}
+                {% endif %}
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel student-panel" id="student-snapshot">
+        <div class="admin-template-header">
+          <div>
+            <h3 style="margin-bottom:6px;">{{ tr('supervisor_announcements') }}</h3>
+            <span>{{ tr('administrative_reminders_and_notices') }}</span>
+          </div>
+        </div>
+        <div class="announcement-stack">
+          {% for row in student_announcements %}
+          <div class="announcement-card is-{{ row.tone }}">
+            <div class="announcement-card-head">
+              <div>
+                <strong>{{ row.announcement.title }}</strong>
+                <span>{{ row.category_label }}{% if row.announcement.level %} • {{ row.announcement.level.name }}{% endif %}</span>
+              </div>
+              {% if row.announcement.is_pinned %}
+              <span class="pill">{{ tr('pinned') }}</span>
+              {% endif %}
+            </div>
+            <p>{{ row.announcement.body }}</p>
+          </div>
+          {% else %}
+          <div class="announcement-card is-info">
+            <strong>{{ tr('no_announcements_right_now') }}</strong>
+            <p>{{ tr('announcements_appear_here') }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="student-link-grid">
+        <div class="student-link-card">
+          <h3>{{ tr('homework_board') }}</h3>
+          {% if level and level.homework_padlet_url %}
+          <a class="student-action-btn secondary" href="{{ level.homework_padlet_url }}" target="_blank" rel="noopener noreferrer">{{ tr('open_homework') }}</a>
+          {% else %}
+          <p class="student-empty-text">{{ tr('no_homework_board_yet') }}</p>
+          {% endif %}
+        </div>
+
+        <div class="student-link-card">
+          <h3>{{ tr('class_board') }}</h3>
+          {% if level and level.announcements_padlet_url %}
+          <a class="student-action-btn secondary" href="{{ level.announcements_padlet_url }}" target="_blank" rel="noopener noreferrer">{{ tr('open_class_board') }}</a>
+          {% else %}
+          <p class="student-empty-text">{{ tr('no_class_board_yet') }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="student-overview-grid">
+      <div class="panel student-panel" id="student-recordings">
+        <div class="admin-template-header">
+          <div>
+            <h3 style="margin-bottom:6px;">{{ tr('books') }}</h3>
+            <span>{{ tr('study_books_for_class') }}</span>
+          </div>
+        </div>
+        <div class="book-subject-stack">
+          {% for row in book_subject_rows %}
+          <div class="book-subject-card">
+            <div class="admin-template-header">
+              <div>
+                <strong>{{ row.subject.name }}</strong>
+                <span>{{ row.subject.description or tr('study_books_for_class') }}</span>
+              </div>
+            </div>
+            <div class="book-card-grid" style="margin-top:12px;">
+              {% for item in row.curriculum_items %}
+              <a class="book-card" href="{{ item.resource_link }}" target="_blank" rel="noopener noreferrer">
+                <span class="book-card-kicker">{{ tr('book') }}</span>
+                <strong>{{ item.title }}</strong>
+                <small>{{ item.description or tr('open_book') }}</small>
+              </a>
+              {% else %}
+              <div class="book-card is-empty">
+                <span class="book-card-kicker">{{ tr('book') }}</span>
+                <strong>{{ tr('no_books_yet') }}</strong>
+                <small>{{ tr('supervisor_add_books_soon') }}</small>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% else %}
+          <p class="student-empty-text">{{ tr('no_books_available_yet') }}</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="panel student-panel" id="student-homework">
+        <div class="admin-template-header">
+          <div>
+            <h3 style="margin-bottom:6px;">{{ tr('extra_learning') }}</h3>
+            <span>{{ tr('extra_learning_note') }}</span>
+          </div>
+        </div>
+        <div class="book-subject-stack">
+          {% for row in extra_resource_subject_rows %}
+          <div class="book-subject-card">
+            <div class="admin-template-header">
+              <div>
+                <strong>{{ tr('helpful_links') }}</strong>
+                <span>{{ row.subject.description or tr('extra_practice_links') }}</span>
+              </div>
+            </div>
+            <div class="book-card-grid" style="margin-top:12px;">
+              {% for item in row.curriculum_items %}
+              <a class="book-card" href="{{ item.resource_link }}" target="_blank" rel="noopener noreferrer">
+                <span class="book-card-kicker">{{ tr('extra') }}</span>
+                <strong>{{ item.title }}</strong>
+                <small>{{ item.description or tr('open_resource') }}</small>
+              </a>
+              {% else %}
+              <div class="book-card is-empty">
+                <span class="book-card-kicker">{{ tr('extra') }}</span>
+                <strong>{{ tr('no_extra_resources_yet') }}</strong>
+                <small>{{ tr('supervisor_add_books_soon') }}</small>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% else %}
+          <p class="student-empty-text">{{ tr('no_extra_learning_links_yet') }}</p>
+          {% endfor %}
+        </div>
+      </div>
+      </div>
+
+      <div class="panel student-panel" id="student-results">
+        <div class="admin-template-header">
+          <div>
+            <h3 style="margin-bottom:6px;">{{ tr('class_recordings') }}</h3>
+            <span>{{ tr('recordings_appear_after_lessons') }}</span>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ tr('lesson_date') }}</th>
+                <th>{{ tr('title_label') }}</th>
+                <th>{{ tr('summary') }}</th>
+                <th>{{ tr('weekly_homework') }}</th>
+                <th>{{ tr('recording') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for rec in recordings %}
+              <tr>
+                <td>{{ rec.lesson_date }}</td>
+                <td>{{ rec.title }}</td>
+                <td>{{ rec.summary or '-' }}</td>
+                <td>{{ rec.homework or '-' }}</td>
+                <td><a href="{{ rec.recording_url }}" target="_blank" rel="noopener noreferrer">{{ tr('watch') }}</a></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="5">{{ tr('no_recordings_available') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel student-panel">
+        <div class="admin-template-header">
+          <div>
+            <h3 style="margin-bottom:6px;">{{ tr('assignments_section') }}</h3>
+            <span>{{ tr('student_assignments_note') }}</span>
+          </div>
+        </div>
+        {% for row in assignment_rows %}
+        <div class="student-assignment-card">
+          <div class="student-assignment-head">
+            <div>
+              <h4>{{ row.assignment.title }}</h4>
+              <p>{{ tr('due') }}: {{ row.assignment.due_date or '-' }}</p>
+            </div>
+            <div class="student-assignment-status {% if row.submission and row.submission.status == 'Reviewed' %}is-reviewed{% elif row.submission and row.submission.status == 'Submitted' %}is-submitted{% else %}is-pending{% endif %}">
+              {{ row.submission.status if row.submission else tr('pending') }}
+            </div>
+          </div>
+
+          <div class="student-assignment-meta">
+            <div class="student-quick-card">
+              <span>{{ tr('score') }}</span>
+              <strong>{{ row.submission.score_value if row.submission and row.submission.score_value else '-' }}</strong>
+            </div>
+            <div class="student-quick-card">
+              <span>{{ tr('file') }}</span>
+              <strong>{% if row.submission and row.submission.submission_file_name %}{{ tr('uploaded') }}{% else %}{{ tr('no_file') }}{% endif %}</strong>
+            </div>
+          </div>
+
+          {% if row.assignment.instructions %}
+          <div class="student-task-box">
+            <strong>{{ tr('what_to_do') }}</strong>
+            <p>{{ row.assignment.instructions }}</p>
+          </div>
+          {% endif %}
+
+          <div class="student-resource-row">
+            {% if row.assignment.resource_link %}
+            <a class="student-action-btn secondary" href="{{ row.assignment.resource_link }}" target="_blank" rel="noopener noreferrer">{{ tr('open_resource_link') }}</a>
+            {% endif %}
+            {% if row.assignment.resource_file_name %}
+            <a class="student-action-btn secondary" href="/students/{{ student.id }}/assignments/{{ row.assignment.id }}/resource?student_code={{ student.student_code }}">{{ tr('download_resource') }}</a>
+            {% endif %}
+            {% if row.submission and row.submission.submission_file_name %}
+            <a class="student-action-btn secondary" href="/students/{{ student.id }}/assignment-submissions/{{ row.submission.id }}/file?student_code={{ student.student_code }}">{{ tr('my_uploaded_file') }}</a>
+            {% endif %}
+          </div>
+          {% if row.submission and row.submission.teacher_notes %}
+          <div class="student-feedback-box">
+            <strong>{{ tr('teacher_notes') }}</strong>
+            <p>{{ row.submission.teacher_notes }}</p>
+          </div>
+          {% endif %}
+          <form class="student-submit-form" method="post" action="/students/{{ student.id }}/assignments/{{ row.assignment.id }}/submit" enctype="multipart/form-data">
+            <input type="hidden" name="student_code" value="{{ student.student_code }}">
+            <label class="student-field-label">{{ tr('write_your_answer') }}</label>
+            <textarea name="submission_text" rows="4" placeholder="{{ tr('write_your_answer_here') }}">{{ row.submission.submission_text if row.submission and row.submission.submission_text else '' }}</textarea>
+            <div class="student-submit-grid">
+              <div>
+                <label class="student-field-label">{{ tr('or_add_a_link') }}</label>
+                <input type="text" name="submission_link" placeholder="{{ tr('paste_answer_link') }}" value="{{ row.submission.submission_link if row.submission and row.submission.submission_link else '' }}">
+              </div>
+              <div>
+                <label class="student-field-label">{{ tr('or_upload_a_file') }}</label>
+                <input type="file" name="submission_file">
+              </div>
+            </div>
+            <div class="topbar" style="margin-top:12px;">
+              <button type="submit">{{ tr('send_my_homework') }}</button>
+            </div>
+          </form>
+        </div>
+        {% else %}
+        <p class="student-empty-text">{{ tr('no_assignments_available_yet') }}</p>
+        {% endfor %}
+      </div>
+
+      <div class="panel student-panel">
+        <h3>{{ tr('my_results') }}</h3>
+        <form class="inline-form" method="get" action="/student/dashboard">
+          <input type="hidden" name="student_code" value="{{ student.student_code }}">
+          <select name="exam_title" required>
+            <option value="">{{ tr('choose_exam') }}</option>
+            {% for exam_title in student_exam_titles %}
+            <option value="{{ exam_title }}" {% if selected_student_exam_title == exam_title %}selected{% endif %}>{{ exam_title }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit">{{ tr('choose_result') }}</button>
+        </form>
+
+        {% if selected_student_exam_summary %}
+        <div class="student-result-card">
+          <div>
+            <h4>{{ selected_student_exam_summary.exam_title }}</h4>
+            <p>{{ selected_student_exam_summary.exam_date or '-' }}</p>
+          </div>
+          <div class="student-result-actions">
+            <a class="student-action-btn" href="/students/{{ student.id }}/exam-report.pdf?student_code={{ student.student_code }}&exam_title={{ selected_student_exam_summary.exam_title|urlencode }}">{{ tr('open_result_pdf') }}</a>
+          </div>
+        </div>
+        {% elif student_exam_titles %}
+        <p class="student-empty-text">{{ tr('choose_exam_then_pdf') }}</p>
+        {% else %}
+        <p class="student-empty-text">{{ tr('no_exam_results_yet') }}</p>
+        {% endif %}
+      </div>
+
+      <div class="panel student-panel" id="student-upcoming-exams">
+        <h3>{{ tr('upcoming_exams') }}</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ tr('date') }}</th>
+                <th>{{ tr('title_label') }}</th>
+                <th>{{ tr('subject') }}</th>
+                <th>{{ tr('time') }}</th>
+                <th>{{ tr('notes') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for exam in upcoming_exams %}
+              <tr>
+                <td>{{ exam.exam_date }}</td>
+                <td>{{ exam.title }}</td>
+                <td>{{ exam.subject_name or '-' }}</td>
+                <td>{{ exam.exam_time or '-' }}</td>
+                <td>{{ exam.notes or '-' }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="5">{{ tr('no_upcoming_exams') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+      </main>
+    </div>
+    <script>
+      (() => {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('[data-sidebar-toggle]');
+        const backdrop = document.querySelector('[data-sidebar-backdrop]');
+        if (!sidebar || !toggle) return;
+        const setOpen = (open) => {
+          sidebar.classList.toggle('is-open', open);
+          if (backdrop) backdrop.classList.toggle('is-open', open);
+          document.body.classList.toggle('sidebar-open', open);
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        };
+        toggle.addEventListener('click', () => setOpen(!sidebar.classList.contains('is-open')));
+        if (backdrop) backdrop.addEventListener('click', () => setOpen(false));
+        sidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setOpen(false)));
+        window.addEventListener('resize', () => {
+          if (window.innerWidth > 700) setOpen(false);
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1113 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tr('supervisor_dashboard') }}</title>
+    <link rel="stylesheet" href="{{ static_asset('ui.css') }}">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="app-sidebar">
+        <div class="app-brand">
+          <span>{{ tr('supervisor_dashboard') }}</span>
+          <strong>{{ tr('executive_control') }}</strong>
+        </div>
+        <div class="app-sidebar-card">
+          <span>{{ tr('today') }}</span>
+          <strong>{{ spotlight.cleanup_critical_items }}</strong>
+          <small>{{ tr('cleanup_critical') }}</small>
+        </div>
+        <nav class="app-nav">
+          <a class="app-nav-link is-active" href="/admin/dashboard">{{ tr('supervisor_dashboard') }}</a>
+          <details class="app-nav-group" open>
+            <summary>{{ tr('today') }}</summary>
+            <div class="app-subnav">
+              <a href="#action-log">{{ tr('recent_system_actions') }}</a>
+              <a href="#plan-followup">{{ tr('curriculum_plan_progress') }}</a>
+              <a href="#teacher-standing">{{ tr('teacher_weekly_standing') }}</a>
+            </div>
+          </details>
+          <details class="app-nav-group">
+            <summary>{{ tr('supervisor_tools') }}</summary>
+            <div class="app-subnav">
+              <a href="/admin/academic-calendar">{{ tr('open_academic_calendar') }}</a>
+              <a href="/admin/syllabus-plan">{{ tr('open_syllabus_plan') }}</a>
+              <a href="/students/reports/monthly-review">{{ tr('open_monthly_review') }}</a>
+              <a href="/admin/action-log">{{ tr('open_action_log') }}</a>
+              <a href="/head/dashboard">{{ tr('head_dashboard') }}</a>
+              <a href="/head/data-root">{{ tr('data_root') }}</a>
+            </div>
+          </details>
+          <details class="app-nav-group">
+            <summary>{{ tr('monthly_reports_review') }}</summary>
+            <div class="app-subnav">
+              <a href="/students">{{ tr('students') }}</a>
+              <a href="/students/reports/monthly-review">{{ tr('open_monthly_review') }}</a>
+              <a href="/admin/weekly-report">{{ tr('weekly_report_label') }}</a>
+            </div>
+          </details>
+          <details class="app-nav-group">
+            <summary>{{ tr('language') }}</summary>
+            <div class="app-subnav">
+              <a href="{{ with_lang('en') }}" class="{% if current_lang == 'en' %}is-active{% endif %}">English</a>
+              <a href="{{ with_lang('ar') }}" class="{% if current_lang == 'ar' %}is-active{% endif %}">العربية</a>
+            </div>
+          </details>
+          <details class="app-nav-group">
+            <summary>{{ tr('role_selection') }}</summary>
+            <div class="app-subnav">
+              <a href="/">{{ tr('role_selection') }}</a>
+              <a href="/admin/logout">{{ tr('logout') }}</a>
+            </div>
+          </details>
+        </nav>
+      </aside>
+      <button class="sidebar-toggle" type="button" aria-label="{{ tr('supervisor_tools') }}" data-sidebar-toggle>
+        <span class="sidebar-toggle-lines"></span>
+      </button>
+      <button class="app-sidebar-backdrop" type="button" aria-label="{{ tr('close_menu') }}" data-sidebar-backdrop></button>
+      <main class="app-main">
+    <div class="container">
+
+      <section class="supervisor-hero">
+        <div class="supervisor-hero-main">
+          <div class="feature-card-kicker">{{ tr('executive_control') }}</div>
+          <h1 class="title">{{ tr('supervisor_dashboard') }}</h1>
+          <p class="subtitle">{{ tr('one_view_supervisor') }}</p>
+          <div class="supervisor-chip-row">
+            <span class="pill">{{ tr('students') }}: {{ total_students }}</span>
+            <span class="pill">{{ tr('levels') }}: {{ total_levels }}</span>
+            <span class="pill">{{ tr('teachers') }}: {{ total_teachers }}</span>
+            <span class="pill">{{ tr('week_start') }}: {{ spotlight.week_start }}</span>
+          </div>
+          <div class="feature-card-actions supervisor-hero-actions">
+            <a class="btn-link reports-btn secondary" href="/admin/academic-calendar">{{ tr('open_academic_calendar') }}</a>
+            <a class="btn-link reports-btn" href="/admin/reports">{{ tr('open_reports_center') }}</a>
+            <a class="btn-link reports-btn secondary" href="/admin/weekly-report">{{ tr('weekly_report_label') }}</a>
+            <a class="btn-link reports-btn secondary" href="/admin/action-log">{{ tr('open_action_log') }}</a>
+          </div>
+        </div>
+        <div class="supervisor-hero-side panel supervisor-hero-summary-card">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('today') }}</div>
+              <h3>{{ tr('executive_control') }}</h3>
+            </div>
+          </div>
+          <div class="supervisor-mini-metrics">
+            <div class="metric-chip">
+              <span>{{ tr('missing_attendance') }}</span>
+              <strong>{{ spotlight.levels_missing_attendance }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ tr('partial_attendance') }}</span>
+              <strong>{{ spotlight.levels_partial_attendance }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ tr('students_needing_attention') }}</span>
+              <strong>{{ spotlight.students_needing_attention }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ tr('active_assignments') }}</span>
+              <strong>{{ spotlight.active_assignments }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ tr('teachers_on_track') }}</span>
+              <strong>{{ spotlight.teachers_on_track }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ tr('teachers_need_follow_up') }}</span>
+              <strong>{{ spotlight.teachers_need_followup }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ tr('cleanup_critical') }}</span>
+              <strong>{{ spotlight.cleanup_critical_items }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ tr('cleanup_total') }}</span>
+              <strong>{{ spotlight.cleanup_total_items }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ tr('ready_to_send') }}</span>
+              <strong>{{ spotlight.monthly_ready_reports }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ tr('missing_notes') }}</span>
+              <strong>{{ spotlight.monthly_missing_notes }}</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="panel workspace-start-panel supervisor-section-panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('start_here') }}</div>
+            <h3>{{ tr('today') }}</h3>
+          </div>
+          <span class="pill">{{ tr('current_teaching_week') }}: {{ academic_calendar_status.current_week }}</span>
+        </div>
+        <div class="workspace-start-grid">
+          <a class="workspace-start-card" href="/admin/academic-calendar">
+            <span class="workspace-start-step">1</span>
+            <strong>{{ tr('academic_calendar_status') }}</strong>
+            <small>{{ tr('open_academic_calendar') }}</small>
+          </a>
+          <a class="workspace-start-card" href="/admin/syllabus-plan">
+            <span class="workspace-start-step">2</span>
+            <strong>{{ tr('curriculum_plan_progress') }}</strong>
+            <small>{{ tr('view_full_plan_followup') }}</small>
+          </a>
+          <a class="workspace-start-card" href="/admin/reports">
+            <span class="workspace-start-step">3</span>
+            <strong>{{ tr('monthly_reports_review') }}</strong>
+            <small>{{ tr('open_reports_center') }}</small>
+          </a>
+        </div>
+      </div>
+
+      <div class="panel supervisor-section-panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('academic_calendar_status') }}</div>
+            <h3>{{ tr('calendar_driven_week') }}</h3>
+          </div>
+          <span class="pill">{{ tr('current_teaching_week') }}: {{ academic_calendar_status.current_week }}</span>
+        </div>
+        <p class="subtitle" style="margin-top:0;">{{ tr('calendar_driven_week_hint') }}</p>
+        <div class="supervisor-mini-metrics" style="margin-bottom:12px;">
+          <div class="metric-chip">
+            <span>{{ tr('current_calendar_status') }}</span>
+            <strong>{{ tr(academic_calendar_status.status_key) }}</strong>
+          </div>
+          {% if academic_calendar_status.is_exam_period %}
+          <div class="metric-chip">
+            <span>{{ tr('current_academic_event') }}</span>
+            <strong>{{ tr('exam_week_status') }}</strong>
+          </div>
+          {% elif academic_calendar_status.is_holiday_period %}
+          <div class="metric-chip">
+            <span>{{ tr('current_academic_event') }}</span>
+            <strong>{{ tr('holiday_status') }}</strong>
+          </div>
+          {% endif %}
+          <div class="metric-chip">
+            <span>{{ tr('current_academic_event') }}</span>
+            <strong>
+              {% if academic_calendar_status.current_event %}
+              {{ academic_calendar_status.current_event.title }}
+              {% else %}
+              {{ tr('teaching_in_session') }}
+              {% endif %}
+            </strong>
+          </div>
+          <div class="metric-chip">
+            <span>{{ tr('next_academic_event') }}</span>
+            <strong>
+              {% if academic_calendar_status.next_event %}
+              {{ academic_calendar_status.next_event_countdown_label }}
+              {% else %}
+              -
+              {% endif %}
+            </strong>
+          </div>
+        </div>
+        <div class="feature-card-meta">
+          {% for event in academic_calendar_status.upcoming_events %}
+          <span class="pill">
+            {{ event.title }} • {{ event.start_date.strftime('%Y-%m-%d') }}
+            {% if event.end_date != event.start_date %}→ {{ event.end_date.strftime('%Y-%m-%d') }}{% endif %}
+          </span>
+          {% else %}
+          <span class="pill">{{ tr('no_upcoming_academic_events') }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="panel supervisor-section-panel" id="action-log">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('recent_system_actions') }}</div>
+            <h3>{{ tr('latest_logged_updates') }}</h3>
+          </div>
+          <div class="feature-card-actions">
+            <a class="btn-link reports-btn secondary" href="/admin/action-log">{{ tr('open_action_log') }}</a>
+          </div>
+        </div>
+        <div class="announcement-stack">
+          {% for row in recent_action_rows %}
+          <div class="announcement-card is-info">
+            <div class="announcement-card-head">
+              <div>
+                <strong>{{ tr(row.action_key) }}</strong>
+                <span>{{ row.actor_name }}{% if row.level_name %} • {{ row.level_name }}{% endif %}</span>
+              </div>
+              <span class="pill">{{ row.created_at.strftime('%Y-%m-%d %H:%M') if row.created_at else '-' }}</span>
+            </div>
+            <p>
+              {{ row.entity_label }}
+              {% if row.details %}• {{ row.details }}{% endif %}
+            </p>
+            {% if row.target_url %}
+            <div class="feature-card-actions" style="margin-top:0;">
+              <a class="btn-link" href="{{ row.target_url }}">{{ tr(row.target_label_key) }}</a>
+            </div>
+            {% endif %}
+          </div>
+          {% else %}
+          <div class="announcement-card is-info">
+            <strong>{{ tr('no_recent_actions') }}</strong>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="panel supervisor-section-panel" id="plan-followup">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('curriculum_plan_followup') }}</div>
+            <h3>{{ tr('curriculum_plan_progress') }}</h3>
+          </div>
+          <div class="feature-card-actions">
+            <a class="btn-link" href="/admin/syllabus-plan">{{ tr('view_full_plan_followup') }}</a>
+          </div>
+        </div>
+        <div class="feature-card-meta" style="margin-bottom:12px;">
+          <span class="pill">{{ tr('current_teaching_week') }}: {{ curriculum_plan_summary.current_week }}</span>
+          <span class="pill">{{ tr('levels_on_track') }}: {{ curriculum_plan_summary.levels_on_track }}</span>
+          <span class="pill">{{ tr('levels_delayed') }}: {{ curriculum_plan_summary.levels_delayed }}</span>
+          <span class="pill">{{ tr('expected_by_now') }}: {{ curriculum_plan_summary.expected_count }}</span>
+          <span class="pill">{{ tr('completed_lessons') }}: {{ curriculum_plan_summary.completed_lessons }}</span>
+          <span class="pill">{{ tr('delayed_lessons') }}: {{ curriculum_plan_summary.delayed_count }}</span>
+        </div>
+        <div class="dashboard-card-grid" style="margin-bottom:12px;">
+          {% for row in curriculum_plan_rows %}
+          <div class="feature-card teacher-level-card {% if row.delayed_count > 0 %}is-follow-up{% else %}is-praise{% endif %}">
+            <div class="admin-template-header" style="align-items:flex-start;">
+              <div>
+                <div class="feature-card-kicker">{{ tr('teacher_label_short') }}</div>
+                <h3>{{ row.teacher.full_name if row.teacher else '-' }}</h3>
+              </div>
+              <span class="teacher-status-badge {% if row.delayed_count > 0 %}is-follow-up{% else %}is-praise{% endif %}">
+                {{ tr(row.status_label_key) }}
+              </span>
+            </div>
+            <div class="teacher-level-status-copy">
+              <strong>{{ tr('level') }}:</strong>
+              <span>{{ row.level.name }}</span>
+            </div>
+            <div class="feature-card-meta">
+              <span class="pill">{{ tr('progress_percentage') }}: {{ row.progress_pct }}%</span>
+              <span class="pill">{{ tr('expected_by_now') }}: {{ row.expected_count }}</span>
+              <span class="pill">{{ tr('completed_lessons') }}: {{ row.completed_count }}/{{ row.total_rows }}</span>
+              <span class="pill">{{ tr('delayed_lessons') }}: {{ row.delayed_count }}</span>
+            </div>
+            <div class="teacher-level-status-copy">
+              <strong>{{ tr('last_completed_item') }}:</strong>
+              <span>{{ row.last_completed_label or '-' }}</span>
+            </div>
+            <div class="feature-card-actions">
+              <a class="btn-link" href="/admin/syllabus-plan?level_id={{ row.level.id }}">{{ tr('open_syllabus_plan') }}</a>
+            </div>
+          </div>
+          {% else %}
+          <div class="announcement-card is-info">
+            <strong>{{ tr('no_curriculum_plan_items') }}</strong>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ tr('teacher_label') }}</th>
+                <th>{{ tr('level') }}</th>
+                <th>{{ tr('progress_percentage') }}</th>
+                <th>{{ tr('expected_by_now') }}</th>
+                <th>{{ tr('delayed_lessons') }}</th>
+                <th>{{ tr('status') }}</th>
+                <th>{{ tr('plan_rows_count') }}</th>
+                <th>{{ tr('completed_lessons') }}</th>
+                <th>{{ tr('in_progress_items_label') }}</th>
+                <th>{{ tr('planned_lessons') }}</th>
+                <th>{{ tr('last_completed_item') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in curriculum_plan_rows %}
+              <tr>
+                <td>{{ row.teacher.full_name if row.teacher else '-' }}</td>
+                <td>{{ row.level.name }}</td>
+                <td>{{ row.progress_pct }}%</td>
+                <td>{{ row.expected_count }}</td>
+                <td>{{ row.delayed_count }}</td>
+                <td><span class="pill">{{ tr(row.status_label_key) }}</span></td>
+                <td>{{ row.total_rows }}</td>
+                <td>{{ row.completed_count }}</td>
+                <td>{{ row.in_progress_count }}</td>
+                <td>{{ row.remaining_count }}</td>
+                <td>{{ row.last_completed_label or '-' }}</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="11">{{ tr('no_curriculum_plan_items') }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel supervisor-section-panel" id="teacher-standing">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('teachers_weekly_followup') }}</div>
+            <h3>{{ tr('teacher_weekly_report') }}</h3>
+          </div>
+          <div class="feature-card-actions">
+            <a class="btn-link reports-btn secondary" href="/admin/reports">{{ tr('open_reports_center') }}</a>
+          </div>
+        </div>
+        <div class="dashboard-card-grid">
+          {% for row in teacher_weekly_status_rows %}
+          <div class="feature-card teacher-level-card {% if row.weekly_status == 'follow_up' %}is-follow-up{% else %}is-praise{% endif %}">
+            <div class="admin-template-header" style="align-items:flex-start;">
+              <div>
+                <div class="feature-card-kicker">{{ tr('teacher_label_short') }}</div>
+                <h3>{{ row.teacher.full_name }}</h3>
+              </div>
+              <span class="teacher-status-badge {% if row.weekly_status == 'follow_up' %}is-follow-up{% else %}is-praise{% endif %}">
+                {% if row.weekly_status == 'follow_up' %}{{ tr('needs_followup') }}{% else %}{{ tr('completed_status') }}{% endif %}
+              </span>
+            </div>
+            <div class="feature-card-meta">
+              <span class="pill">{{ tr('levels_count_label') }}: {{ row.levels_count }}</span>
+              <span class="pill">{{ tr('students_count_label') }}: {{ row.students_count }}</span>
+              <span class="pill">{{ tr('levels_need_followup') }}: {{ row.weekly_follow_up_count }}</span>
+            </div>
+            <div class="feature-card-meta">
+              <span class="pill">{{ tr('attendance_this_week') }}: {{ row.attendance_completion_label }}</span>
+              <span class="pill">{{ tr('zoom_recordings') }}: {{ row.recordings_completion_label }}</span>
+              <span class="pill">{{ tr('weekly_homework_label') }}: {{ row.levels_with_weekly_homework }}/{{ row.levels_count }}</span>
+            </div>
+            <div class="teacher-level-status-copy">
+              <strong>{{ tr('week_status_label') }}:</strong>
+              <span>{{ row.weekly_review_notes }}</span>
+            </div>
+            <div class="teacher-level-status-copy">
+              <strong>{{ tr('weekly_summary_label') }}:</strong>
+              <span>
+                {{ tr('attendance_this_week') }} {{ row.attendance_completion_label }}،
+                {{ tr('zoom_recordings') }} {{ row.recordings_completion_label }}،
+                {{ tr('weekly_homework_label') }} {{ row.levels_with_weekly_homework }}/{{ row.levels_count }}
+                ({{ row.weekly_assignments_count }}).
+              </span>
+            </div>
+            <div class="feature-card-meta">
+              {% for check in row.weekly_level_checks %}
+              <span class="pill">
+                {{ check.level_name }}: {{ tr('attendance_word') }} {{ check.attendance_label }} • {{ tr('recordings_word') }} {{ check.recordings_label }} • {{ tr('homework_word') }} {{ check.weekly_assignments_count }}
+              </span>
+              {% endfor %}
+            </div>
+            <div class="teacher-level-status-copy">
+              {% for check in row.weekly_level_checks %}
+              <span>
+                {{ check.level_name }}:
+                {% if check.attendance_missing_days_label != '-' %}
+                {{ tr('missing_attendance_label') }} {{ check.attendance_missing_days_label }}
+                {% else %}
+                {{ tr('attendance_complete_label') }}
+                {% endif %}
+                |
+                {% if check.recording_missing_days_label != '-' %}
+                {{ tr('missing_recordings_label') }} {{ check.recording_missing_days_label }}
+                {% else %}
+                {{ tr('recordings_complete_label') }}
+                {% endif %}
+              </span>
+              {% endfor %}
+            </div>
+          </div>
+          {% else %}
+          <div class="panel">
+            <p>{{ tr('no_teacher_weekly_data') }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if access_code_status == 'success' %}
+      <div class="notice success">{{ access_code_message }}</div>
+      {% elif access_code_status == 'error' %}
+      <div class="notice error">{{ access_code_message }}</div>
+      {% endif %}
+
+      {% if teacher_thanks_status == 'success' %}
+      <div class="notice success">{{ teacher_thanks_message }}</div>
+      {% elif teacher_thanks_status == 'error' %}
+      <div class="notice error">{{ teacher_thanks_message }}</div>
+      {% endif %}
+
+      <div class="panel supervisor-section-panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('teacher_monthly_report') }}</div>
+            <h3>{{ tr('ideal_teacher_and_thanks') }}</h3>
+          </div>
+          <div class="feature-card-actions">
+            <a class="btn-link reports-btn" href="/admin/reports/teachers.xlsx">{{ tr('teachers_master_excel') }}</a>
+            <a class="btn-link reports-btn secondary" href="/admin/reports/teachers.pdf">{{ tr('teachers_master_pdf') }}</a>
+          </div>
+        </div>
+        <div class="feature-card-meta" style="margin-bottom:12px;">
+          <span class="pill">{{ tr('month_label') }}: {{ teacher_monthly_report_summary.month_key }}</span>
+          <span class="pill">{{ tr('teachers_count_label') }}: {{ teacher_monthly_report_summary.teachers_count }}</span>
+          <span class="pill">{{ tr('ready_for_thanks') }}: {{ teacher_monthly_report_summary.ready_to_thank }}</span>
+          <span class="pill">{{ tr('ideal_teacher') }}: {{ teacher_monthly_report_summary.ideal_teacher_name }}</span>
+          <span class="pill">{{ tr('score_label') }}: {{ teacher_monthly_report_summary.ideal_teacher_score }}</span>
+        </div>
+        <div class="dashboard-card-grid">
+          {% for row in teacher_monthly_report_rows %}
+          <div class="feature-card teacher-level-card {% if ideal_teacher_row and row.teacher.id == ideal_teacher_row.teacher.id %}is-praise{% else %}is-follow-up{% endif %}">
+            <div class="admin-template-header" style="align-items:flex-start;">
+              <div>
+                <div class="feature-card-kicker">{% if ideal_teacher_row and row.teacher.id == ideal_teacher_row.teacher.id %}{{ tr('ideal_teacher') }}{% else %}{{ tr('monthly_report_label') }}{% endif %}</div>
+                <h3>{{ row.teacher.full_name }}</h3>
+              </div>
+              <span class="teacher-status-badge {% if row.performance_label_key in ['ideal_status', 'excellent_status'] %}is-praise{% else %}is-follow-up{% endif %}">
+                {{ row.performance_label }}
+              </span>
+            </div>
+            <div class="feature-card-meta">
+              <span class="pill">{{ tr('score_label') }}: {{ row.overall_score }}</span>
+              <span class="pill">{{ tr('attendance_percentage_label') }}: {{ row.attendance_pct }}%</span>
+              <span class="pill">{{ tr('recordings_percentage_label') }}: {{ row.recordings_pct }}%</span>
+              <span class="pill">{{ tr('weekly_homework_label') }}: {{ row.homework_pct }}%</span>
+            </div>
+            <div class="feature-card-meta">
+              <span class="pill">{{ tr('levels_count_label') }}: {{ row.levels_count }}</span>
+              <span class="pill">{{ tr('assignments') }}: {{ row.monthly_assignments_count }}</span>
+              <span class="pill">{{ tr('pending_reviews_label') }}: {{ row.monthly_pending_reviews }}</span>
+              <span class="pill">{{ tr('email_ready_label') }}: {% if row.has_valid_email %}{{ tr('ready_label') }}{% else %}{{ tr('not_ready_label') }}{% endif %}</span>
+            </div>
+            <div class="teacher-level-status-copy">
+              <strong>{{ tr('level_breakdown_label') }}:</strong>
+              {% for check in row.level_checks %}
+              <span>
+                {{ check.level_name }}:
+                {{ tr('attendance_word') }} {{ check.attendance_label }} |
+                {{ tr('recordings_word') }} {{ check.recordings_label }} |
+                {{ tr('homework_word') }} {{ check.homework_label }}
+              </span>
+              {% endfor %}
+            </div>
+            <div class="feature-card-actions">
+              <form method="post" action="/admin/teachers/monthly-thanks/send">
+                <input type="hidden" name="teacher_id" value="{{ row.teacher.id }}">
+                <button type="submit" {% if not row.has_valid_email %}disabled{% endif %}>{{ tr('send_appreciation_message') }}</button>
+              </form>
+            </div>
+          </div>
+          {% else %}
+          <div class="panel">
+            <p>{{ tr('no_teacher_monthly_data') }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if announcement_status == 'success' %}
+      <div class="notice success">{{ announcement_message }}</div>
+      {% elif announcement_status == 'error' %}
+      <div class="notice error">{{ announcement_message }}</div>
+      {% endif %}
+
+      {% if calendar_status == 'success' %}
+      <div class="notice success">{{ calendar_message }}</div>
+      {% elif calendar_status == 'error' %}
+      <div class="notice error">{{ calendar_message }}</div>
+      {% endif %}
+
+      {% if readiness_issues %}
+      <div class="warning">
+        <strong>{{ tr('deployment_checklist') }}</strong>
+        <ul style="margin:8px 0 0 18px; padding:0;">
+          {% for issue in readiness_issues %}
+          <li>{{ issue }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <section class="supervisor-kpi-grid">
+        {% for item in kpis %}
+        <article class="supervisor-kpi-card">
+          <span>{{ item.label }}</span>
+          <strong>{{ item.value }}</strong>
+          <small>{{ item.caption }}</small>
+        </article>
+        {% endfor %}
+      </section>
+
+      <section class="supervisor-main-grid">
+        <div class="panel supervisor-section-panel">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('todays_gaps') }}</div>
+              <h3>{{ tr('immediate_supervisor_actions') }}</h3>
+            </div>
+          </div>
+          <div class="announcement-stack">
+            {% for row in todays_gap_rows %}
+            <div class="announcement-card is-warning">
+              <div class="announcement-card-head">
+                <div>
+                  <strong>{{ row.level.name }}</strong>
+                  <span>{{ row.teacher_name }}</span>
+                </div>
+              </div>
+              <p>{{ row.gaps|join(', ') }}</p>
+              <div class="feature-card-actions" style="margin-top:0;">
+                <a class="btn-link" href="/admin/levels/{{ row.level.id }}/follow-up">{{ tr('open_followup') }}</a>
+                <a class="btn-link" href="/levels/{{ row.level.id }}">{{ tr('open_level') }}</a>
+                <a class="btn-link" href="/attendance?level_id={{ row.level.id }}">{{ tr('attendance') }}</a>
+                <a class="btn-link" href="/head/data-root?section=levels">{{ tr('edit_level') }}</a>
+              </div>
+            </div>
+            {% else %}
+            <div class="announcement-card is-info">
+              <strong>{{ tr('no_urgent_daily_gaps') }}</strong>
+              <p>{{ tr('urgent_daily_gaps_clear') }}</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="panel supervisor-section-panel supervisor-tools-panel">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('supervisor_tools') }}</div>
+              <h3>{{ tr('core_access') }}</h3>
+            </div>
+          </div>
+          <p class="subtitle" style="margin-top:0;">{{ tr('core_links_access_management') }}</p>
+          <form class="inline-form" method="post" action="/admin/access-code/update" onsubmit="return confirm('{{ tr('confirm_change_admin_code') }}');">
+            <input type="text" name="new_access_code" placeholder="{{ tr('new_access_code') }}" minlength="4" required>
+            <button type="submit">{{ tr('update_code') }}</button>
+          </form>
+          <div class="feature-card-actions supervisor-tools-grid" style="margin-top:14px;">
+            <a class="btn-link reports-btn" href="/admin/reports">{{ tr('open_reports_center') }}</a>
+            <a class="btn-link reports-btn secondary" href="/students">{{ tr('students') }}</a>
+            <a class="btn-link reports-btn secondary" href="/attendance/list">{{ tr('attendance_records') }}</a>
+            <a class="btn-link reports-btn secondary" href="/monthly-report">{{ tr('monthly_report') }}</a>
+            <a class="btn-link reports-btn secondary" href="/admin/weekly-report">{{ tr('weekly_report_label') }}</a>
+            <a class="btn-link reports-btn secondary" href="/admin/weekly-report.pdf">{{ tr('weekly_pdf_label') }}</a>
+            <a class="btn-link reports-btn secondary" href="/admin/action-log">{{ tr('open_action_log') }}</a>
+            <a class="btn-link reports-btn secondary" href="/admin/exam-name-matches">{{ tr('open_matching') }}</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="supervisor-main-grid">
+        <div class="panel supervisor-section-panel">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('monthly_reports_review') }}</div>
+              <h3>{{ tr('supervisor_review_before_sending') }}</h3>
+            </div>
+            <a class="btn-link reports-btn secondary" href="/students/reports/monthly-review">{{ tr('open_monthly_review') }}</a>
+          </div>
+          <div class="feature-card-meta" style="margin-bottom:12px;">
+            <span class="pill">{{ tr('ready') }}: {{ monthly_review_summary.send_ready }}</span>
+            <span class="pill">{{ tr('missing_notes') }}: {{ monthly_review_summary.missing_notes }}</span>
+            <span class="pill">{{ tr('missing_email') }}: {{ monthly_review_summary.missing_email }}</span>
+            <span class="pill">{{ tr('missing_whatsapp') }}: {{ monthly_review_summary.missing_whatsapp }}</span>
+          </div>
+          <div class="announcement-stack">
+            {% for row in monthly_review_rows %}
+            <div class="announcement-card {% if row.send_ready %}is-info{% else %}is-warning{% endif %}">
+              <div class="announcement-card-head">
+                <div>
+                  <strong>{{ row.student.full_name }}</strong>
+                  <span>{{ row.report_data.level_name }} • {{ row.report_data.teacher_name }}</span>
+                </div>
+                <span class="pill">{% if row.send_ready %}{{ tr('ready') }}{% else %}{{ tr('review') }}{% endif %}</span>
+              </div>
+              <p>
+                {% if row.send_ready %}
+                {{ tr('monthly_report_ready_for_supervisor') }}
+                {% else %}
+                {{ row.issues|join(', ')|replace('_', ' ') }}
+                {% endif %}
+              </p>
+              <div class="feature-card-actions" style="margin-top:0;">
+                <a class="btn-link" href="/students/{{ row.student.id }}/report?period=month">{{ tr('open_report') }}</a>
+                <a class="btn-link" href="/students/reports/monthly-review">{{ tr('review_queue') }}</a>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="panel supervisor-section-panel">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('followup_attention_levels') }}</div>
+              <h3>{{ tr('classes_with_student_flags') }}</h3>
+            </div>
+          </div>
+          <div class="announcement-stack">
+            {% for row in level_followup_snapshot_rows %}
+            <div class="announcement-card is-warning">
+              <div class="announcement-card-head">
+                <div>
+                  <strong>{{ row.level.name }}</strong>
+                  <span>{{ row.teacher_name }}</span>
+                </div>
+                <span class="pill">{{ tr('students_flagged') }}: {{ row.flagged_count }}</span>
+              </div>
+              <p>
+                {{ tr('attendance_14d') }}: {{ row.low_attendance_count }} |
+                {{ tr('arabic_attendance_snapshot') }}: {{ row.imported_attendance_count }} |
+                {{ tr('open_assignments') }}: {{ row.open_assignments_count }} |
+                {{ tr('latest_exam') }}: {{ row.low_exam_count }} |
+                {{ tr('monthly_note_status') }}: {{ row.missing_monthly_note_count }}
+              </p>
+              <div class="feature-card-actions" style="margin-top:0;">
+                <a class="btn-link" href="/admin/levels/{{ row.level.id }}/follow-up">{{ tr('open_followup') }}</a>
+                <a class="btn-link" href="/students">{{ tr('students') }}</a>
+              </div>
+            </div>
+            {% else %}
+            <div class="announcement-card is-info">
+              <strong>{{ tr('followup_attention_levels') }}</strong>
+              <p>{{ tr('urgent_daily_gaps_clear') }}</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('data_cleanup') }}</div>
+              <h3>{{ tr('critical_records_snapshot') }}</h3>
+            </div>
+            <a class="btn-link" href="/head/data-root?section=cleanup&cleanup_priority_filter=critical">{{ tr('open_cleanup') }}</a>
+          </div>
+          <div class="feature-card-meta" style="margin-bottom:12px;">
+            <span class="pill">{{ tr('critical_label') }}: {{ cleanup_summary.critical_items }}</span>
+            <span class="pill">{{ tr('students') }}: {{ cleanup_summary.student_records }}</span>
+            <span class="pill">{{ tr('teachers') }}: {{ cleanup_summary.teacher_records }}</span>
+            <span class="pill">{{ tr('levels') }}: {{ cleanup_summary.level_records }}</span>
+          </div>
+          <div class="feature-card-actions" style="margin-top:0; margin-bottom:12px;">
+            <a class="btn-link" href="/head/data-root?section=cleanup">{{ tr('all_cleanup') }}</a>
+            <a class="btn-link" href="/head/data-root?section=cleanup&cleanup_priority_filter=critical">{{ tr('critical_only') }}</a>
+            <a class="btn-link" href="/head/data-root?section=cleanup&cleanup_scope=students">{{ tr('students_only') }}</a>
+            <a class="btn-link" href="/head/data-root?section=cleanup&cleanup_scope=teachers">{{ tr('teachers_only') }}</a>
+            <a class="btn-link" href="/head/data-root?section=cleanup&cleanup_scope=levels">{{ tr('levels_only') }}</a>
+          </div>
+          <div class="announcement-stack">
+            {% for row in cleanup_snapshot_students %}
+            {% if row.priority.tone == 'critical' %}
+            <div class="announcement-card is-danger">
+              <strong>{{ row.student.full_name }}</strong>
+              <p>{{ row.flags|join(', ')|replace('_', ' ') }}</p>
+              <div class="feature-card-actions" style="margin-top:0;">
+                <a class="btn-link" href="/head/data-root?section=cleanup&cleanup_scope=students&cleanup_priority_filter=critical">{{ tr('students_cleanup') }}</a>
+                <a class="btn-link" href="/head/data-root?section=students&search={{ row.student.student_code }}#student-{{ row.student.id }}">{{ tr('fix_record') }}</a>
+              </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% for row in cleanup_snapshot_teachers %}
+            {% if row.priority.tone == 'critical' %}
+            <div class="announcement-card is-danger">
+              <strong>{{ row.teacher.full_name }}</strong>
+              <p>{{ row.flags|join(', ')|replace('_', ' ') }}</p>
+              <div class="feature-card-actions" style="margin-top:0;">
+                <a class="btn-link" href="/head/data-root?section=cleanup&cleanup_scope=teachers&cleanup_priority_filter=critical">{{ tr('teachers_cleanup') }}</a>
+                <a class="btn-link" href="/head/data-root?section=teachers&teacher_search={{ row.teacher.full_name|urlencode }}#teacher-{{ row.teacher.id }}">{{ tr('fix_record') }}</a>
+              </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% for row in cleanup_snapshot_levels %}
+            {% if row.priority.tone == 'critical' %}
+            <div class="announcement-card is-danger">
+              <strong>{{ row.level.name }}</strong>
+              <p>{{ row.health_flags|join(', ')|replace('_', ' ') }}</p>
+              <div class="feature-card-actions" style="margin-top:0;">
+                <a class="btn-link" href="/head/data-root?section=cleanup&cleanup_scope=levels&cleanup_priority_filter=critical">{{ tr('levels_cleanup') }}</a>
+                <a class="btn-link" href="/head/data-root?section=levels&level_search={{ row.level.name|urlencode }}#level-{{ row.level.id }}">{{ tr('fix_record') }}</a>
+              </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% if cleanup_summary.critical_items == 0 %}
+            <div class="announcement-card is-info">
+              <strong>{{ tr('no_critical_cleanup_blockers') }}</strong>
+              <p>{{ tr('remaining_cleanup_review_only') }}</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </section>
+
+      <div class="supervisor-main-grid">
+        <div class="panel">
+          {% if arabic_attendance_import_status == 'success' %}
+          <div class="notice success">{{ arabic_attendance_import_message }}</div>
+          {% elif arabic_attendance_import_status == 'error' %}
+          <div class="notice error">{{ arabic_attendance_import_message }}</div>
+          {% endif %}
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('arabic_attendance_import') }}</div>
+              <h3>{{ tr('arabic_attendance_import') }}</h3>
+            </div>
+          </div>
+          <p class="subtitle" style="margin-top:0;">{{ tr('arabic_attendance_import_subtitle') }}</p>
+          <p class="subtitle" style="margin-top:0;">{{ tr('attendance_import_steps') }}</p>
+          <div class="feature-card-meta" style="margin-bottom:12px;">
+            <span class="pill">{{ tr('current_attendance_file') }}: {{ arabic_attendance_import_summary.current_file_name }}</span>
+            <span class="pill">{{ tr('imported_rows') }}: {{ arabic_attendance_import_summary.imported_rows_count }}</span>
+            <span class="pill">{{ tr('matched_rows') }}: {{ arabic_attendance_import_summary.matched_rows_count }}</span>
+            <span class="pill">{{ tr('unmatched_rows') }}: {{ arabic_attendance_import_summary.unmatched_rows_count }}</span>
+            <span class="pill">{{ tr('matched_aliases') }}: {{ arabic_attendance_import_summary.matched_aliases_count }}</span>
+            <span class="pill">{{ arabic_attendance_import_summary.current_file_modified or '-' }}</span>
+            <span class="pill">{{ tr('last_arabic_attendance_refresh') }}: {{ arabic_attendance_import_summary.last_refresh or '-' }}</span>
+          </div>
+          {% if arabic_attendance_import_summary.unmatched_rows_count > 0 %}
+          <div class="notice error" style="margin-bottom:12px;">
+            {{ arabic_attendance_import_summary.unmatched_rows_count }} Arabic attendance row(s) need name review before full trust.
+          </div>
+          {% endif %}
+          <form class="inline-form" method="post" action="/admin/arabic-attendance/upload" enctype="multipart/form-data" style="margin-bottom:10px;" onsubmit="return confirm('Upload and replace the current Arabic attendance workbook?');">
+            <input type="file" name="attendance_sheet" accept=".xlsx,.xls" required>
+            <button type="submit">{{ tr('upload_arabic_attendance_file') }}</button>
+          </form>
+          <form class="inline-form" method="post" action="/admin/arabic-attendance/refresh" onsubmit="return confirm('Refresh Arabic attendance workbook now?');" style="margin-bottom:10px;">
+            <button type="submit">{{ tr('refresh_arabic_attendance') }}</button>
+          </form>
+          <div class="feature-card-actions" style="margin-top:0;">
+            <a class="btn-link" href="/admin/arabic-attendance/current">{{ tr('download_current_attendance_file') }}</a>
+            <a class="btn-link" href="/admin/arabic-attendance/backup/latest">{{ tr('download_latest_backup') }}</a>
+          </div>
+          <div class="announcement-stack" style="margin-top:12px;">
+            {% for row in arabic_attendance_action_rows %}
+            <div class="announcement-card is-info">
+              <div class="announcement-card-head">
+                <div>
+                  <strong>{{ row.entity_label }}</strong>
+                  <span>{{ row.created_at.strftime('%Y-%m-%d %H:%M') if row.created_at else '-' }}</span>
+                </div>
+                <span class="pill">{{ row.action_type }}</span>
+              </div>
+              <p>{{ row.details or '-' }}</p>
+            </div>
+            {% endfor %}
+            {% for row in arabic_attendance_archive_rows %}
+            <div class="announcement-card is-info">
+              <div class="announcement-card-head">
+                <div>
+                  <strong>{{ row.file_name }}</strong>
+                  <span>{{ row.modified_at }}</span>
+                </div>
+                <span class="pill">{{ row.size_kb }} KB</span>
+              </div>
+            </div>
+            {% endfor %}
+            {% for row in arabic_attendance_import_summary.unmatched_samples %}
+            <div class="announcement-card is-warning">
+              <div class="announcement-card-head">
+                <div>
+                  <strong>{{ row.workbook_name }}</strong>
+                  <span>{{ row.level_name }}</span>
+                </div>
+                <span class="pill">{{ row.score }}</span>
+              </div>
+              <p>{{ row.best_match_name or '-' }}</p>
+            </div>
+            {% endfor %}
+            {% if not arabic_attendance_action_rows and not arabic_attendance_archive_rows %}
+            <div class="announcement-card is-info">
+              <strong>{{ tr('arabic_attendance_import') }}</strong>
+              <p>{{ tr('no_arabic_attendance_history') }}</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('operating_calendar') }}</div>
+              <h3>{{ tr('duty_time_and_weekly_followup') }}</h3>
+            </div>
+          </div>
+          <p class="subtitle" style="margin-top:0;">{{ tr('calendar_settings_help') }}</p>
+          <form method="post" action="/admin/calendar-settings/update">
+            <div class="admin-exam-form-grid">
+              <input type="time" name="duty_start_time" value="{{ calendar_settings.duty_start_time }}" required>
+              <input type="time" name="duty_end_time" value="{{ calendar_settings.duty_end_time }}" required>
+            </div>
+            <div class="admin-exam-form-grid" style="margin-top:10px;">
+              <select name="weekly_followup_weekday" required>
+                {% for weekday in ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'] %}
+                <option value="{{ weekday }}" {% if calendar_settings.weekly_followup_weekday == weekday %}selected{% endif %}>{{ weekday.title() }}</option>
+                {% endfor %}
+              </select>
+              <input type="time" name="weekly_followup_time" value="{{ calendar_settings.weekly_followup_time }}" required>
+            </div>
+            <div class="topbar" style="margin-top:10px;">
+              <button type="submit">{{ tr('save_calendar_settings') }}</button>
+            </div>
+          </form>
+          <div class="guide" style="margin-top:12px;">
+            <h4>{{ tr('weekly_followup_status') }}</h4>
+            <p>{{ followup_status_message }}</p>
+            <p>{{ tr('last_successful_scheduled_run', value=(last_weekly_followup_run or tr('not_yet_run'))) }}</p>
+          </div>
+          <form class="inline-form" method="post" action="/admin/weekly-followup/generate">
+            <input type="date" name="target_date" value="{{ spotlight.today }}">
+            <button type="submit">{{ tr('generate_weekly_followup_now') }}</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('holiday_calendar') }}</div>
+              <h3>{{ tr('academic_holidays') }}</h3>
+            </div>
+          </div>
+          <form method="post" action="/admin/holidays/add">
+            <div class="admin-exam-form-grid">
+              <input type="text" name="title" placeholder="{{ tr('holiday_title') }}" required>
+              <input type="date" name="start_date" required>
+            </div>
+            <div class="admin-exam-form-grid" style="margin-top:10px;">
+              <input type="date" name="end_date" required>
+              <button type="submit">{{ tr('add_holiday') }}</button>
+            </div>
+          </form>
+          <div class="announcement-stack" style="margin-top:12px;">
+            {% for holiday in holiday_rows %}
+            <div class="announcement-card is-info">
+              <div class="announcement-card-head">
+                <div>
+                  <strong>{{ holiday.title }}</strong>
+                  <span>{{ holiday.start_date }} to {{ holiday.end_date }}</span>
+                </div>
+                <span class="pill">{% if holiday.is_active %}{{ tr('active_label') }}{% else %}{{ tr('inactive_label') }}{% endif %}</span>
+              </div>
+              <form class="inline-form" method="post" action="/admin/holidays/{{ holiday.id }}/update">
+                <label><input type="checkbox" name="is_active" value="1" {% if holiday.is_active %}checked{% endif %}> {{ tr('active_label') }}</label>
+                <button type="submit">{{ tr('save') }}</button>
+              </form>
+            </div>
+            {% else %}
+            <div class="announcement-card is-info">
+              <strong>{{ tr('no_holidays_added') }}</strong>
+              <p>{{ tr('weekly_generator_runs_normally') }}</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('weekly_archive') }}</div>
+              <h3>{{ tr('saved_weekly_reports') }}</h3>
+            </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ tr('file') }}</th>
+                <th>{{ tr('updated') }}</th>
+                <th>{{ tr('size') }}</th>
+                <th>{{ tr('download') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in archived_weekly_reports %}
+              <tr>
+                <td>{{ row.file_name }}</td>
+                <td>{{ row.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ row.size_kb }} KB</td>
+                <td><a class="btn-link" href="/admin/weekly-report/archive/{{ row.file_name }}">{{ tr('download') }}</a></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="4">{{ tr('no_archived_weekly_reports') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="supervisor-main-grid">
+        <div class="panel">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('broadcast_center') }}</div>
+              <h3>{{ tr('post_administrative_announcement') }}</h3>
+            </div>
+          </div>
+          <p class="subtitle" style="margin-top:0;">{{ tr('announcement_posting_help') }}</p>
+          <form method="post" action="/admin/announcements/add">
+            <div class="admin-exam-form-grid">
+              <input type="text" name="title" placeholder="{{ tr('announcement_title') }}" required>
+              <select name="audience" required>
+                <option value="all">{{ tr('all_audience') }}</option>
+                <option value="teachers">{{ tr('teachers_only_audience') }}</option>
+                <option value="students">{{ tr('students_only_audience') }}</option>
+              </select>
+            </div>
+            <div class="admin-exam-form-grid" style="margin-top:10px;">
+              <select name="category" required>
+                <option value="general">{{ tr('general_category') }}</option>
+                <option value="reminder">{{ tr('reminder_category') }}</option>
+                <option value="alert">{{ tr('alert_category') }}</option>
+                <option value="follow_up">{{ tr('follow_up_category') }}</option>
+              </select>
+              <select name="level_id">
+                <option value="">{{ tr('all_levels') }}</option>
+                {% for level in levels %}
+                <option value="{{ level.id }}">{{ level.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <textarea name="body" rows="5" placeholder="{{ tr('announcement_body_placeholder') }}" style="margin-top:10px;" required></textarea>
+            <div class="admin-exam-form-grid" style="margin-top:10px;">
+              <input type="date" name="starts_on">
+              <input type="date" name="expires_on">
+            </div>
+            <div class="inline-form" style="margin-top:10px;">
+              <label style="display:flex; align-items:center; gap:8px; font-size:14px;">
+                <input type="checkbox" name="is_pinned" value="1">
+                <span>{{ tr('pin_this_announcement') }}</span>
+              </label>
+              <button type="submit">{{ tr('publish_announcement') }}</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('live_feed') }}</div>
+              <h3>{{ tr('recent_announcements') }}</h3>
+            </div>
+          </div>
+          <div class="announcement-stack">
+            {% for row in announcement_rows %}
+            <div class="announcement-card is-{{ row.tone }}">
+              <div class="announcement-card-head">
+                <div>
+                  <strong>{{ row.announcement.title }}</strong>
+                  <span>{{ row.category_label }} • {{ row.audience_label }}{% if row.announcement.level %} • {{ row.announcement.level.name }}{% endif %}</span>
+                </div>
+                <span class="pill">{% if row.announcement.is_active %}{{ tr('active_label') }}{% else %}{{ tr('archived_state') }}{% endif %}</span>
+              </div>
+              <p>{{ row.announcement.body }}</p>
+              <form class="inline-form" method="post" action="/admin/announcements/{{ row.announcement.id }}/update">
+                <label><input type="checkbox" name="is_active" value="1" {% if row.announcement.is_active %}checked{% endif %}> {{ tr('active_label') }}</label>
+                <label><input type="checkbox" name="is_pinned" value="1" {% if row.announcement.is_pinned %}checked{% endif %}> {{ tr('pinned') }}</label>
+                <input type="date" name="expires_on" value="{{ row.announcement.expires_on or '' }}">
+                <button type="submit">{{ tr('save') }}</button>
+              </form>
+            </div>
+            {% else %}
+            <div class="announcement-card is-info">
+              <strong>{{ tr('no_announcements_yet') }}</strong>
+              <p>{{ tr('published_messages_here') }}</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="supervisor-main-grid">
+        <div class="panel">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('student_risk_radar') }}</div>
+              <h3>{{ tr('students_needing_followup') }}</h3>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{{ tr('student_label') }}</th>
+                  <th>{{ tr('level') }}</th>
+                  <th>{{ tr('risk_label') }}</th>
+                  <th>{{ tr('attendance_14d') }}</th>
+                  <th>{{ tr('open_assignments') }}</th>
+                  <th>{{ tr('latest_exam') }}</th>
+                  <th>{{ tr('why') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in student_attention_rows %}
+                <tr>
+                  <td><a href="/students/{{ row.student.id }}/report?period=month">{{ row.student.full_name }}</a></td>
+                  <td>{{ row.level_name }}</td>
+                  <td>{{ row.risk_label }}</td>
+                  <td>
+                    {{ row.attendance_rate_display if row.attendance_rate_display is not none else '-' }}{% if row.attendance_rate_display is not none %}%{% endif %}
+                    {% if row.attendance_source_key %}
+                    <br><small>{{ tr(row.attendance_source_key) }}</small>
+                    {% endif %}
+                  </td>
+                  <td>{{ row.open_assignments }}</td>
+                  <td>
+                    {% if row.latest_exam_title %}
+                    {{ row.latest_exam_title }}<br><small>{{ row.latest_exam_percentage if row.latest_exam_percentage is not none else '-' }}{% if row.latest_exam_percentage is not none %}%{% endif %}</small>
+                    {% else %}
+                    -
+                    {% endif %}
+                  </td>
+                  <td>{{ row.reasons }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7">{{ tr('no_students_flagged') }}</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+      </main>
+    </div>
+    <script>
+      (() => {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('[data-sidebar-toggle]');
+        const backdrop = document.querySelector('[data-sidebar-backdrop]');
+        if (!sidebar || !toggle) return;
+        const setOpen = (open) => {
+          sidebar.classList.toggle('is-open', open);
+          if (backdrop) backdrop.classList.toggle('is-open', open);
+          document.body.classList.toggle('sidebar-open', open);
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        };
+        toggle.addEventListener('click', () => setOpen(!sidebar.classList.contains('is-open')));
+        if (backdrop) backdrop.addEventListener('click', () => setOpen(false));
+        sidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setOpen(false)));
+        window.addEventListener('resize', () => {
+          if (window.innerWidth > 700) setOpen(false);
+        });
+      })();
+    </script>
+  </body>
+</html>

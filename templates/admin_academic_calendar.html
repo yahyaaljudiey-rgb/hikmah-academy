@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tr('academic_calendar') }}</title>
+    <link rel="stylesheet" href="{{ static_asset('ui.css') }}">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="app-sidebar">
+        <div class="app-brand">
+          <span>{{ tr('academic_calendar') }}</span>
+          <strong>{{ tr('executive_control') }}</strong>
+        </div>
+        <div class="app-sidebar-card">
+          <span>{{ tr('current_teaching_week') }}</span>
+          <strong>{{ academic_calendar_status.current_week }}</strong>
+          <small>{{ tr(academic_calendar_status.status_key) }}</small>
+        </div>
+        <nav class="app-nav">
+          <a class="app-nav-link" href="/admin/dashboard">{{ tr('supervisor_dashboard') }}</a>
+          <a class="app-nav-link is-active" href="/admin/academic-calendar">{{ tr('academic_calendar') }}</a>
+          <a class="app-nav-link" href="/admin/syllabus-plan">{{ tr('open_syllabus_plan') }}</a>
+          <details class="app-nav-group">
+            <summary>{{ tr('language') }}</summary>
+            <div class="app-subnav">
+              <a href="{{ with_lang('en') }}" class="{% if current_lang == 'en' %}is-active{% endif %}">English</a>
+              <a href="{{ with_lang('ar') }}" class="{% if current_lang == 'ar' %}is-active{% endif %}">العربية</a>
+            </div>
+          </details>
+        </nav>
+      </aside>
+      <button class="sidebar-toggle" type="button" aria-label="{{ tr('academic_calendar') }}" data-sidebar-toggle>
+        <span class="sidebar-toggle-lines"></span>
+      </button>
+      <button class="app-sidebar-backdrop" type="button" aria-label="{{ tr('close_menu') }}" data-sidebar-backdrop></button>
+      <main class="app-main">
+        <div class="container">
+          {% if op_status == 'success' %}
+          <div class="notice success">{{ op_message }}</div>
+          {% elif op_status == 'error' %}
+          <div class="notice error">{{ op_message }}</div>
+          {% endif %}
+
+          <section class="supervisor-hero">
+            <div class="supervisor-hero-main">
+              <div class="feature-card-kicker">{{ tr('academic_calendar') }}</div>
+              <h1 class="title">{{ tr('academic_calendar') }}</h1>
+              <p class="subtitle">{{ tr('academic_calendar_subtitle') }}</p>
+              <div class="supervisor-chip-row">
+                <span class="pill">{{ tr('current_teaching_week') }}: {{ academic_calendar_status.current_week }}</span>
+                <span class="pill">{{ tr('current_calendar_status') }}: {{ tr(academic_calendar_status.status_key) }}</span>
+                <span class="pill">
+                  {{ tr('current_academic_event') }}:
+                  {% if academic_calendar_status.current_event %}
+                  {{ academic_calendar_status.current_event.title }}
+                  {% else %}
+                  {{ tr('teaching_in_session') }}
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+            <div class="supervisor-hero-side panel supervisor-hero-summary-card">
+              <div class="admin-template-header">
+                <div>
+                  <div class="section-kicker">{{ tr('next_academic_event') }}</div>
+                  <h3>
+                    {% if academic_calendar_status.next_event %}
+                    {{ academic_calendar_status.next_event.title }}
+                    {% else %}
+                    -
+                    {% endif %}
+                  </h3>
+                </div>
+              </div>
+              <div class="feature-card-meta">
+                {% for event in academic_calendar_status.upcoming_events %}
+                <span class="pill">
+                  {{ event.title }} • {{ event.start_date.strftime('%Y-%m-%d') }}
+                  {% if event.end_date != event.start_date %}→ {{ event.end_date.strftime('%Y-%m-%d') }}{% endif %}
+                </span>
+                {% else %}
+                <span class="pill">{{ tr('no_upcoming_academic_events') }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          </section>
+
+          <div class="panel supervisor-section-panel">
+            <div class="admin-template-header">
+              <div>
+                <div class="section-kicker">{{ tr('manage_calendar_events') }}</div>
+                <h3>{{ tr('add_calendar_event') }}</h3>
+              </div>
+            </div>
+            <form class="inline-form" method="post" action="/admin/academic-calendar/add">
+              <input type="text" name="title" placeholder="{{ tr('event_title_label') }}" required>
+              <select name="event_type" required>
+                {% for event_type in event_type_options %}
+                <option value="{{ event_type }}">{{ tr(event_type ~ '_type') }}</option>
+                {% endfor %}
+              </select>
+              <input type="date" name="start_date" required>
+              <input type="date" name="end_date" required>
+              <label class="pill"><input type="checkbox" name="is_instructional" value="1"> {{ tr('instructional_label') }}</label>
+              <input type="text" name="note_text" placeholder="{{ tr('event_note_label') }}">
+              <button type="submit">{{ tr('save_calendar_event') }}</button>
+            </form>
+          </div>
+
+          <div class="panel supervisor-section-panel">
+            <div class="admin-template-header">
+              <div>
+                <div class="section-kicker">{{ tr('academic_calendar') }}</div>
+                <h3>{{ tr('upcoming_academic_events') }}</h3>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>{{ tr('title_label') }}</th>
+                    <th>{{ tr('event_type_label') }}</th>
+                    <th>{{ tr('start_date_label') }}</th>
+                    <th>{{ tr('end_date_label') }}</th>
+                    <th>{{ tr('instructional_label') }}</th>
+                    <th>{{ tr('notes') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for event in calendar_events %}
+                  <tr>
+                    <td colspan="6">
+                      <form class="inline-form" method="post" action="/admin/academic-calendar/{{ event.id }}/update" style="align-items:flex-start;">
+                        <input type="text" name="title" value="{{ event.title }}" required>
+                        <select name="event_type" required>
+                          {% for event_type in event_type_options %}
+                          <option value="{{ event_type }}" {% if event.event_type == event_type %}selected{% endif %}>{{ tr(event_type ~ '_type') }}</option>
+                          {% endfor %}
+                        </select>
+                        <input type="date" name="start_date" value="{{ event.start_date.strftime('%Y-%m-%d') }}" required>
+                        <input type="date" name="end_date" value="{{ event.end_date.strftime('%Y-%m-%d') }}" required>
+                        <label class="pill"><input type="checkbox" name="is_instructional" value="1" {% if event.is_instructional %}checked{% endif %}> {{ tr('instructional_label') }}</label>
+                        <input type="text" name="note_text" value="{{ event.note_text or '' }}" placeholder="{{ tr('event_note_label') }}">
+                        <button type="submit">{{ tr('update_calendar_event') }}</button>
+                      </form>
+                    </td>
+                  </tr>
+                  {% else %}
+                  <tr>
+                    <td colspan="6">{{ tr('no_upcoming_academic_events') }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script>
+      (() => {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('[data-sidebar-toggle]');
+        const backdrop = document.querySelector('[data-sidebar-backdrop]');
+        if (!sidebar || !toggle) return;
+        const setOpen = (open) => {
+          sidebar.classList.toggle('is-open', open);
+          if (backdrop) backdrop.classList.toggle('is-open', open);
+          document.body.classList.toggle('sidebar-open', open);
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        };
+        toggle.addEventListener('click', () => setOpen(!sidebar.classList.contains('is-open')));
+        if (backdrop) backdrop.addEventListener('click', () => setOpen(false));
+        sidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setOpen(false)));
+        window.addEventListener('resize', () => {
+          if (window.innerWidth > 700) setOpen(false);
+        });
+      })();
+    </script>
+  </body>
+</html>

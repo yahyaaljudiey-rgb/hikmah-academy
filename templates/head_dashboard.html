@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{% if current_lang == 'ar' %}rtl{% else %}ltr{% endif %}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ ui.title }}</title>
+    <link rel="stylesheet" href="/static/ui.css">
+  </head>
+  <body class="control-danger-zone">
+    <div class="container">
+      <div class="topbar">
+        <a class="pill" href="/admin/logout">{{ ui.logout }}</a>
+        <a class="pill" href="/">{{ ui.main_dashboard }}</a>
+        <a class="pill" href="/head/data-root">{{ ui.data_root }}</a>
+        <span class="pill">{{ ui.language }}:</span>
+        <a class="pill" href="/head/dashboard?lang=en">EN</a>
+        <a class="pill" href="/head/dashboard?lang=ar">AR</a>
+      </div>
+
+      <section class="control-warning-banner">
+        <div class="control-warning-icon">!</div>
+        <div class="control-warning-copy">
+          <strong>{% if current_lang == 'ar' %}منطقة تحكم حساسة{% else %}Sensitive Control Area{% endif %}</strong>
+          <p>
+            {% if current_lang == 'ar' %}
+            أي تعديل هنا ينعكس على صفحات المعلمين والطلاب والتقارير والمناهج في كامل الموقع.
+            {% else %}
+            Changes made here affect teacher pages, student pages, reports, and curriculum data across the whole site.
+            {% endif %}
+          </p>
+        </div>
+      </section>
+
+      <section class="supervisor-hero control-hero">
+        <div class="supervisor-hero-main">
+          <div class="feature-card-kicker">{% if current_lang == 'ar' %}مركز التحكم المركزي{% else %}Central Control Center{% endif %}</div>
+          <h1 class="title">{{ ui.title }}</h1>
+          <p class="subtitle">{{ ui.subtitle }}</p>
+          <div class="supervisor-chip-row">
+            <span class="pill">{{ ui.total_students }}: {{ total_students }}</span>
+            <span class="pill">{{ ui.total_levels }}: {{ total_levels }}</span>
+            <span class="pill">{{ ui.total_teachers }}: {{ total_teachers }}</span>
+            <span class="pill">Active Templates: {{ head_snapshot.active_templates }}</span>
+            <span class="pill">Published Exams: {{ head_snapshot.published_exams }}</span>
+            <span class="pill">Cleanup Critical: {{ head_snapshot.cleanup_critical }}</span>
+          </div>
+        </div>
+        <div class="supervisor-hero-side panel control-hero-side">
+          <h3>Quick Operations</h3>
+          <div class="feature-card-actions" style="margin-top:0;">
+            <a class="btn-link" href="/head/data-root?section=cleanup&cleanup_priority_filter=critical">Open Cleanup</a>
+            <a class="btn-link" href="/admin/dashboard">Supervisor Dashboard</a>
+            <a class="btn-link" href="/head/data-root?section=levels">Levels Setup</a>
+            <a class="btn-link" href="/head/data-root?section=teachers">Teachers Setup</a>
+          </div>
+          <div class="guide" style="margin-top:12px;">
+            <h4>Today</h4>
+            <p>Levels missing Zoom: {{ head_snapshot.levels_missing_zoom }}</p>
+            <p>Teacher resources: {{ head_snapshot.teacher_resources_count }}</p>
+            <p>Books links: {{ head_snapshot.books_count }}</p>
+          </div>
+        </div>
+      </section>
+
+      {% if exam_import_status == 'success' %}
+      <div class="notice success">{{ exam_import_message }}</div>
+      {% elif exam_import_status == 'error' %}
+      <div class="notice error">{{ exam_import_message }}</div>
+      {% endif %}
+
+      <div class="grid-cards">
+        <div class="card"><h3>{{ ui.total_students }}</h3><div class="metric">{{ total_students }}</div></div>
+        <div class="card"><h3>{{ ui.total_levels }}</h3><div class="metric">{{ total_levels }}</div></div>
+        <div class="card"><h3>{{ ui.total_teachers }}</h3><div class="metric">{{ total_teachers }}</div></div>
+        <div class="card"><h3>Active Templates</h3><div class="metric">{{ head_snapshot.active_templates }}</div></div>
+        <div class="card"><h3>Published Exams</h3><div class="metric">{{ head_snapshot.published_exams }}</div></div>
+        <div class="card"><h3>Levels Missing Zoom</h3><div class="metric">{{ head_snapshot.levels_missing_zoom }}</div></div>
+      </div>
+
+      <div class="workspace-hero">
+        <div class="panel workspace-hero-main">
+          <div class="workspace-hero-copy">
+            <div class="section-kicker">{{ ui.assessment_control }}</div>
+            <h3>{{ ui.exam_management }}</h3>
+            <p>{{ ui.exam_management_desc }}</p>
+          </div>
+          <div class="workspace-hero-stats">
+            <div class="metric-chip">
+              <span>{{ ui.templates }}</span>
+              <strong>{{ exam_template_rows|length }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ ui.imported_exams }}</span>
+              <strong>{{ exam_titles|length }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ ui.visibility_rules }}</span>
+              <strong>{{ students|length }}</strong>
+            </div>
+          </div>
+        </div>
+        <div class="panel workspace-hero-side">
+          <p><strong>{{ ui.workflow_label }}</strong> {{ ui.workflow_text }}</p>
+          <p><strong>{{ ui.tip_label }}</strong> {{ ui.tip_text }}</p>
+        </div>
+      </div>
+
+      <div class="admin-exam-grid">
+        <div class="panel admin-exam-panel">
+          <div class="section-kicker">Import</div>
+          <h3>{{ ui.import_exam_results }}</h3>
+          <p>{{ ui.import_exam_desc_1 }}</p>
+          <p>{{ ui.import_exam_desc_2 }}</p>
+          <form class="inline-form" method="post" action="/head/exam-results/import" enctype="multipart/form-data">
+            <input type="file" name="exam_sheet" accept=".xlsx,.xls" required>
+            <button type="submit">{{ ui.upload_excel }}</button>
+          </form>
+        </div>
+
+        <div class="panel admin-exam-panel">
+          <div class="section-kicker">{{ ui.step_2 }}</div>
+          <h3>{{ ui.publish_or_restrict }}</h3>
+          <p>{{ ui.publish_or_restrict_desc }}</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{{ ui.exam }}</th>
+                  <th>{{ ui.published_for_all }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for exam_title in exam_titles %}
+                <tr>
+                  <td>{{ exam_title }}</td>
+                  <td>
+                    <form class="inline-form" method="post" action="/head/exam-publications/update">
+                      <input type="hidden" name="exam_title" value="{{ exam_title }}">
+                      <label><input type="checkbox" name="is_published" {% if exam_publications.get(exam_title) and exam_publications.get(exam_title).is_published %}checked{% endif %}> {{ ui.visible }}</label>
+                      <button type="submit">{{ ui.save }}</button>
+                    </form>
+                  </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="2">{{ ui.no_exams_found }}</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="admin-exam-subpanel">
+            <h4>{{ ui.individual_student_visibility }}</h4>
+            <form class="inline-form" method="post" action="/head/student-exam-visibility/update">
+              <select name="student_id" required>
+                <option value="">{{ ui.select_student }}</option>
+                {% for student in students %}
+                <option value="{{ student.id }}">{{ student.full_name }}{% if student.level %} - {{ student.level.name }}{% elif student.level_name %} - {{ student.level_name }}{% endif %}</option>
+                {% endfor %}
+              </select>
+              <select name="exam_title" required>
+                <option value="">{{ ui.select_exam }}</option>
+                {% for exam_title in exam_titles %}
+                <option value="{{ exam_title }}">{{ exam_title }}</option>
+                {% endfor %}
+              </select>
+              <select name="visibility_mode" required>
+                <option value="hide">{{ ui.hide_for_student }}</option>
+                <option value="show">{{ ui.show_for_student }}</option>
+              </select>
+              <button type="submit">{{ ui.save_visibility }}</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel admin-exam-panel">
+        <div class="section-kicker">{{ ui.step_1 }}</div>
+        <h3>{{ ui.create_exam_template }}</h3>
+        <p>{{ ui.create_exam_template_desc }}</p>
+        <form method="post" action="/head/exam-templates/add">
+          <div class="admin-exam-form-grid">
+            <input type="text" name="title" placeholder="{{ ui.exam_title }}" required>
+            <input type="date" name="exam_date">
+          </div>
+          <div class="admin-exam-help">
+            <strong>{{ ui.branches_format }}</strong>
+            <span>{{ ui.branches_example }}</span>
+          </div>
+          <textarea name="branches_text" rows="6" placeholder="Reading (Fluency)|10&#10;Speaking|10&#10;Listening + Writing|10&#10;Reading + SPaG|10"></textarea>
+          <div class="topbar" style="margin-top:10px;">
+            <button type="submit">{{ ui.add_exam_template }}</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="section-kicker">{{ ui.step_3 }}</div>
+        <h3>{{ ui.existing_exam_templates }}</h3>
+        <p>{{ ui.existing_exam_templates_desc }}</p>
+        <div class="admin-template-stack">
+          {% for row in exam_template_rows %}
+          <div class="exam-sheet compact admin-template-card">
+            <form method="post" action="/head/exam-templates/{{ row.template.id }}/update">
+              <div class="admin-template-header">
+                <div>
+                  <strong>{{ row.template.title }}</strong>
+                  <span>{{ row.template.exam_date or ui.no_date_set }}</span>
+                </div>
+                <label><input type="checkbox" name="is_active" {% if row.template.is_active %}checked{% endif %}> {{ ui.active }}</label>
+              </div>
+              <div class="admin-exam-form-grid" style="margin-top:10px;">
+                <input type="text" name="title" value="{{ row.template.title }}" required>
+                <input type="date" name="exam_date" value="{{ row.template.exam_date or '' }}">
+              </div>
+              <textarea name="branches_text" rows="5" style="margin-top:10px;">{{ row.branch_text }}</textarea>
+              <div class="topbar" style="margin-top:10px;">
+                <button type="submit">{{ ui.update_template }}</button>
+              </div>
+            </form>
+          </div>
+          {% else %}
+          <p>{{ ui.no_exam_templates_yet }}</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="section-kicker">{{ ui.curriculum }}</div>
+        <h3>{{ ui.subjects_and_books }}</h3>
+        <p>{{ ui.subjects_and_books_desc }}</p>
+
+        <div class="grid-cards" style="margin-top:14px;">
+          <div class="card"><h3>{{ ui.books }}</h3><div class="metric">{{ head_snapshot.books_count }}</div></div>
+          <div class="card"><h3>{{ ui.teacher_resources }}</h3><div class="metric">{{ head_snapshot.teacher_resources_count }}</div></div>
+          <div class="card"><h3>{{ ui.total_levels }}</h3><div class="metric">{{ total_levels }}</div></div>
+        </div>
+
+        <div class="supervisor-main-grid" style="margin-top:14px;">
+          <div class="panel admin-exam-panel" style="margin-bottom:0;">
+            <h3>{{ ui.add_level_link }}</h3>
+            <form method="post" action="/head/curriculum-items/add">
+              <div class="admin-exam-form-grid">
+                <select name="level_id" required>
+                  <option value="">{{ ui.select_level }}</option>
+                  {% for level in levels %}
+                  <option value="{{ level.id }}">{{ level.name }}</option>
+                  {% endfor %}
+                </select>
+                <select name="item_group" required>
+                  <option value="books">{{ ui.book }}</option>
+                  <option value="teacher_resources">{{ ui.teacher_resource }}</option>
+                </select>
+              </div>
+              <div class="admin-exam-form-grid" style="margin-top:10px;">
+                <input type="text" name="title" placeholder="{{ ui.resource_title }}" required>
+                <input type="number" name="order_index" placeholder="{{ ui.order }}">
+              </div>
+              <div class="admin-exam-form-grid" style="margin-top:10px;">
+                <select name="visibility_scope" required>
+                  <option value="student_and_teacher">Teacher + Students</option>
+                  <option value="teacher_only">Teacher Only</option>
+                </select>
+              </div>
+              <input type="text" name="resource_link" placeholder="{{ ui.google_drive_link }}" style="margin-top:10px;" required>
+              <textarea name="description" rows="3" placeholder="{{ ui.short_book_description }}" style="margin-top:10px;"></textarea>
+              <div class="inline-form" style="margin-top:10px;">
+                <label style="display:flex; align-items:center; gap:8px; font-size:14px;">
+                  <input type="checkbox" name="apply_to_all_levels" value="1">
+                  <span>{{ ui.apply_to_all_levels }}</span>
+                </label>
+                <button type="submit">{{ ui.save_link }}</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="guide" style="margin-bottom:0;">
+            <h4>Curriculum Notes</h4>
+            <p>Use books for student-facing materials and teacher resources for internal support links.</p>
+            <p>Apply to all levels only for truly shared materials to keep each level page focused.</p>
+            <p>Delete outdated links quickly so students and teachers always see the latest version.</p>
+          </div>
+        </div>
+
+        <div class="supervisor-main-grid" style="margin-top:14px;">
+          <div class="panel" style="margin-bottom:0;">
+            <h3 style="margin-top:0;">{{ ui.books }}</h3>
+            <div class="admin-book-levels">
+              {% for row in book_subject_rows %}
+              <div class="admin-book-subject">
+                <div class="admin-template-header">
+                  <div>
+                    <strong>{{ row.subject.level.name if row.subject.level else '-' }}</strong>
+                  </div>
+                </div>
+                <div class="book-card-grid" style="margin-top:12px;">
+                  {% for item in row.curriculum_items %}
+                  <div class="book-card">
+                    <a href="{{ item.resource_link }}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:inherit;">
+                      <span class="book-card-kicker">{{ ui.book }}</span>
+                      <strong>{{ item.title }}</strong>
+                      <small>{% if item.visibility_scope == 'teacher_only' %}Teacher Only{% else %}Teacher + Students{% endif %}</small>
+                      <small>{{ item.description or ui.open_on_drive }}</small>
+                    </a>
+                    <form class="inline-form" method="post" action="/head/curriculum-items/{{ item.id }}/visibility" style="margin-top:10px;">
+                      <select name="visibility_scope">
+                        <option value="student_and_teacher" {% if item.visibility_scope != 'teacher_only' %}selected{% endif %}>Teacher + Students</option>
+                        <option value="teacher_only" {% if item.visibility_scope == 'teacher_only' %}selected{% endif %}>Teacher Only</option>
+                      </select>
+                      <button class="secondary" type="submit">Save Visibility</button>
+                    </form>
+                    <form method="post" action="/head/curriculum-items/{{ item.id }}/delete" style="margin-top:10px;">
+                      <button class="danger" type="submit" onclick="return confirm('{{ ui.delete_link_confirm }}');">{{ ui.delete_link }}</button>
+                    </form>
+                  </div>
+                  {% else %}
+                  <div class="book-card is-empty">
+                    <span class="book-card-kicker">{{ ui.book }}</span>
+                    <strong>{{ ui.no_books_yet }}</strong>
+                    <small>{{ ui.add_drive_link }}</small>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+              {% else %}
+              <p>{{ ui.no_subjects_or_books }}</p>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="panel" style="margin-bottom:0;">
+            <h3 style="margin-top:0;">{{ ui.teacher_resources }}</h3>
+            <div class="admin-book-levels">
+              {% for row in teacher_resource_subject_rows %}
+              <div class="admin-book-subject">
+                <div class="admin-template-header">
+                  <div>
+                    <strong>{{ row.subject.level.name if row.subject.level else '-' }}</strong>
+                  </div>
+                </div>
+                <div class="book-card-grid" style="margin-top:12px;">
+                  {% for item in row.curriculum_items %}
+                  <div class="book-card">
+                    <a href="{{ item.resource_link }}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:inherit;">
+                      <span class="book-card-kicker">{{ ui.teacher_resource }}</span>
+                      <strong>{{ item.title }}</strong>
+                      <small>{% if item.visibility_scope == 'teacher_only' %}Teacher Only{% else %}Teacher + Students{% endif %}</small>
+                      <small>{{ item.description or ui.open_on_drive }}</small>
+                    </a>
+                    <form class="inline-form" method="post" action="/head/curriculum-items/{{ item.id }}/visibility" style="margin-top:10px;">
+                      <select name="visibility_scope">
+                        <option value="student_and_teacher" {% if item.visibility_scope != 'teacher_only' %}selected{% endif %}>Teacher + Students</option>
+                        <option value="teacher_only" {% if item.visibility_scope == 'teacher_only' %}selected{% endif %}>Teacher Only</option>
+                      </select>
+                      <button class="secondary" type="submit">Save Visibility</button>
+                    </form>
+                    <form method="post" action="/head/curriculum-items/{{ item.id }}/delete" style="margin-top:10px;">
+                      <button class="danger" type="submit" onclick="return confirm('{{ ui.delete_link_confirm }}');">{{ ui.delete_link }}</button>
+                    </form>
+                  </div>
+                  {% else %}
+                  <div class="book-card is-empty">
+                    <span class="book-card-kicker">{{ ui.teacher_resource }}</span>
+                    <strong>{{ ui.no_teacher_resources_yet }}</strong>
+                    <small>{{ ui.add_teacher_links_here }}</small>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+              {% else %}
+              <p>{{ ui.no_teacher_resources_yet }}</p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="section-kicker">Level Directory</div>
+        <h3>{{ ui.level_name }}</h3>
+        <p class="subtitle">{{ ui.details }} / {{ ui.attendance_report }} / {{ ui.join_zoom }}</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ ui.level_name }}</th>
+                <th>{{ ui.teacher_name }}</th>
+                <th>{{ ui.students_count }}</th>
+                <th>{{ ui.join_zoom }}</th>
+                <th>{{ ui.details }}</th>
+                <th>{{ ui.attendance_report }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in level_rows %}
+              <tr>
+                <td>{{ row.name }}</td>
+                <td>{{ row.teacher_name or '-' }}</td>
+                <td>{{ row.students_count }}</td>
+                <td>{% if row.zoom_link %}<a class="btn-link" href="{{ row.zoom_link }}" target="_blank" rel="noopener noreferrer">{{ ui.join_zoom }}</a>{% else %}-{% endif %}</td>
+                <td><a href="/levels/{{ row.id }}">{{ ui.details }}</a></td>
+                <td><a href="/levels/{{ row.id }}/attendance-report">{{ ui.attendance_report }}</a></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="6">{{ ui.no_levels_found }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <script>
+      (() => {
+        const forms = Array.from(document.querySelectorAll('form[method="post"], form[method="POST"]'));
+        const deleteText = {% if current_lang == 'ar' %}"هذا إجراء حساس وسيؤثر على بيانات الموقع. هل تريد المتابعة؟"{% else %}"This is a sensitive action that will affect live site data. Do you want to continue?"{% endif %};
+        const saveText = {% if current_lang == 'ar' %}"سيتم حفظ هذا التعديل مباشرة على النظام الحي. هل أنت متأكد؟"{% else %}"This change will be saved directly to the live system. Are you sure?"{% endif %};
+
+        forms.forEach((form) => {
+          form.addEventListener('submit', (event) => {
+            const submitter = event.submitter;
+            const isDanger = submitter && submitter.classList.contains('danger');
+            const message = isDanger ? deleteText : saveText;
+            if (!window.confirm(message)) {
+              event.preventDefault();
+            }
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

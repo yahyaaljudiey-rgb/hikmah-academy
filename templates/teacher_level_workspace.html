@@ -1,0 +1,1127 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tr('teacher_level_workspace') }}</title>
+    <link rel="stylesheet" href="{{ static_asset('ui.css') }}">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="app-sidebar">
+        <div class="app-brand">
+          <span>{{ tr('assigned_level') }}</span>
+          <strong>{{ level.name }}</strong>
+        </div>
+        <div class="app-sidebar-card">
+          <span>{{ tr('students') }}</span>
+          <strong>{{ students|length }}</strong>
+          <small>{{ tr('daily_workflow_help') }}</small>
+        </div>
+        <nav class="app-nav">
+          <a class="app-nav-link" href="/teacher/dashboard">{{ tr('teacher_dashboard') }}</a>
+          <details class="app-nav-group" open>
+            <summary>{{ tr('daily_workflow') }}</summary>
+            <div class="app-subnav">
+              <a href="/teacher/levels/{{ level.id }}?workspace=class-tools" class="{% if default_workspace_panel == 'class-tools' %}is-active{% endif %}">{{ tr('before_class') }}</a>
+              <a href="/attendance?level_id={{ level.id }}">{{ tr('open_attendance') }}</a>
+              <a href="/teacher/levels/{{ level.id }}/syllabus-plan">{{ tr('open_syllabus_plan') }}</a>
+            </div>
+          </details>
+          <details class="app-nav-group" {% if default_workspace_panel in ['assignments', 'recordings', 'students', 'assessment', 'scheduling'] %}open{% endif %}>
+            <summary>{{ tr('class_operations') }}</summary>
+            <div class="app-subnav">
+              <a href="/teacher/levels/{{ level.id }}?workspace=recordings" class="{% if default_workspace_panel == 'recordings' %}is-active{% endif %}">{{ tr('recordings_label') }}</a>
+              <a href="/teacher/levels/{{ level.id }}?workspace=assignments" class="{% if default_workspace_panel == 'assignments' %}is-active{% endif %}">{{ tr('assignments') }}</a>
+              <a href="/teacher/levels/{{ level.id }}?workspace=assessment" class="{% if default_workspace_panel == 'assessment' %}is-active{% endif %}">{{ tr('exams') }}</a>
+              <a href="/teacher/levels/{{ level.id }}?workspace=scheduling" class="{% if default_workspace_panel == 'scheduling' %}is-active{% endif %}">{{ tr('upcoming_exams_label') }}</a>
+              <a href="/teacher/levels/{{ level.id }}?workspace=students" class="{% if default_workspace_panel == 'students' %}is-active{% endif %}">{{ tr('students_section') }}</a>
+            </div>
+          </details>
+          <details class="app-nav-group">
+            <summary>{{ tr('language') }}</summary>
+            <div class="app-subnav">
+              <a href="{{ with_lang('en') }}" class="{% if current_lang == 'en' %}is-active{% endif %}">English</a>
+              <a href="{{ with_lang('ar') }}" class="{% if current_lang == 'ar' %}is-active{% endif %}">العربية</a>
+            </div>
+          </details>
+          <details class="app-nav-group">
+            <summary>{{ tr('role_selection') }}</summary>
+            <div class="app-subnav">
+              <a href="/">{{ tr('role_selection') }}</a>
+              <a href="/teacher/logout">{{ tr('logout') }}</a>
+            </div>
+          </details>
+        </nav>
+      </aside>
+      <button class="sidebar-toggle" type="button" aria-label="{{ tr('daily_workflow') }}" data-sidebar-toggle>
+        <span class="sidebar-toggle-lines"></span>
+      </button>
+      <button class="app-sidebar-backdrop" type="button" aria-label="{{ tr('close_menu') }}" data-sidebar-backdrop></button>
+      <main class="app-main">
+    <div class="container">
+
+      <h1 class="title">{{ level.name }} {{ tr('teacher_level_workspace') }}</h1>
+      <p class="subtitle">{{ tr('workspace_subtitle') }}</p>
+
+      {% if op_status == 'success' %}
+      <div class="notice success">{{ op_message }}</div>
+      {% elif op_status == 'error' %}
+      <div class="notice error">{{ op_message }}</div>
+      {% endif %}
+
+      <div class="workspace-hero">
+        <div class="panel workspace-hero-main">
+            <div class="workspace-hero-copy">
+            <div class="section-kicker">{{ tr('teacher_control_center') }}</div>
+            <h3>{{ level.name }}</h3>
+            <p>{{ level.teacher.full_name if level.teacher else '-' }}</p>
+          </div>
+          <div class="workspace-hero-stats">
+            <div class="metric-chip">
+              <span>{{ tr('students') }}</span>
+              <strong>{{ students|length }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ tr('upcoming_exams_label') }}</span>
+              <strong>{{ upcoming_exams|length }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ tr('recordings_label') }}</span>
+              <strong>{{ recordings|length }}</strong>
+            </div>
+            <div class="metric-chip">
+              <span>{{ tr('assignments') }}</span>
+              <strong>{{ assignments|length }}</strong>
+            </div>
+          </div>
+        </div>
+        <div class="panel workspace-hero-side">
+          <div class="admin-template-header">
+            <div>
+              <div class="section-kicker">{{ tr('zoom_link_label') }}</div>
+              <h3>{{ tr('prepare_zoom_and_plan') }}</h3>
+            </div>
+          </div>
+          <div class="copy-stack">
+            <div class="copy-row">
+              <strong>{{ tr('zoom_link_label') }}:</strong>
+              {% if level.zoom_link %}
+              <a class="copy-value" href="{{ level.zoom_link }}" target="_blank" rel="noopener noreferrer">{{ level.zoom_link }}</a>
+              <button class="secondary copy-action" type="button" data-copy-text="{{ level.zoom_link }}">{{ tr('copy_label') }}</button>
+              {% else %}
+              <span class="copy-value">-</span>
+              {% endif %}
+            </div>
+            <div class="copy-row">
+              <strong>{{ tr('zoom_email_label') }}:</strong>
+              <span class="copy-value">{{ level.zoom_email or '-' }}</span>
+              {% if level.zoom_email %}
+              <button class="secondary copy-action" type="button" data-copy-text="{{ level.zoom_email }}">{{ tr('copy_label') }}</button>
+              {% endif %}
+            </div>
+            <div class="copy-row">
+              <strong>{{ tr('zoom_meeting_id_label') }}:</strong>
+              <span class="copy-value">{{ level.zoom_meeting_id or '-' }}</span>
+              {% if level.zoom_meeting_id %}
+              <button class="secondary copy-action" type="button" data-copy-text="{{ level.zoom_meeting_id }}">{{ tr('copy_label') }}</button>
+              {% endif %}
+            </div>
+            <div class="copy-row">
+              <strong>{{ tr('zoom_passcode_label') }}:</strong>
+              <span class="copy-value">{{ level.zoom_passcode or '-' }}</span>
+              {% if level.zoom_passcode %}
+              <button class="secondary copy-action" type="button" data-copy-text="{{ level.zoom_passcode }}">{{ tr('copy_label') }}</button>
+              {% endif %}
+            </div>
+            <span class="copy-msg" data-copy-feedback></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel workspace-start-panel teacher-section-panel">
+        <div class="admin-template-header">
+          <div>
+            <div class="section-kicker">{{ tr('start_here') }}</div>
+            <h3>{{ tr('daily_workflow') }}</h3>
+          </div>
+          <span class="pill">{{ tr('current_teaching_week') }}: {{ syllabus_plan_summary.current_week }}</span>
+        </div>
+        <div class="workspace-start-grid">
+          <a class="workspace-start-card" href="/teacher/levels/{{ level.id }}/syllabus-plan">
+            <span class="workspace-start-step">1</span>
+            <strong>{{ tr('before_class') }}</strong>
+            <small>{{ tr('open_syllabus_plan') }}</small>
+          </a>
+          <a class="workspace-start-card" href="/attendance?level_id={{ level.id }}">
+            <span class="workspace-start-step">2</span>
+            <strong>{{ tr('during_class') }}</strong>
+            <small>{{ tr('take_attendance') }}</small>
+          </a>
+          <a class="workspace-start-card" href="/teacher/levels/{{ level.id }}?workspace=recordings">
+            <span class="workspace-start-step">3</span>
+            <strong>{{ tr('after_class') }}</strong>
+            <small>{{ tr('upload_recording_and_homework') }}</small>
+          </a>
+        </div>
+      </div>
+
+      <div class="workspace-nav">
+        <button class="workspace-nav-card {% if default_workspace_panel == 'class-tools' %}is-active{% endif %}" type="button" data-workspace-target="class-tools">
+          <span class="workspace-nav-kicker">{{ tr('resources') }}</span>
+          <strong>{{ tr('daily_workflow') }}</strong>
+          <small>{{ tr('prepare_zoom_and_plan') }}</small>
+        </button>
+        <button class="workspace-nav-card {% if default_workspace_panel == 'assessment' %}is-active{% endif %}" type="button" data-workspace-target="assessment">
+          <span class="workspace-nav-kicker">{{ tr('assessment') }}</span>
+          <strong>{{ tr('exams') }}</strong>
+          <small>{{ tr('templates_reports_scores') }}</small>
+        </button>
+        <button class="workspace-nav-card {% if default_workspace_panel == 'scheduling' %}is-active{% endif %}" type="button" data-workspace-target="scheduling">
+          <span class="workspace-nav-kicker">{{ tr('scheduling') }}</span>
+          <strong>{{ tr('upcoming_exams_label') }}</strong>
+          <small>{{ tr('plan_dates_announcements') }}</small>
+        </button>
+        <button class="workspace-nav-card {% if default_workspace_panel == 'recordings' %}is-active{% endif %}" type="button" data-workspace-target="recordings">
+          <span class="workspace-nav-kicker">{{ tr('resources') }}</span>
+          <strong>{{ tr('recordings_label') }}</strong>
+          <small>{{ tr('manage_lesson_recordings') }}</small>
+        </button>
+        <button class="workspace-nav-card {% if default_workspace_panel == 'assignments' %}is-active{% endif %}" type="button" data-workspace-target="assignments">
+          <span class="workspace-nav-kicker">{{ tr('homework') }}</span>
+          <strong>{{ tr('assignments') }}</strong>
+          <small>{{ tr('create_tasks_review_submissions') }}</small>
+        </button>
+        <button class="workspace-nav-card {% if default_workspace_panel == 'students' %}is-active{% endif %}" type="button" data-workspace-target="students">
+          <span class="workspace-nav-kicker">{{ tr('roster') }}</span>
+          <strong>{{ tr('students_section') }}</strong>
+          <small>{{ tr('see_student_list_reports') }}</small>
+        </button>
+      </div>
+
+      <section class="workspace-section {% if default_workspace_panel == 'class-tools' %}is-active{% endif %}" data-workspace-panel="class-tools">
+        <div class="section-header">
+          <div class="section-kicker">{{ tr('today_tasks') }}</div>
+          <h2>{{ tr('daily_workflow') }}</h2>
+        </div>
+
+        <div class="panel">
+          <div class="section-kicker">{{ tr('daily_workflow') }}</div>
+          <h3>{{ tr('focus_on_these_first') }}</h3>
+          <p class="subtitle" style="margin-top:0;">{{ tr('daily_workflow_help') }}</p>
+          <div class="dashboard-card-grid">
+            <article class="feature-card">
+              <div class="feature-card-kicker">{{ tr('before_class') }}</div>
+              <h3>{{ tr('prepare_zoom_and_plan') }}</h3>
+              <div class="feature-card-actions">
+                <a class="btn-link" href="/teacher/levels/{{ level.id }}/syllabus-plan">{{ tr('open_syllabus_plan') }}</a>
+                {% if level.zoom_link %}
+                <a class="btn-link" href="{{ level.zoom_link }}" target="_blank" rel="noopener noreferrer">{{ tr('join_zoom') }}</a>
+                <button class="secondary copy-action" type="button" data-copy-text="{{ level.zoom_link }}">{{ tr('copy_zoom_link') }}</button>
+                {% endif %}
+              </div>
+            </article>
+            <article class="feature-card">
+              <div class="feature-card-kicker">{{ tr('during_class') }}</div>
+              <h3>{{ tr('take_attendance_and_teach') }}</h3>
+              <div class="feature-card-actions">
+                <a class="btn-link" href="/attendance?level_id={{ level.id }}">{{ tr('take_attendance') }}</a>
+                <a class="btn-link" href="/teacher/levels/{{ level.id }}?workspace=students">{{ tr('students_section') }}</a>
+              </div>
+            </article>
+            <article class="feature-card">
+              <div class="feature-card-kicker">{{ tr('after_class') }}</div>
+              <h3>{{ tr('upload_recording_and_homework') }}</h3>
+              <div class="feature-card-actions">
+                <a class="btn-link" href="/teacher/levels/{{ level.id }}?workspace=recordings">{{ tr('recordings_label') }}</a>
+                <a class="btn-link" href="/teacher/levels/{{ level.id }}?workspace=assignments">{{ tr('assignments') }}</a>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>{{ tr('padlet_links') }}</h3>
+          <form method="post" action="/teacher/levels/{{ level.id }}/padlet">
+            <div class="inline-form">
+              <input type="text" name="homework_padlet_url" value="{{ level.homework_padlet_url or '' }}" placeholder="{{ tr('homework_padlet_url') }}" style="min-width:320px;">
+              <input type="text" name="announcements_padlet_url" value="{{ level.announcements_padlet_url or '' }}" placeholder="{{ tr('announcements_padlet_url') }}" style="min-width:320px;">
+              <button type="submit">{{ tr('save_padlet_links') }}</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel quick-actions-panel">
+          <h3>{{ tr('quick_actions') }}</h3>
+          <div class="topbar">
+            <a class="pill" href="/attendance?level_id={{ level.id }}">{{ tr('take_attendance') }}</a>
+            {% if level.zoom_link %}
+            <a class="pill" href="{{ level.zoom_link }}" target="_blank" rel="noopener noreferrer">{{ tr('join_zoom') }}</a>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="section-kicker">{{ tr('teacher_plan_checkpoint') }}</div>
+          <h3>{{ tr('syllabus_plan') }}</h3>
+          <p class="subtitle" style="margin-top:0;">{{ tr('curriculum_plan_progress') }}</p>
+          <div class="feature-card-meta" style="margin-bottom:12px;">
+            <span class="pill">{{ tr('current_teaching_week') }}: {{ syllabus_plan_summary.current_week }}</span>
+            <span class="pill">{{ tr('progress_percentage') }}: {{ syllabus_plan_summary.progress_pct }}%</span>
+            <span class="pill">{{ tr('expected_by_now') }}: {{ syllabus_plan_summary.expected_count }}</span>
+            <span class="pill">{{ tr('completed_lessons') }}: {{ syllabus_plan_summary.completed_count }}/{{ syllabus_plan_summary.total_rows }}</span>
+            <span class="pill">{{ tr('delayed_lessons') }}: {{ syllabus_plan_summary.delayed_count }}</span>
+            <span class="pill">{{ tr('execution_status') }}: {{ tr(syllabus_plan_summary.status_label_key) }}</span>
+            <span class="pill">{{ tr('last_completed_item') }}: {{ syllabus_plan_summary.last_completed_label or '-' }}</span>
+          </div>
+          <div class="feature-card-actions" style="margin-bottom:12px;">
+            <a class="btn-link" href="/teacher/levels/{{ level.id }}/syllabus-plan">{{ tr('open_syllabus_plan') }}</a>
+          </div>
+          <div class="book-subject-stack">
+            {% for row in book_subject_rows %}
+            <div class="book-subject-card">
+              <div class="admin-template-header">
+                <div>
+                  <strong>{{ row.subject.name }}</strong>
+                  <span>{{ row.subject.description or tr('level_curriculum') }}</span>
+                </div>
+              </div>
+              <div class="book-card-grid" style="margin-top:12px;">
+                {% for entry in row.curriculum_items %}
+                {% set item = entry.item %}
+                <div class="book-card">
+                  <span class="book-card-kicker">{{ tr('book') }}</span>
+                  <strong>{{ item.title }}</strong>
+                  <small>{{ item.description or tr('open_book') }}</small>
+                  {% if item.resource_link %}
+                  <div class="feature-card-actions" style="margin-top:10px;">
+                    <a class="btn-link" href="{{ item.resource_link }}" target="_blank" rel="noopener noreferrer">{{ tr('open_book') }}</a>
+                  </div>
+                  {% endif %}
+                  <form method="post" action="/teacher/curriculum-items/{{ item.id }}/progress" style="margin-top:10px;">
+                    <select name="status" required>
+                      <option value="pending" {% if entry.status == 'pending' %}selected{% endif %}>{{ tr('pending_state') }}</option>
+                      <option value="in_progress" {% if entry.status == 'in_progress' %}selected{% endif %}>{{ tr('in_progress_state') }}</option>
+                      <option value="completed" {% if entry.status == 'completed' %}selected{% endif %}>{{ tr('completed_state') }}</option>
+                    </select>
+                    <input type="text" name="note_text" value="{{ entry.note_text }}" placeholder="{{ tr('plan_note') }}" style="margin-top:8px;">
+                    <button type="submit" class="secondary" style="margin-top:8px;">{{ tr('save_progress') }}</button>
+                  </form>
+                </div>
+                {% else %}
+                <div class="book-card is-empty">
+                  <span class="book-card-kicker">{{ tr('book') }}</span>
+                  <strong>{{ tr('no_books_yet') }}</strong>
+                  <small>{{ tr('supervisor_not_added_links') }}</small>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% else %}
+            <p>{{ tr('no_curriculum_plan_items') }}</p>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>{{ tr('teacher_resources') }}</h3>
+          <div class="book-subject-stack">
+            {% for row in teacher_resource_subject_rows %}
+            <div class="book-subject-card">
+              <div class="admin-template-header">
+                <div>
+                  <strong>{{ row.subject.name }}</strong>
+                  <span>{{ tr('shared_links_for_teachers') }}</span>
+                </div>
+              </div>
+              <div class="book-card-grid" style="margin-top:12px;">
+                {% for item in row.curriculum_items %}
+                <a class="book-card" href="{{ item.resource_link }}" target="_blank" rel="noopener noreferrer">
+                  <span class="book-card-kicker">{{ tr('resource') }}</span>
+                  <strong>{{ item.title }}</strong>
+                  <small>{{ item.description or tr('open_resource') }}</small>
+                </a>
+                {% else %}
+                <div class="book-card is-empty">
+                  <span class="book-card-kicker">{{ tr('resource') }}</span>
+                  <strong>{{ tr('no_resources_yet') }}</strong>
+                  <small>{{ tr('supervisor_not_added_shared_links') }}</small>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% else %}
+            <p>{{ tr('no_shared_teacher_resources') }}</p>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace-section {% if default_workspace_panel == 'assessment' %}is-active{% endif %}" data-workspace-panel="assessment">
+        <div class="section-header">
+          <div class="section-kicker">{{ tr('assessment') }}</div>
+          <h2>{{ tr('exams') }}</h2>
+        </div>
+
+        <div class="panel">
+          <div class="section-kicker">{{ tr('assessment') }}</div>
+          <h3>{{ tr('class_exam_overview') }}</h3>
+          <form class="inline-form" method="get" action="/teacher/levels/{{ level.id }}">
+            <select name="overview_exam_title" required>
+              <option value="">{{ tr('choose_exam') }}</option>
+              {% for exam_title in level_exam_titles %}
+              <option value="{{ exam_title }}" {% if overview_exam_title == exam_title %}selected{% endif %}>{{ exam_title }}</option>
+              {% endfor %}
+            </select>
+            {% if selected_template %}
+            <input type="hidden" name="exam_template_id" value="{{ selected_template.id }}">
+            {% endif %}
+            <button type="submit">{{ tr('show_class_report') }}</button>
+          </form>
+
+          {% if overview_exam_title %}
+          <div class="table-wrap" style="margin-top:12px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>{{ tr('students') }}</th>
+                  <th>{{ tr('code_label') }}</th>
+                  <th>{{ tr('total') }}</th>
+                  <th>{{ tr('percentage') }}</th>
+                  <th>{{ tr('grade') }}</th>
+                  <th>{{ tr('report') }}</th>
+                  <th>{{ tr('pdf') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in overview_rows %}
+                <tr>
+                  <td>{{ row.student.full_name }}</td>
+                  <td>{{ row.student.student_code }}</td>
+                  <td>
+                    {% if row.summary and row.summary.computed_total is not none %}
+                      {{ row.summary.computed_total }}{% if row.summary.computed_max_total is not none %} / {{ row.summary.computed_max_total }}{% endif %}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                  <td>{% if row.summary and row.summary.computed_percentage is not none %}{{ row.summary.computed_percentage }}%{% else %}-{% endif %}</td>
+                  <td>{% if row.summary %}{{ row.summary.computed_grade }}{% else %}-{% endif %}</td>
+                  <td>
+                    {% if row.summary %}
+                    <a class="btn-link" href="/teacher/students/{{ row.student.id }}/exam-report?exam_title={{ overview_exam_title|urlencode }}">{{ tr('report') }}</a>
+                    {% else %}
+                    -
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if row.summary %}
+                    <a class="btn-link" href="/teacher/students/{{ row.student.id }}/exam-report.pdf?exam_title={{ overview_exam_title|urlencode }}">{{ tr('pdf') }}</a>
+                    {% else %}
+                    -
+                    {% endif %}
+                  </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7">{{ tr('no_students_for_level') }}</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="panel">
+          <div class="section-kicker">{{ tr('assessment') }}</div>
+          <h3>{{ tr('template_exam_entry') }}</h3>
+          <form class="inline-form" method="get" action="/teacher/levels/{{ level.id }}">
+            <select name="exam_template_id" required>
+              <option value="">{{ tr('choose_exam') }}</option>
+              {% for template in exam_templates %}
+              <option value="{{ template.id }}" {% if selected_template and selected_template.id == template.id %}selected{% endif %}>{{ template.title }}</option>
+              {% endfor %}
+            </select>
+            {% if overview_exam_title %}
+            <input type="hidden" name="overview_exam_title" value="{{ overview_exam_title }}">
+            {% endif %}
+            <button type="submit">{{ tr('open_exam_table') }}</button>
+          </form>
+
+          {% if selected_template %}
+          <div class="exam-sheet compact">
+            <div class="exam-sheet-header">
+              <div>
+                <h4>{{ selected_template.title }}</h4>
+                <p>{{ students|length }} {{ tr('students') }}{% if selected_template.exam_date %} • {{ selected_template.exam_date }}{% endif %}</p>
+              </div>
+            </div>
+            <form method="post" action="/teacher/levels/{{ level.id }}/template-results/save">
+              <input type="hidden" name="exam_template_id" value="{{ selected_template.id }}">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>{{ tr('students') }}</th>
+                      <th>{{ tr('code_label') }}</th>
+                      {% for branch in selected_template_branches %}
+                      <th>{{ branch.branch_name }}{% if branch.max_score %}<br><small>/ {{ branch.max_score }}</small>{% endif %}</th>
+                      {% endfor %}
+                      <th>{{ tr('notes') }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% if not selected_template_branches %}
+                    <tr><td colspan="3">{{ tr('no_branches_defined') }}</td></tr>
+                    {% else %}
+                    {% for row in selected_template_student_rows %}
+                    <tr>
+                      <td>
+                        {{ row.student.full_name }}
+                        <input type="hidden" name="student_ids" value="{{ row.student.id }}">
+                      </td>
+                      <td>{{ row.student.student_code }}</td>
+                      {% for branch in selected_template_branches %}
+                      {% set branch_result = row.branch_results.get(branch.branch_name) %}
+                      <td>
+                        <input
+                          type="text"
+                          name="student_{{ row.student.id }}_branch_{{ branch.id }}_score"
+                          value="{{ branch_result.score_value if branch_result else '' }}"
+                          placeholder="{{ tr('score') }}"
+                          style="width:90px;"
+                        >
+                      </td>
+                      {% endfor %}
+                      <td>
+                        <input
+                          type="text"
+                          name="student_{{ row.student.id }}_note"
+                          value="{{ row.shared_note }}"
+                          placeholder="{{ tr('notes') }}"
+                          style="min-width:220px;"
+                        >
+                      </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="{{ 3 + (selected_template_branches|length) }}">{{ tr('no_students_for_level') }}</td></tr>
+                    {% endfor %}
+                    {% endif %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="topbar" style="margin-top:10px;">
+                <button type="submit">{{ tr('save_class_results') }}</button>
+              </div>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="panel">
+          <div class="section-kicker">{{ tr('assessment') }}</div>
+          <h3>{{ tr('exam_results_label') }}</h3>
+          <form class="inline-form" method="get" action="/teacher/levels/{{ level.id }}">
+            <select name="results_exam_title" required>
+              <option value="">{{ tr('choose_exam') }}</option>
+              {% for exam_title in level_exam_titles %}
+              <option value="{{ exam_title }}" {% if results_exam_title == exam_title %}selected{% endif %}>{{ exam_title }}</option>
+              {% endfor %}
+            </select>
+            {% if selected_template %}
+            <input type="hidden" name="exam_template_id" value="{{ selected_template.id }}">
+            {% endif %}
+            {% if overview_exam_title %}
+            <input type="hidden" name="overview_exam_title" value="{{ overview_exam_title }}">
+            {% endif %}
+            <button type="submit">{{ tr('open_results_table') }}</button>
+          </form>
+
+          {% if results_exam_title %}
+          <div class="exam-sheet compact">
+            <div class="exam-sheet-header">
+              <div>
+                <h4>{{ results_exam_title }}</h4>
+                <p>{{ results_exam_rows|length }} {{ tr('students') }}</p>
+              </div>
+            </div>
+            <form method="post" action="/teacher/exam-results/bulk-update">
+              <input type="hidden" name="results_exam_title" value="{{ results_exam_title }}">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>{{ tr('students') }}</th>
+                      <th>{{ tr('code_label') }}</th>
+                      {% for branch_name in results_exam_branches %}
+                      <th>{{ branch_name }}</th>
+                      {% endfor %}
+                      <th>{{ tr('notes') }}</th>
+                      <th>{{ tr('total') }}</th>
+                      <th>{{ tr('percentage') }}</th>
+                      <th>{{ tr('grade') }}</th>
+                      <th>{{ tr('report') }}</th>
+                      <th>{{ tr('pdf') }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for row in results_exam_rows %}
+                    <tr>
+                      <td>{{ row.student.full_name }}</td>
+                      <td>{{ row.student.student_code }}</td>
+                      {% for branch_name in results_exam_branches %}
+                      {% set result = row.components_by_subject.get(branch_name) %}
+                      <td>
+                        {% if result %}
+                        <input type="hidden" name="exam_result_ids" value="{{ result.id }}">
+                        <input type="text" name="score_value_{{ result.id }}" value="{{ result.score_value }}" style="width:90px;" required>
+                        <input type="hidden" name="max_score_{{ result.id }}" value="{{ result.max_score or '' }}">
+                        <input type="hidden" name="notes_{{ result.id }}" value="{{ row.shared_note }}">
+                        {% else %}
+                        -
+                        {% endif %}
+                      </td>
+                      {% endfor %}
+                      <td>
+                        {% if row.summary and row.summary.components %}
+                        <input
+                          type="text"
+                          value="{{ row.shared_note }}"
+                          placeholder="{{ tr('notes') }}"
+                          style="min-width:220px;"
+                          onchange="this.closest('tr').querySelectorAll('input[name^=\'notes_\']').forEach((field) => { field.value = this.value; })"
+                        >
+                        {% else %}
+                        -
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if row.summary and row.summary.computed_total is not none %}
+                        {{ row.summary.computed_total }}{% if row.summary.computed_max_total is not none %} / {{ row.summary.computed_max_total }}{% endif %}
+                        {% else %}
+                        -
+                        {% endif %}
+                      </td>
+                      <td>{% if row.summary and row.summary.computed_percentage is not none %}{{ row.summary.computed_percentage }}%{% else %}-{% endif %}</td>
+                      <td>{% if row.summary %}{{ row.summary.computed_grade }}{% else %}-{% endif %}</td>
+                      <td>
+                        {% if row.summary %}
+                        <a class="btn-link" href="/teacher/students/{{ row.student.id }}/exam-report?exam_title={{ results_exam_title|urlencode }}">{{ tr('open_workspace') if false else tr('report') }}</a>
+                        {% else %}
+                        -
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if row.summary %}
+                        <a class="btn-link" href="/teacher/students/{{ row.student.id }}/exam-report.pdf?exam_title={{ results_exam_title|urlencode }}">{{ tr('pdf') }}</a>
+                        {% else %}
+                        -
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="{{ 9 + (results_exam_branches|length) }}">{{ tr('no_exam_results_level') }}</td></tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% if results_exam_branches %}
+              <div class="topbar" style="margin-top:10px;">
+                <button class="secondary" type="submit">{{ tr('update_exam_results') }}</button>
+              </div>
+              {% endif %}
+            </form>
+          </div>
+          {% else %}
+          <p>{{ tr('no_exam_results_level') }}</p>
+          {% endif %}
+        </div>
+      </section>
+
+      <section class="workspace-section {% if default_workspace_panel == 'scheduling' %}is-active{% endif %}" data-workspace-panel="scheduling">
+        <div class="section-header">
+          <div class="section-kicker">{{ tr('scheduling') }}</div>
+          <h2>{{ tr('upcoming_exams_label') }}</h2>
+        </div>
+
+        <div class="panel">
+          <div class="section-kicker">{{ tr('scheduling') }}</div>
+          <h3>{{ tr('add_upcoming_exam') }}</h3>
+          <form class="inline-form" method="post" action="/teacher/levels/{{ level.id }}/upcoming-exams/add">
+            <input type="text" name="title" placeholder="{{ tr('exam_title_placeholder') }}" required>
+            <input type="text" name="subject_name" placeholder="{{ tr('subject') }}">
+            <input type="date" name="exam_date" required>
+            <input type="text" name="exam_time" placeholder="{{ tr('time') }}">
+            <input type="text" name="notes" placeholder="{{ tr('notes') }}" style="min-width:240px;">
+            <button type="submit">{{ tr('add_upcoming_exam') }}</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="section-kicker">{{ tr('scheduling') }}</div>
+          <h3>{{ tr('upcoming_exams_label') }}</h3>
+          <form method="post" action="/teacher/upcoming-exams/bulk-update">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>{{ tr('date') }}</th>
+                    <th>{{ tr('title_label') }}</th>
+                    <th>{{ tr('subject') }}</th>
+                    <th>{{ tr('time') }}</th>
+                    <th>{{ tr('notes') }}</th>
+                    <th>{{ tr('delete') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for exam in upcoming_exams %}
+                  <tr>
+                    <td>
+                      <input type="hidden" name="upcoming_exam_ids" value="{{ exam.id }}">
+                      <input type="date" name="exam_date_{{ exam.id }}" value="{{ exam.exam_date }}" required>
+                    </td>
+                    <td><input type="text" name="title_{{ exam.id }}" value="{{ exam.title }}" required></td>
+                    <td><input type="text" name="subject_name_{{ exam.id }}" value="{{ exam.subject_name or '' }}" placeholder="{{ tr('subject') }}"></td>
+                    <td><input type="text" name="exam_time_{{ exam.id }}" value="{{ exam.exam_time or '' }}" placeholder="{{ tr('time') }}"></td>
+                    <td><input type="text" name="notes_{{ exam.id }}" value="{{ exam.notes or '' }}" placeholder="{{ tr('notes') }}" style="min-width:200px;"></td>
+                    <td>
+                      <button class="danger" type="submit" formaction="/teacher/upcoming-exams/{{ exam.id }}/delete" formmethod="post" onclick="return confirm('{{ tr('delete_upcoming_exam_confirm') }}');">{{ tr('delete') }}</button>
+                    </td>
+                  </tr>
+                  {% else %}
+                  <tr><td colspan="6">{{ tr('no_upcoming_exams') }}</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% if upcoming_exams %}
+            <div class="topbar" style="margin-top:10px;">
+              <button class="secondary" type="submit">{{ tr('update_upcoming_exams') }}</button>
+            </div>
+            {% endif %}
+          </form>
+        </div>
+      </section>
+
+      <section class="workspace-section {% if default_workspace_panel == 'recordings' %}is-active{% endif %}" data-workspace-panel="recordings">
+        <div class="section-header">
+          <div class="section-kicker">{{ tr('resources') }}</div>
+          <h2>{{ tr('recordings_label') }}</h2>
+        </div>
+
+        <div class="panel">
+          <h3>{{ tr('add_lesson_link') }}</h3>
+          <form class="inline-form" method="post" action="/teacher/levels/{{ level.id }}/recordings/add">
+            <input type="text" name="title" placeholder="{{ tr('lesson_title') }}" required>
+            <input type="text" name="recording_url" placeholder="{{ tr('lesson_zoom_link') }}" style="min-width:320px;" required>
+            <input type="date" name="lesson_date" required>
+            <input type="text" name="summary" placeholder="{{ tr('short_lesson_summary') }}" style="min-width:280px;">
+            <input type="text" name="homework" placeholder="{{ tr('weekly_homework') }}" style="min-width:280px;">
+            <button type="submit">{{ tr('add_lesson') }}</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="section-kicker">{{ tr('resources') }}</div>
+          <h3>{{ tr('lesson_links_and_homework') }}</h3>
+          <form method="post" action="/teacher/recordings/bulk-update">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>{{ tr('lesson_date') }}</th>
+                    <th>{{ tr('title_label') }}</th>
+                    <th>{{ tr('url') }}</th>
+                    <th>{{ tr('summary') }}</th>
+                    <th>{{ tr('weekly_homework') }}</th>
+                    <th>{{ tr('delete') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for rec in recordings %}
+                  <tr>
+                    <td>
+                      <input type="hidden" name="recording_ids" value="{{ rec.id }}">
+                      <input type="date" name="lesson_date_{{ rec.id }}" value="{{ rec.lesson_date }}" required>
+                    </td>
+                    <td><input type="text" name="title_{{ rec.id }}" value="{{ rec.title }}" required></td>
+                    <td><input type="text" name="recording_url_{{ rec.id }}" value="{{ rec.recording_url }}" style="min-width:280px;" required></td>
+                    <td><input type="text" name="summary_{{ rec.id }}" value="{{ rec.summary or '' }}" placeholder="{{ tr('short_lesson_summary') }}" style="min-width:220px;"></td>
+                    <td><input type="text" name="homework_{{ rec.id }}" value="{{ rec.homework or '' }}" placeholder="{{ tr('weekly_homework') }}" style="min-width:220px;"></td>
+                    <td>
+                      <button class="danger" type="submit" formaction="/teacher/recordings/{{ rec.id }}/delete" formmethod="post" onclick="return confirm('{{ tr('delete_recording_confirm') }}');">{{ tr('delete') }}</button>
+                    </td>
+                  </tr>
+                  {% else %}
+                  <tr><td colspan="6">{{ tr('no_lesson_links_yet') }}</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% if recordings %}
+            <div class="topbar" style="margin-top:10px;">
+              <button class="secondary" type="submit">{{ tr('update_recordings') }}</button>
+            </div>
+            {% endif %}
+          </form>
+        </div>
+      </section>
+
+      <section class="workspace-section {% if default_workspace_panel == 'assignments' %}is-active{% endif %}" data-workspace-panel="assignments">
+        <div class="section-header">
+          <div class="section-kicker">{{ tr('homework') }}</div>
+          <h2>{{ tr('assignments') }}</h2>
+        </div>
+
+        <div class="panel">
+          <h3>{{ tr('create_assignment') }}</h3>
+          <form method="post" action="/teacher/levels/{{ level.id }}/assignments/add" enctype="multipart/form-data">
+            <div class="inline-form">
+              <input type="text" name="title" placeholder="{{ tr('assignment_title') }}" required>
+              <input type="date" name="due_date">
+              <input type="text" name="resource_link" placeholder="{{ tr('optional_resource_link') }}" style="min-width:280px;">
+            </div>
+            <textarea name="instructions" rows="4" placeholder="{{ tr('instructions_questions_tasks') }}" style="margin-top:10px;"></textarea>
+            <div class="inline-form" style="margin-top:10px;">
+              <input type="file" name="resource_file">
+              <button type="submit">{{ tr('add_assignment') }}</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel">
+          <h3>{{ tr('assignment_review') }}</h3>
+          <form class="inline-form" method="get" action="/teacher/levels/{{ level.id }}">
+            <select name="assignment_id" required>
+              <option value="">{{ tr('select_assignment') }}</option>
+              {% for assignment in assignments %}
+              <option value="{{ assignment.id }}" {% if selected_assignment and selected_assignment.id == assignment.id %}selected{% endif %}>{{ assignment.title }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit">{{ tr('open_assignment') }}</button>
+          </form>
+
+          {% if selected_assignment %}
+          <div class="exam-sheet compact">
+            <div class="exam-sheet-header">
+              <div>
+                <h4>{{ selected_assignment.title }}</h4>
+                <p>{{ tr('due') }}: {{ selected_assignment.due_date or '-' }}</p>
+              </div>
+              <div class="exam-sheet-metrics">
+                <div class="metric-chip">
+                  <span>{{ tr('status') }}</span>
+                  <strong>{% if selected_assignment.is_active %}{{ tr('active_state') }}{% else %}{{ tr('closed_state') }}{% endif %}</strong>
+                </div>
+                {% if selected_assignment.resource_link or selected_assignment.resource_file_name %}
+                <div class="metric-chip">
+                  <span>{{ tr('resource') }}</span>
+                  <strong>
+                    {% if selected_assignment.resource_link %}
+                    <a href="{{ selected_assignment.resource_link }}" target="_blank" rel="noopener noreferrer">{{ tr('link') }}</a>
+                    {% elif selected_assignment.resource_file_name %}
+                    <a href="/teacher/assignments/{{ selected_assignment.id }}/resource">{{ tr('file') }}</a>
+                    {% endif %}
+                  </strong>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            {% if selected_assignment.instructions %}
+            <p><strong>{{ tr('instructions') }}:</strong> {{ selected_assignment.instructions }}</p>
+            {% endif %}
+            <form method="post" action="/teacher/assignments/submissions/bulk-update">
+              <input type="hidden" name="assignment_id" value="{{ selected_assignment.id }}">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>{{ tr('students') }}</th>
+                      <th>{{ tr('submission') }}</th>
+                      <th>{{ tr('file') }}</th>
+                      <th>{{ tr('status') }}</th>
+                      <th>{{ tr('score') }}</th>
+                      <th>{{ tr('teacher_notes') }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for row in selected_assignment_rows %}
+                    <tr>
+                      <td>{{ row.student.full_name }}<br><small>{{ row.student.student_code }}</small></td>
+                      <td>
+                        {% if row.submission %}
+                          {% if row.submission.submission_text %}<div>{{ row.submission.submission_text }}</div>{% endif %}
+                          {% if row.submission.submission_link %}<div><a href="{{ row.submission.submission_link }}" target="_blank" rel="noopener noreferrer">{{ tr('submission_link') }}</a></div>{% endif %}
+                          {% if not row.submission.submission_text and not row.submission.submission_link %}-{% endif %}
+                        {% else %}
+                        -
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if row.submission and row.submission.submission_file_name %}
+                        <a href="/teacher/assignment-submissions/{{ row.submission.id }}/file">{{ row.submission.submission_file_name }}</a>
+                        {% else %}
+                        -
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if row.submission %}
+                        <input type="hidden" name="submission_ids" value="{{ row.submission.id }}">
+                        <select name="status_{{ row.submission.id }}">
+                          <option value="Submitted" {% if row.submission.status == 'Submitted' %}selected{% endif %}>{{ tr('submitted_state') }}</option>
+                          <option value="Reviewed" {% if row.submission.status == 'Reviewed' %}selected{% endif %}>{{ tr('reviewed_state') }}</option>
+                          <option value="Needs Update" {% if row.submission.status == 'Needs Update' %}selected{% endif %}>{{ tr('needs_update_state') }}</option>
+                        </select>
+                        {% else %}
+                        {{ tr('pending') }}
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if row.submission %}
+                        <input type="text" name="score_value_{{ row.submission.id }}" value="{{ row.submission.score_value or '' }}" placeholder="{{ tr('score') }}" style="width:90px;">
+                        {% else %}
+                        -
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if row.submission %}
+                        <input type="text" name="teacher_notes_{{ row.submission.id }}" value="{{ row.submission.teacher_notes or '' }}" placeholder="{{ tr('feedback') }}" style="min-width:220px;">
+                        {% else %}
+                        -
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6">{{ tr('no_students_for_level') }}</td></tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% if selected_assignment_has_submissions %}
+              <div class="topbar" style="margin-top:10px;">
+                <button class="secondary" type="submit">{{ tr('update_assignment_reviews') }}</button>
+              </div>
+              {% else %}
+              <p style="margin-top:10px;">{{ tr('no_student_submissions_yet') }}</p>
+              {% endif %}
+            </form>
+          </div>
+          {% elif assignments %}
+          <p>{{ tr('select_assignment_review_marks') }}</p>
+          {% else %}
+          <p>{{ tr('no_assignments_created_yet') }}</p>
+          {% endif %}
+        </div>
+      </section>
+
+      <section class="workspace-section {% if default_workspace_panel == 'students' %}is-active{% endif %}" data-workspace-panel="students">
+        <div class="section-header">
+          <div class="section-kicker">{{ tr('roster') }}</div>
+          <h2>{{ tr('students') }}</h2>
+        </div>
+
+        <div class="panel">
+          <div class="section-kicker">{{ tr('class_followup_register') }}</div>
+          <h3>{{ tr('class_followup_register') }}</h3>
+          <p class="subtitle" style="margin-top:0;">{{ tr('student_followup_subtitle') }}</p>
+          <div class="feature-card-meta" style="margin-bottom:12px;">
+            <span class="pill">{{ tr('excellent_students') }}: {{ student_followup_summary.excellent_count }}</span>
+            <span class="pill">{{ tr('stable_students') }}: {{ student_followup_summary.stable_count }}</span>
+            <span class="pill">{{ tr('students_need_attention') }}: {{ student_followup_summary.needs_attention_count }}</span>
+            <span class="pill">{{ tr('students') }}: {{ student_followup_summary.total_count }}</span>
+          </div>
+          <form class="inline-form" method="get" action="/teacher/levels/{{ level.id }}" style="margin-bottom:12px;">
+            <input type="hidden" name="workspace" value="students">
+            <select name="followup_status">
+              <option value="">{{ tr('status') }}</option>
+              <option value="needs_attention_status" {% if followup_status_filter == 'needs_attention_status' %}selected{% endif %}>{{ tr('needs_attention_status') }}</option>
+              <option value="stable_status" {% if followup_status_filter == 'stable_status' %}selected{% endif %}>{{ tr('stable_status') }}</option>
+              <option value="excellent_status" {% if followup_status_filter == 'excellent_status' %}selected{% endif %}>{{ tr('excellent_status') }}</option>
+            </select>
+            <select name="followup_sort">
+              <option value="">{{ tr('sort_by') }}</option>
+              <option value="lowest_attendance" {% if followup_sort == 'lowest_attendance' %}selected{% endif %}>{{ tr('lowest_attendance_first') }}</option>
+              <option value="open_assignments" {% if followup_sort == 'open_assignments' %}selected{% endif %}>{{ tr('most_open_assignments_first') }}</option>
+              <option value="missing_monthly_note" {% if followup_sort == 'missing_monthly_note' %}selected{% endif %}>{{ tr('missing_monthly_note_first') }}</option>
+            </select>
+            <input type="text" name="followup_q" value="{{ followup_q }}" placeholder="{{ tr('student_name_label') }}">
+            <button type="submit">{{ tr('apply') }}</button>
+            <a class="btn-link" href="/teacher/levels/{{ level.id }}">{{ tr('reset') }}</a>
+          </form>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{{ tr('student_code') }}</th>
+                  <th>{{ tr('student_name_label') }}</th>
+                  <th>{{ tr('student_overall_status') }}</th>
+                  <th>{{ tr('attendance_14d') }}</th>
+                  <th>{{ tr('arabic_attendance_snapshot') }}</th>
+                  <th>{{ tr('open_assignments') }}</th>
+                  <th>{{ tr('latest_exam') }}</th>
+                  <th>{{ tr('monthly_note_status') }}</th>
+                  <th>{{ tr('report') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in student_followup_rows %}
+                <tr>
+                  <td>{{ row.student.student_code }}</td>
+                  <td>{{ row.student.full_name }}</td>
+                  <td><span class="pill">{{ tr(row.status_key) }}</span></td>
+                  <td>
+                    {% if row.attendance_rate_display is not none %}
+                    {{ row.attendance_rate_display }}%
+                    {% if row.attendance_source_key %}
+                    <br><small>{{ tr(row.attendance_source_key) }}</small>
+                    {% endif %}
+                    {% else %}
+                    -
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if row.imported_attendance %}
+                    {{ row.imported_attendance.present_count }}/{{ row.imported_attendance.total_count }}
+                    <br><small>{{ row.imported_attendance.attendance_percentage }}%</small>
+                    {% else %}
+                    -
+                    {% endif %}
+                  </td>
+                  <td>{{ row.open_assignments }}</td>
+                  <td>
+                    {% if row.latest_exam_title %}
+                    {{ row.latest_exam_title }}<br><small>{{ row.latest_exam_percentage if row.latest_exam_percentage is not none else '-' }}{% if row.latest_exam_percentage is not none %}%{% endif %}</small>
+                    {% else %}
+                    -
+                    {% endif %}
+                  </td>
+                  <td>
+                    <span class="pill">{% if row.has_monthly_note %}{{ tr('note_ready') }}{% else %}{{ tr('note_missing') }}{% endif %}</span>
+                  </td>
+                  <td><a class="btn-link" href="/students/{{ row.student.id }}/report?period=month">{{ tr('open_report') }}</a></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="9">{{ tr('no_students_found') }}</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ tr('student_code') }}</th>
+                <th>{{ tr('student_name_label') }}</th>
+                <th>{{ tr('status') }}</th>
+                <th>{{ tr('student_year_label') }}</th>
+                <th>{{ tr('report') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for student in students %}
+              <tr>
+                <td>{{ student.student_code }}</td>
+                <td>{{ student.full_name }}</td>
+                <td>{{ student.status or '' }}</td>
+                <td>{{ student.student_year or '' }}</td>
+                <td><a href="/students/{{ student.id }}/report?period=month">{{ tr('open_report') }}</a></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="5">{{ tr('no_students_found') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+      </main>
+    </div>
+    <script>
+      (() => {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('[data-sidebar-toggle]');
+        const backdrop = document.querySelector('[data-sidebar-backdrop]');
+        if (!sidebar || !toggle) return;
+        const setOpen = (open) => {
+          sidebar.classList.toggle('is-open', open);
+          if (backdrop) backdrop.classList.toggle('is-open', open);
+          document.body.classList.toggle('sidebar-open', open);
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        };
+        toggle.addEventListener('click', () => setOpen(!sidebar.classList.contains('is-open')));
+        if (backdrop) backdrop.addEventListener('click', () => setOpen(false));
+        sidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setOpen(false)));
+        window.addEventListener('resize', () => {
+          if (window.innerWidth > 700) setOpen(false);
+        });
+      })();
+      (() => {
+        const cards = Array.from(document.querySelectorAll('[data-workspace-target]'));
+        const panels = Array.from(document.querySelectorAll('[data-workspace-panel]'));
+        if (!cards.length || !panels.length) return;
+
+        const activate = (target) => {
+          cards.forEach((card) => {
+            card.classList.toggle('is-active', card.dataset.workspaceTarget === target);
+          });
+          panels.forEach((panel) => {
+            panel.classList.toggle('is-active', panel.dataset.workspacePanel === target);
+          });
+        };
+
+        cards.forEach((card) => {
+          card.addEventListener('click', () => activate(card.dataset.workspaceTarget));
+        });
+
+        activate('{{ default_workspace_panel }}');
+      })();
+      (() => {
+        const feedback = document.querySelector('[data-copy-feedback]');
+        const fallbackCopy = (text) => {
+          const input = document.createElement('textarea');
+          input.value = text;
+          input.setAttribute('readonly', '');
+          input.style.position = 'absolute';
+          input.style.left = '-9999px';
+          document.body.appendChild(input);
+          input.select();
+          let ok = false;
+          try {
+            ok = document.execCommand('copy');
+          } catch (err) {
+            ok = false;
+          }
+          document.body.removeChild(input);
+          return ok;
+        };
+        const showFeedback = (message) => {
+          if (!feedback) return;
+          feedback.textContent = message;
+          window.clearTimeout(window.__workspaceCopyTimer);
+          window.__workspaceCopyTimer = window.setTimeout(() => {
+            feedback.textContent = '';
+          }, 1800);
+        };
+        document.querySelectorAll('[data-copy-text]').forEach((button) => {
+          button.addEventListener('click', async () => {
+            const text = button.getAttribute('data-copy-text') || '';
+            if (!text) return;
+            let copied = false;
+            if (navigator.clipboard && window.isSecureContext) {
+              try {
+                await navigator.clipboard.writeText(text);
+                copied = true;
+              } catch (err) {
+                copied = fallbackCopy(text);
+              }
+            } else {
+              copied = fallbackCopy(text);
+            }
+            showFeedback(copied ? "{{ tr('copied_label') }}" : "{{ tr('copy_failed_label') }}");
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

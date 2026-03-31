@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ level.name }} {{ tr('class_followup_register') }}</title>
+    <link rel="stylesheet" href="/static/ui.css">
+  </head>
+  <body>
+    <div class="container reports-shell">
+      <div class="topbar reports-topbar">
+        <a class="pill" href="/admin/dashboard">{{ tr('supervisor_dashboard') }}</a>
+        <a class="pill" href="/levels/{{ level.id }}">{{ tr('open_level') }}</a>
+        <a class="pill" href="/attendance?level_id={{ level.id }}">{{ tr('attendance') }}</a>
+        <a class="pill" href="/admin/levels/{{ level.id }}/follow-up.xlsx">{{ tr('level_full_excel') }}</a>
+        <a class="pill" href="/admin/levels/{{ level.id }}/follow-up.pdf">{{ tr('level_full_pdf') }}</a>
+        <span class="pill">{{ tr('language') }}:</span>
+        <a class="pill" href="{{ with_lang('en') }}">EN</a>
+        <a class="pill" href="{{ with_lang('ar') }}">AR</a>
+      </div>
+
+      <section class="reports-hero compact">
+        <div class="reports-hero-copy">
+          <span class="reports-kicker">{{ tr('class_followup_register') }}</span>
+          <h1 class="title reports-title">{{ level.name }} {{ tr('class_followup_register') }}</h1>
+          <p class="subtitle reports-subtitle">{{ tr('supervisor_level_followup_subtitle') }}</p>
+        </div>
+      </section>
+
+      <div class="panel">
+        <div class="feature-card-meta" style="margin-bottom:12px;">
+          <span class="pill">{{ tr('excellent_students') }}: {{ followup_summary.excellent_count }}</span>
+          <span class="pill">{{ tr('stable_students') }}: {{ followup_summary.stable_count }}</span>
+          <span class="pill">{{ tr('students_need_attention') }}: {{ followup_summary.needs_attention_count }}</span>
+          <span class="pill">{{ tr('students') }}: {{ followup_summary.total_count }}</span>
+        </div>
+        <form class="inline-form" method="get" action="/admin/levels/{{ level.id }}/follow-up" style="margin-bottom:12px;">
+          <select name="followup_status">
+            <option value="">{{ tr('status') }}</option>
+            <option value="needs_attention_status" {% if followup_status_filter == 'needs_attention_status' %}selected{% endif %}>{{ tr('needs_attention_status') }}</option>
+            <option value="stable_status" {% if followup_status_filter == 'stable_status' %}selected{% endif %}>{{ tr('stable_status') }}</option>
+            <option value="excellent_status" {% if followup_status_filter == 'excellent_status' %}selected{% endif %}>{{ tr('excellent_status') }}</option>
+          </select>
+          <select name="followup_sort">
+            <option value="">{{ tr('sort_by') }}</option>
+            <option value="lowest_attendance" {% if followup_sort == 'lowest_attendance' %}selected{% endif %}>{{ tr('lowest_attendance_first') }}</option>
+            <option value="open_assignments" {% if followup_sort == 'open_assignments' %}selected{% endif %}>{{ tr('most_open_assignments_first') }}</option>
+            <option value="missing_monthly_note" {% if followup_sort == 'missing_monthly_note' %}selected{% endif %}>{{ tr('missing_monthly_note_first') }}</option>
+          </select>
+          <input type="text" name="followup_q" value="{{ followup_q }}" placeholder="{{ tr('student_name_label') }}">
+          <button type="submit">{{ tr('apply') }}</button>
+          <a class="btn-link" href="/admin/levels/{{ level.id }}/follow-up">{{ tr('reset') }}</a>
+        </form>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ tr('student_code') }}</th>
+                <th>{{ tr('student_name_label') }}</th>
+                <th>{{ tr('student_overall_status') }}</th>
+                <th>{{ tr('attendance_14d') }}</th>
+                <th>{{ tr('arabic_attendance_snapshot') }}</th>
+                <th>{{ tr('open_assignments') }}</th>
+                <th>{{ tr('latest_exam') }}</th>
+                <th>{{ tr('monthly_note_status') }}</th>
+                <th>{{ tr('report') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in followup_rows %}
+              <tr>
+                <td>{{ row.student.student_code }}</td>
+                <td>{{ row.student.full_name }}</td>
+                <td><span class="pill">{{ tr(row.status_key) }}</span></td>
+                <td>
+                  {% if row.attendance_rate_display is not none %}
+                  {{ row.attendance_rate_display }}%
+                  {% if row.attendance_source_key %}
+                  <br><small>{{ tr(row.attendance_source_key) }}</small>
+                  {% endif %}
+                  {% else %}
+                  -
+                  {% endif %}
+                </td>
+                <td>
+                  {% if row.imported_attendance %}
+                  {{ row.imported_attendance.present_count }}/{{ row.imported_attendance.total_count }}
+                  <br><small>{{ row.imported_attendance.attendance_percentage }}%</small>
+                  {% else %}
+                  -
+                  {% endif %}
+                </td>
+                <td>{{ row.open_assignments }}</td>
+                <td>
+                  {% if row.latest_exam_title %}
+                  {{ row.latest_exam_title }}<br><small>{{ row.latest_exam_percentage if row.latest_exam_percentage is not none else '-' }}{% if row.latest_exam_percentage is not none %}%{% endif %}</small>
+                  {% else %}
+                  -
+                  {% endif %}
+                </td>
+                <td><span class="pill">{% if row.has_monthly_note %}{{ tr('note_ready') }}{% else %}{{ tr('note_missing') }}{% endif %}</span></td>
+                <td><a class="btn-link" href="/students/{{ row.student.id }}/report?period=month">{{ tr('open_report') }}</a></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="9">{{ tr('no_students_found') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

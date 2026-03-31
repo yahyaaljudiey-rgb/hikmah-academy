@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tr('monthly_reports_review') }}</title>
+    <link rel="stylesheet" href="/static/ui.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <a class="pill" href="/students">{{ tr('students_page') }}</a>
+        <a class="pill" href="/head/dashboard">{{ tr('head_dashboard') }}</a>
+        <a class="pill" href="/admin/dashboard">{{ tr('supervisor_dashboard') }}</a>
+        <span class="pill">{{ tr('language') }}:</span>
+        <a class="pill" href="{{ with_lang('en') }}">EN</a>
+        <a class="pill" href="{{ with_lang('ar') }}">AR</a>
+      </div>
+
+      <h1 class="title">{{ tr('monthly_reports_review') }}</h1>
+      <p class="subtitle">{{ tr('month_label') }}: {{ summary.month_key }}. {{ tr('monthly_review_subtitle') }}</p>
+
+      {% if bulk_status == 'success' %}
+      <div class="notice success">{{ bulk_message }}</div>
+      {% elif bulk_status == 'error' %}
+      <div class="notice error">{{ bulk_message }}</div>
+      {% endif %}
+
+      <div class="grid-cards">
+        <div class="card"><h3>{{ tr('total_students') }}</h3><div class="metric">{{ summary.total_students }}</div></div>
+        <div class="card"><h3>{{ tr('ready_to_send') }}</h3><div class="metric">{{ summary.send_ready }}</div></div>
+        <div class="card"><h3>{{ tr('missing_notes') }}</h3><div class="metric">{{ summary.missing_notes }}</div></div>
+        <div class="card"><h3>{{ tr('missing_email') }}</h3><div class="metric">{{ summary.missing_email }}</div></div>
+        <div class="card"><h3>{{ tr('missing_whatsapp') }}</h3><div class="metric">{{ summary.missing_whatsapp }}</div></div>
+      </div>
+
+      <div class="panel">
+        <form class="inline-form" method="get" action="/students/reports/monthly-review">
+          <select name="review_filter">
+            <option value="all" {% if review_filter == 'all' %}selected{% endif %}>{{ tr('all_students') }}</option>
+            <option value="ready" {% if review_filter == 'ready' %}selected{% endif %}>{{ tr('ready_only') }}</option>
+            <option value="not_ready" {% if review_filter == 'not_ready' %}selected{% endif %}>{{ tr('not_ready_only') }}</option>
+          </select>
+          <button class="secondary" type="submit">{{ tr('apply') }}</button>
+          <a class="btn-link" href="/students/reports/monthly-review">{{ tr('reset') }}</a>
+          <button class="secondary" type="button" onclick="toggleReady(true)">{{ tr('select_all_ready') }}</button>
+          <button class="secondary" type="button" onclick="toggleReady(false)">{{ tr('unselect_all') }}</button>
+        </form>
+      </div>
+
+      <form method="post" action="/students/reports/monthly-send">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ tr('send') }}</th>
+                <th>{{ tr('student_name') }}</th>
+                <th>{{ tr('level') }}</th>
+                <th>{{ tr('parent_email') }}</th>
+                <th>{{ tr('parent_whatsapp') }}</th>
+                <th>{{ tr('teacher_note') }}</th>
+                <th>{{ tr('status') }}</th>
+                <th>{{ tr('review') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in review_rows %}
+              <tr>
+                <td>
+                  <input class="monthly-send-checkbox" type="checkbox" name="selected_student_ids" value="{{ row.student.id }}" {% if row.send_ready %}checked{% endif %} {% if not row.send_ready %}disabled{% endif %}>
+                </td>
+                <td>{{ row.student.full_name }}<br><small>{{ row.student.student_code }}</small></td>
+                <td>{{ row.report_data.level_name }}</td>
+                <td>{{ row.parent_email or '-' }}</td>
+                <td>{{ row.parent_whatsapp or '-' }}</td>
+                <td>{{ row.report_data.monthly_note_text or '-' }}</td>
+                <td>
+                  {% if row.send_ready %}
+                  <span class="cleanup-priority is-review">{{ tr('ready') }}</span>
+                  {% else %}
+                  <span class="cleanup-priority is-critical">{{ row.issues|join(', ')|replace('_', ' ') }}</span>
+                  {% endif %}
+                </td>
+                <td><a class="btn-link" href="/students/{{ row.student.id }}/report?period=month">{{ tr('open_report') }}</a></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="8">{{ tr('no_students_found') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="topbar" style="margin-top:12px;">
+          <button type="submit">{{ tr('send_selected_monthly_reports') }}</button>
+        </div>
+      </form>
+    </div>
+    <script>
+      function toggleReady(checked) {
+        document.querySelectorAll('.monthly-send-checkbox').forEach((item) => {
+          if (!item.disabled) {
+            item.checked = checked;
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="{{ current_lang }}" dir="{{ current_dir }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tr('syllabus_plan') }}</title>
+    <link rel="stylesheet" href="/static/ui.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <a class="pill" href="/admin/dashboard">{{ tr('supervisor_dashboard') }}</a>
+        <a class="pill" href="/head/dashboard">{{ tr('head_dashboard') }}</a>
+        <span class="pill">{{ tr('language') }}:</span>
+        <a class="pill" href="{{ with_lang('en') }}">EN</a>
+        <a class="pill" href="{{ with_lang('ar') }}">AR</a>
+      </div>
+
+      <h1 class="title">{{ tr('syllabus_plan') }}</h1>
+      <p class="subtitle">{{ tr('select_level_to_review_plan') }}</p>
+
+      {% if op_status == 'success' %}
+      <div class="notice success">{{ op_message }}</div>
+      {% elif op_status == 'error' %}
+      <div class="notice error">{{ op_message }}</div>
+      {% endif %}
+
+      <div class="panel">
+        <div class="stats-grid" style="margin-bottom:12px;">
+          <div class="stat-card">
+            <span class="stat-label">{{ tr('current_teaching_week') }}</span>
+            <strong class="stat-value">{{ academic_calendar_status.current_week }}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">{{ tr('current_calendar_status') }}</span>
+            <strong class="stat-value">{{ tr(academic_calendar_status.status_key) }}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">{{ tr('current_academic_event') }}</span>
+            <strong class="stat-value">
+              {% if academic_calendar_status.current_event %}
+              {{ academic_calendar_status.current_event.title }}
+              {% else %}
+              {{ tr('teaching_in_session') }}
+              {% endif %}
+            </strong>
+          </div>
+        </div>
+        <p class="subtitle" style="margin-top:0;">{{ tr('teaching_week_auto') }}</p>
+        <form class="inline-form" method="get" action="/admin/syllabus-plan">
+          <select name="level_id">
+            <option value="">{{ tr('all_levels') }}</option>
+            {% for level in levels %}
+            <option value="{{ level.id }}" {% if selected_level_id == (level.id|string) %}selected{% endif %}>{{ level.name }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit">{{ tr('apply') }}</button>
+          <a class="btn-link" href="/admin/syllabus-plan">{{ tr('reset') }}</a>
+        </form>
+        <div class="feature-card-meta" style="margin-top:12px;">
+          {% for event in academic_calendar_status.upcoming_events %}
+          <span class="pill">
+            {{ event.title }} • {{ event.start_date.strftime('%Y-%m-%d') }}
+            {% if event.end_date != event.start_date %}→ {{ event.end_date.strftime('%Y-%m-%d') }}{% endif %}
+          </span>
+          {% else %}
+          <span class="pill">{{ tr('no_upcoming_academic_events') }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>{{ tr('teacher_plan_overview') }}</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ tr('teacher_label') }}</th>
+                <th>{{ tr('level') }}</th>
+                <th>{{ tr('plan_rows_count') }}</th>
+                <th>{{ tr('progress_percentage') }}</th>
+                <th>{{ tr('expected_by_now') }}</th>
+                <th>{{ tr('delayed_lessons') }}</th>
+                <th>{{ tr('status') }}</th>
+                <th>{{ tr('completed_items_label') }}</th>
+                <th>{{ tr('in_progress_items_label') }}</th>
+                <th>{{ tr('pending_items_label') }}</th>
+                <th>{{ tr('last_completed_item') }}</th>
+                <th>{{ tr('open_syllabus_plan') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in summary_rows %}
+              <tr>
+                <td>{{ row.teacher.full_name if row.teacher else '-' }}</td>
+                <td>{{ row.level.name }}</td>
+                <td>{{ row.total_rows }}</td>
+                <td>{{ row.progress_pct }}%</td>
+                <td>{{ row.expected_count }}</td>
+                <td>{{ row.delayed_count }}</td>
+                <td><span class="pill">{{ tr(row.status_label_key) }}</span></td>
+                <td>{{ row.completed_count }}</td>
+                <td>{{ row.in_progress_count }}</td>
+                <td>{{ row.remaining_count }}</td>
+                <td>{{ row.last_completed_label or '-' }}</td>
+                <td><a class="btn-link" href="/admin/syllabus-plan?level_id={{ row.level.id }}">{{ tr('open_link') }}</a></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="12">{{ tr('no_plan_rows_yet') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {% if selected_summary %}
+      <div class="panel">
+        <h3>{{ selected_summary.level.name }} {{ tr('syllabus_plan') }}</h3>
+        <div class="feature-card-actions" style="margin-bottom:12px;">
+          <form method="post" action="/admin/levels/{{ selected_summary.level.id }}/syllabus-plan-editing">
+            <input type="hidden" name="syllabus_edit_open" value="{% if selected_summary.level.syllabus_edit_open %}0{% else %}1{% endif %}">
+            <button type="submit">
+              {% if selected_summary.level.syllabus_edit_open %}{{ tr('lock_teacher_plan_editing') }}{% else %}{{ tr('allow_teacher_plan_editing') }}{% endif %}
+            </button>
+          </form>
+          <span class="pill">{% if selected_summary.level.syllabus_edit_open %}{{ tr('editing_open') }}{% else %}{{ tr('editing_locked') }}{% endif %}</span>
+          <a class="pill" href="/admin/levels/{{ selected_summary.level.id }}/syllabus-plan.xlsx">{{ tr('excel_label') }}</a>
+          <a class="pill" href="/admin/levels/{{ selected_summary.level.id }}/syllabus-plan/template.xlsx">{{ tr('download_plan_template') }}</a>
+        </div>
+        <div class="guide syllabus-guide" style="margin-bottom:12px;">
+          <h4>{{ tr('import_plan_template') }}</h4>
+          <p>{{ tr('plan_template_hint') }}</p>
+          <form method="post" action="/admin/levels/{{ selected_summary.level.id }}/syllabus-plan/import" enctype="multipart/form-data" class="inline-form">
+            <label class="syllabus-input-label" for="admin-plan-template-file">{{ tr('plan_template_file_label') }}</label>
+            <input id="admin-plan-template-file" type="file" name="plan_template_file" accept=".xlsx" required>
+            <button type="submit">{{ tr('import_plan_template') }}</button>
+          </form>
+        </div>
+        {% if selected_import_preview %}
+        <div class="panel syllabus-import-preview-panel" style="margin-bottom:16px;">
+          <h4>{{ tr('import_preview_ready') }}</h4>
+          <p class="subtitle" style="margin-top:0;">{{ tr('import_preview_hint') }}</p>
+          <div class="stats-grid syllabus-import-preview-stats" style="margin-bottom:12px;">
+            <div class="stat-card syllabus-import-preview-stat">
+              <span class="stat-label">{{ tr('preview_scheduled_rows') }}</span>
+              <strong class="stat-value">{{ selected_import_preview.scheduled_count }}</strong>
+            </div>
+            <div class="stat-card syllabus-import-preview-stat is-blue">
+              <span class="stat-label">{{ tr('preview_reserve_rows') }}</span>
+              <strong class="stat-value">{{ selected_import_preview.reserve_count }}</strong>
+            </div>
+            <div class="stat-card syllabus-import-preview-stat is-amber">
+              <span class="stat-label">{{ tr('changed_plan_rows') }}</span>
+              <strong class="stat-value">{{ selected_import_comparison.changed_count if selected_import_comparison else 0 }}</strong>
+            </div>
+          </div>
+          <div class="feature-card-actions" style="margin-bottom:12px;">
+            <form method="post" action="/admin/levels/{{ selected_summary.level.id }}/syllabus-plan/import/apply">
+              <button type="submit">{{ tr('apply_import') }}</button>
+            </form>
+            <form method="post" action="/admin/levels/{{ selected_summary.level.id }}/syllabus-plan/import/discard">
+              <button type="submit">{{ tr('discard_preview') }}</button>
+            </form>
+          </div>
+          {% if selected_import_comparison and not selected_import_comparison.changed_count %}
+          <div class="guide syllabus-guide" style="margin-bottom:12px;">
+            <p style="margin:0;">{{ tr('plan_import_matches_current') }}</p>
+          </div>
+          {% endif %}
+          {% if selected_import_preview.scheduled_rows %}
+          <div class="table-wrap syllabus-preview-table-wrap" style="margin-bottom:12px;">
+            <table class="syllabus-preview-table">
+              <thead>
+                <tr>
+                  <th>{{ tr('week_number') }}</th>
+                  <th>{{ tr('book_name') }}</th>
+                  <th>{{ tr('unit_name') }}</th>
+                  <th>{{ tr('lesson_name') }}</th>
+                  <th>{{ tr('lesson_reference') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in selected_import_preview.scheduled_rows[:8] %}
+                <tr>
+                  <td>{{ row.week_number }} / {{ tr('lesson_slot_' ~ row.session_number) }}</td>
+                  <td>{{ row.book_name or '-' }}</td>
+                  <td>{{ row.unit_name or '-' }}</td>
+                  <td>{{ row.lesson_title or '-' }}</td>
+                  <td>{{ row.source_reference or '-' }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% endif %}
+          {% if selected_import_comparison and selected_import_comparison.changed_rows %}
+          <h5 style="margin:12px 0 8px;">{{ tr('plan_comparison_preview') }}</h5>
+          <div class="table-wrap syllabus-comparison-table-wrap" style="margin-bottom:12px;">
+            <table class="syllabus-comparison-table">
+              <thead>
+                <tr>
+                  <th>{{ tr('week_number') }}</th>
+                  <th>{{ tr('current_value') }}</th>
+                  <th>{{ tr('new_value') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in selected_import_comparison.changed_rows %}
+                <tr class="syllabus-comparison-row">
+                  <td>{{ row.week_number }} / {{ tr('lesson_slot_' ~ row.session_number) }}</td>
+                  <td class="syllabus-comparison-old">
+                    <strong>{{ row.current_lesson }}</strong><br>
+                    <small>{{ row.current_book }} • {{ row.current_unit }}</small>
+                  </td>
+                  <td class="syllabus-comparison-new">
+                    <strong>{{ row.new_lesson }}</strong><br>
+                    <small>{{ row.new_book }} • {{ row.new_unit }}</small>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% endif %}
+          {% if selected_import_preview.reserve_rows %}
+          <div class="table-wrap syllabus-preview-table-wrap">
+            <table class="syllabus-preview-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>{{ tr('book_name') }}</th>
+                  <th>{{ tr('unit_name') }}</th>
+                  <th>{{ tr('lesson_name') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in selected_import_preview.reserve_rows[:5] %}
+                <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{ row.book_name or '-' }}</td>
+                  <td>{{ row.unit_name or '-' }}</td>
+                  <td>{{ row.lesson_title or '-' }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">{{ tr('progress_percentage') }}</span>
+            <strong class="stat-value">{{ selected_summary.progress_pct }}%</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">{{ tr('expected_by_now') }}</span>
+            <strong class="stat-value">{{ selected_summary.expected_count }}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">{{ tr('delayed_lessons') }}</span>
+            <strong class="stat-value">{{ selected_summary.delayed_count }}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">{{ tr('unscheduled_plan_rows') }}</span>
+            <strong class="stat-value">{{ selected_summary.unscheduled_count }}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">{{ tr('status') }}</span>
+            <strong class="stat-value">{{ tr(selected_summary.status_label_key) }}</strong>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ tr('week_number') }}</th>
+                {% for session_number in selected_session_numbers %}
+                <th>{{ tr('lesson_slot_' ~ session_number) }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in selected_grid_rows %}
+              <tr class="syllabus-week-row {% if row.week_meta.is_current_week %}is-current-week{% endif %} {% if row.week_meta.dominant_event_type %}is-{{ row.week_meta.dominant_event_type|replace('_', '-') }}{% endif %}">
+                <td class="syllabus-week-label">
+                  <strong>{{ tr('academic_week_label') }} {{ row.academic_week_number }}</strong>
+                  {% if row.week_number %}
+                  <small class="syllabus-week-dates">{{ tr('teaching_week_label') }} {{ row.week_number }}</small>
+                  {% else %}
+                  <span class="pill">{{ tr('non_teaching_week') }}</span>
+                  {% endif %}
+                  {% if row.week_meta.date_label %}
+                  <small class="syllabus-week-dates">{{ row.week_meta.date_label }}</small>
+                  {% endif %}
+                  {% if row.week_meta.is_current_week %}
+                  <span class="pill">{{ tr('current_week_badge') }}</span>
+                  {% endif %}
+                  {% for event in row.week_meta.events %}
+                  <span class="pill">{{ event.title }}</span>
+                  {% endfor %}
+                </td>
+                {% if not row.is_instructional_week %}
+                <td class="syllabus-plan-cell is-empty syllabus-non-teaching-cell" colspan="{{ selected_session_numbers|length }}">
+                  <div class="syllabus-plan-shell">
+                    <div class="syllabus-plan-head">
+                      <strong>{{ tr('non_teaching_week') }}</strong>
+                      <span class="pill">{{ tr('current_calendar_status') }}</span>
+                    </div>
+                    <p class="syllabus-plan-empty-copy">{{ tr('no_lessons_scheduled_this_week') }}</p>
+                  </div>
+                </td>
+                {% else %}
+                {% for session in row.sessions %}
+                {% set entry = session.entry %}
+                <td class="syllabus-plan-cell {% if not session.is_available_slot %}is-non-teaching-slot{% elif entry %}has-entry{% else %}is-empty{% endif %} {% if session.is_review %}is-review{% endif %}">
+                  {% if not session.is_available_slot %}
+                  <div class="syllabus-plan-shell">
+                    <div class="syllabus-plan-head">
+                      <strong>{{ tr('lesson_slot_' ~ session.session_number) }}</strong>
+                      <span class="pill">{{ tr('non_teaching_week') }}</span>
+                    </div>
+                    <p class="syllabus-plan-empty-copy">{{ tr('no_lessons_scheduled_this_week') }}</p>
+                  </div>
+                  {% elif entry %}
+                  <div class="syllabus-plan-shell">
+                  <div class="syllabus-plan-head">
+                    <strong>{{ tr('lesson_slot_' ~ session.session_number) }}</strong>
+                    {% if session.is_review %}
+                    <span class="pill">{{ tr('review_lesson') }}</span>
+                    {% endif %}
+                  </div>
+                  <div class="syllabus-entry-stack">
+                    <span class="syllabus-entry-book">{{ entry.book_name or '-' }}</span>
+                    <span class="syllabus-entry-unit">{{ entry.unit_name or '-' }}</span>
+                    <strong class="syllabus-entry-lesson">{{ entry.lesson_title }}</strong>
+                    <span class="syllabus-entry-ref">{{ entry.source_reference or '-' }}</span>
+                  </div>
+                  <p>{{ entry.learning_objective or '-' }}</p>
+                  <p><strong>{{ tr('planned_homework_label') }}:</strong> {{ entry.planned_homework or '-' }}</p>
+                  <div class="feature-card-meta syllabus-plan-meta">
+                    <span class="pill">{{ tr('status') }}: {{ tr(entry.status ~ '_state') if entry.status in ['planned','in_progress','completed','postponed'] else entry.status }}</span>
+                    <span class="pill">{{ tr('completed_on') }}: {{ entry.completed_on.strftime('%Y-%m-%d') if entry.completed_on else '-' }}</span>
+                  </div>
+                  <p><strong>{{ tr('plan_note') }}:</strong> {{ entry.note_text or '-' }}</p>
+                  </div>
+                  {% else %}
+                  <div class="syllabus-plan-shell">
+                    <div class="syllabus-plan-head">
+                      <strong>{{ tr('lesson_slot_' ~ session.session_number) }}</strong>
+                      <span class="pill">{{ tr('empty_plan_cell') }}</span>
+                    </div>
+                    <p class="syllabus-plan-empty-copy">{{ tr('fill_plan_cell_hint') }}</p>
+                  </div>
+                  {% endif %}
+                </td>
+                {% endfor %}
+                {% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% if selected_summary.unscheduled_rows %}
+        <div class="panel" style="margin-top:16px;">
+          <h4>{{ tr('reserve_plan_rows') }}</h4>
+          <p class="subtitle" style="margin-top:0;">{{ tr('unscheduled_plan_caption') }}</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>{{ tr('book_name') }}</th>
+                  <th>{{ tr('unit_name') }}</th>
+                  <th>{{ tr('lesson_name') }}</th>
+                  <th>{{ tr('lesson_reference') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for entry in selected_summary.unscheduled_rows %}
+                <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{ entry.book_name or '-' }}</td>
+                  <td>{{ entry.unit_name or '-' }}</td>
+                  <td>{{ entry.lesson_title or '-' }}</td>
+                  <td>{{ entry.source_reference or '-' }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </body>
+</html>
